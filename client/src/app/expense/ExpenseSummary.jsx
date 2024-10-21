@@ -15,7 +15,7 @@ function ExpenseSummary({ summaryData }) {
 
         {/* Category Expenses */}
         <div className="space-y-2">
-          {summaryData?.categoryExpenses.length > 0 ? (
+          {summaryData?.categoryExpenses?.length > 0 ? (
             summaryData?.categoryExpenses.map((categoryExpense) => (
               <div
                 key={categoryExpense?._id}

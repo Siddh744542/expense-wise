@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import ExpenseCategory from "./ExpenseCategory";
+import ExpenseCategory from "./(expense)/ExpenseCategory";
 import IncomeSource from "./IncomeSource";
 
 function Category() {
@@ -10,7 +10,7 @@ function Category() {
     setIsExpense(!isExpense);
   };
   return (
-    <div className="p-2 pr-5">
+    <div className="pr-5">
       <div className="flex flex-col items-center">
         <div className="flex items-center space-x-4">
           <span
@@ -48,7 +48,7 @@ function Category() {
             Income
           </span>
         </div>
-        <div className="mt-6 w-full">
+        <div className=" w-full">
           {isExpense ? <ExpenseCategory /> : <IncomeSource />}
         </div>
       </div>

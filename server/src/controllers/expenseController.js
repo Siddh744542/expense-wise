@@ -3,28 +3,36 @@ import DailyExpense from "../../models/dailyExpense.js";
 import MonthlyExpense from "../../models/monthlyExpense.js";
 
 export const getSummary = async (req, res) => {
-  const { userId } = req.query;
+  const { userId, month } = req.query;
+  try {
+    const monthlySummary = await MonthlyExpense.findOne({
+      userId: userId,
+      month,
+    });
+    const availableMonths = await MonthlyExpense.distinct("month", { userId });
 
-  const currentMonth = new Date().toISOString().slice(0, 7);
+    if (!monthlySummary) {
+      return res.json({
+        categoryExpenses: [],
+        totalExpenses: 0,
+        availableMonths,
+      });
+    }
 
-  const monthlySummary = await MonthlyExpense.findOne({
-    userId: userId,
-    month: currentMonth,
-  });
+    const totalExpenses = monthlySummary.categoryExpenses.reduce(
+      (sum, category) => sum + category.amount,
+      0
+    );
 
-  if (!monthlySummary) {
-    return res.json({ categoryExpenses: [], totalExpenses: 0 });
+    res.json({
+      totalExpenses,
+      categoryExpenses: monthlySummary.categoryExpenses,
+      availableMonths,
+    });
+  } catch (error) {
+    console.error("Error fetching summary:", error);
+    res.status(500).json({ message: "Failed to fetch summary." });
   }
-
-  const totalExpenses = monthlySummary.categoryExpenses.reduce(
-    (sum, category) => sum + category.amount,
-    0
-  );
-
-  res.json({
-    totalExpenses,
-    categoryExpenses: monthlySummary.categoryExpenses,
-  });
 };
 
 const updateMonthlyExpense = async (expenseData) => {

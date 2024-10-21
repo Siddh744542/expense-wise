@@ -8,3 +8,20 @@ body {
   min-width: 100%;
   @apply bg-background font-roboto;
 }
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f6f6ff;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #8a86c8;
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #474292;
+}

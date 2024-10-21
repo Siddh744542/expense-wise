@@ -5,22 +5,14 @@ import { useSession } from "next-auth/react";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import axios from "axios";
-// const categoryLimits = {
-//   Groceries: 500,
-//   Transport: 200,
-//   Entertainment: 300,
-//   Utilities: 150,
-// };
-// const categoryExpenses = {
-//   Groceries: 100,
-//   Transport: 150,
-//   Entertainment: 250,
-//   Utilities: 145,
-// };
 
 const DailyExpenseForm = ({ searchParams }) => {
   const router = useRouter();
   const { data: session, status } = useSession();
+  const [categoryData, setCategoryData] = useState();
+  const [selectedMonth, setSelectedMonth] = useState(
+    String(new Date().toISOString().slice(0, 7))
+  );
   const today = new Date().toISOString().split("T")[0]; // Get current date in 'YYYY-MM-DD' format
   const [isEditing, setIsEditing] = useState(false);
 
@@ -32,6 +24,7 @@ const DailyExpenseForm = ({ searchParams }) => {
   });
 
   useEffect(() => {
+    fetchCategory();
     if (Object.keys(searchParams).length > 0) {
       setFormData({
         date: searchParams.date?.split("T")[0] || today,
@@ -43,21 +36,30 @@ const DailyExpenseForm = ({ searchParams }) => {
     } else {
       setIsEditing(false);
     }
-  }, [searchParams]);
-  const [categoryLimit, setCategoryLimit] = useState(null);
-  const [categoryExpense, setCategoryExpense] = useState(null);
+  }, [searchParams, session]);
 
+  const fetchCategory = async () => {
+    try {
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_DOMAIN}/expense/summary`,
+        {
+          params: { userId: session?.user.id, month: selectedMonth },
+        }
+      );
+      setCategoryData(response.data);
+    } catch (err) {}
+  };
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({
       ...formData,
       [name]: value,
     });
-
-    // if (name === "category") {
-    //   setCategoryLimit(categoryLimits[value] || null);
-    //   setCategoryExpense(categoryExpenses[value] || null);
-    // }
+    if (name === "date") {
+      const updatedMonth = value.slice(0, 7);
+      setSelectedMonth(updatedMonth);
+      fetchCategory();
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -121,12 +123,11 @@ const DailyExpenseForm = ({ searchParams }) => {
 
   return (
     <div className="!w-1/2 px- mx-auto mt-10 space-y-4">
-      {/* Title Outside of the Box */}
+      {/* Title*/}
       <h2 className="text-2xl font-semibold text-primary-700 text-center mb-4">
         {isEditing ? "Update Daily Expense" : "Add Daily Expense"}
       </h2>
 
-      {/* White Boxed Form */}
       <div className="p-6 bg-white shadow-md rounded-md">
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Date Input */}
@@ -161,10 +162,11 @@ const DailyExpenseForm = ({ searchParams }) => {
               <option value="" disabled>
                 Select Category
               </option>
-              <option value="Groceries">Groceries</option>
-              <option value="Transport">Transport</option>
-              <option value="Entertainment">Entertainment</option>
-              <option value="Utilities">Utilities</option>
+              {categoryData?.categoryExpenses.map((categories) => (
+                <option key={categories.category} value={categories.category}>
+                  {categories.category}
+                </option>
+              ))}
             </select>
           </div>
 

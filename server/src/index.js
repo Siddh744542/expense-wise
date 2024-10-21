@@ -10,6 +10,7 @@ import { connect } from "./dbConfig/dbConfig.js";
 import userRoutes from "../src/routes/userRoutes.js";
 import expenseRoutes from "../src/routes/expenseRoute.js";
 import incomeRoutes from "../src/routes/incomeRoute.js";
+import categoryRoutes from "../src/routes/categoryRoute.js";
 // configuration
 dotenv.config();
 const app = express();
@@ -27,6 +28,7 @@ connect();
 app.use("/users", userRoutes); //http://localhost:8000/users
 app.use("/expense", expenseRoutes); //http://localhost:8000/expense
 app.use("/income", incomeRoutes); //http://localhost:8000/income
+app.use("/category", categoryRoutes); //http://localhost:8000/category
 // server
 const port = Number(process.env.PORT) || 3001;
 

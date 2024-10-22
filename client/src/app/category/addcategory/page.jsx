@@ -13,6 +13,7 @@ const AddCategoryForm = ({ searchParams }) => {
   const [formData, setFormData] = useState({
     category: "",
     limit: "",
+    month: "",
   });
 
   useEffect(() => {
@@ -20,6 +21,7 @@ const AddCategoryForm = ({ searchParams }) => {
       setFormData({
         category: searchParams.category || "",
         limit: searchParams.limit || "",
+        month: searchParams.month || "",
       });
       setIsEditing(true);
     } else {
@@ -62,6 +64,7 @@ const AddCategoryForm = ({ searchParams }) => {
           setFormData({
             category: "",
             limit: "",
+            month: "",
           });
           router.push("/category");
         });
@@ -131,6 +134,22 @@ const AddCategoryForm = ({ searchParams }) => {
               value={formData.limit}
               onChange={handleChange}
               placeholder="Enter limit for the category"
+              className="border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring focus:border-primary-500"
+              required
+            />
+          </div>
+
+          <div className="flex flex-col">
+            <label htmlFor="month" className="text-gray-600 mb-1">
+              Month
+            </label>
+            <input
+              type="month"
+              name="month"
+              id="month"
+              value={formData.month}
+              onChange={handleChange}
+              placeholder="Select month"
               className="border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring focus:border-primary-500"
               required
             />

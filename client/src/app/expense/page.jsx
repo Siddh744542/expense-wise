@@ -6,13 +6,7 @@ import ExpenseSummary from "./ExpenseSummary";
 import CategoryChart from "./CategoryChart";
 import { useRouter } from "next/navigation";
 import ExpenseList from "./ExpenseList";
-
-const formatMonth = (monthString) => {
-  const date = new Date(`${monthString}-01`);
-  const monthName = date.toLocaleString("default", { month: "long" });
-  const year = date.getFullYear();
-  return `${monthName} - ${year}`;
-};
+import formatMonth from "@/helper/formatMonth";
 
 function Expenses() {
   const { data: session, status } = useSession();

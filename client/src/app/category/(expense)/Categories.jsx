@@ -46,7 +46,7 @@ const ConfirmDeleteModal = ({ isOpen, onClose, handleDelete }) => {
   );
 };
 
-function Categories({ categoryData }) {
+function Categories({ categoryData, selectedMonth }) {
   const { data: session, status } = useSession();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(null);
@@ -128,6 +128,7 @@ function Categories({ categoryData }) {
                       id: categoryExpense._id,
                       category: categoryExpense.category,
                       limit: categoryExpense.limit,
+                      month: selectedMonth,
                     },
                   }}
                 >

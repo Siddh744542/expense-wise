@@ -90,7 +90,7 @@ function Categories({ categoryData, selectedMonth }) {
     <div className="h-[370px] bg-white p-5 pr-1 rounded-lg shadow flex flex-col">
       {/* Total Expenses */}
       <div className="space-y-2 pr-5">
-        <div className="text-primary-600 font-semibold text-xl flex justify-between">
+        <div className="text-primary-500 font-semibold text-xl flex justify-between">
           Total Expenses:
           <div className="text-action font-bold text-2xl">
             ₹{categoryData?.totalExpenses || 0}

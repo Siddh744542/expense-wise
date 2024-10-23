@@ -9,26 +9,13 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-const chartColor = [
-  "#f45655",
-  "#7da7d9",
-  "#F1C02B",
-  "#D09C9C",
-  "#8EB3D3",
-  "#F1B13D",
-  "#F2A6B1",
-  "#8BC3C3",
-  "#A5A1E1",
-  "#A4C6A4",
-  "#D78A7A",
-  ,
-  ,
-];
+import ChartColors from "@/helper/ChartColors";
+
 const aggregateCategoryData = (categoryData) => {
   return categoryData?.map((expense, index) => ({
     name: expense.category,
     value: expense.amount,
-    fill: chartColor[index % chartColor.length], // Assign color from array
+    fill: ChartColors[index % ChartColors.length],
   }));
 };
 function ExpenseByCategoryBarchart({ expenseCategoryData }) {

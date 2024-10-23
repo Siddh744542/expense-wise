@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import Categories from "./Categories";
 import ExpenseByCategoryBarchart from "./ExpenseByCategoryBarchart";
 import formatMonth from "@/helper/formatMonth";
+import CategorySpendingRadialChart from "./CategorySpendingRadialChart";
 function ExpenseCategory() {
   const { data: session, status } = useSession();
   const [categoryData, setCategoryData] = useState();
@@ -73,7 +74,7 @@ function ExpenseCategory() {
         </div>
       </div>
 
-      <div className="grid grid-cols-5 auto-rows-fr gap-4 ">
+      <div className="grid grid-cols-5 gap-4 ">
         <div className="col-span-2">
           <Categories
             categoryData={categoryData}
@@ -90,11 +91,10 @@ function ExpenseCategory() {
           />
         </div>
 
-        {/* Bottom Left: Monthly trends (larger) */}
-        <div className="col-span-3 bg-white p-4 shadow-md rounded-lg">
-          <h2 className="text-lg font-semibold">Monthly Trends</h2>
-          {/* Add your Monthly Trends bar chart here */}
-          <p>Chart goes here</p>
+        <div className="h-full col-span-3 bg-white p-4 shadow-md rounded-lg">
+          <CategorySpendingRadialChart
+            categoryData={categoryData?.categoryExpenses}
+          />
         </div>
 
         {/* Bottom Right: Top categories comparison (smaller) */}

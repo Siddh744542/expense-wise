@@ -41,7 +41,7 @@ const CategorySpendingRadialChart = ({ categoryData }) => {
       <h2 className="text-xl text-primary-500 font-semibold text-center ">
         Spending by Category
       </h2>
-      <div className="h-72">
+      <div className="h-72 flex-grow">
         <ResponsiveContainer width="100%" height="100%">
           <RadialBarChart
             cx="50%"

@@ -8,7 +8,7 @@ import {
   ResponsiveContainer,
   Tooltip,
 } from "recharts";
-
+import ChartColors from "@/helper/ChartColors";
 const aggregateSourceData = (sourceIncomes) => {
   return sourceIncomes?.map((income, index) => ({
     name: income.source,
@@ -16,19 +16,6 @@ const aggregateSourceData = (sourceIncomes) => {
   }));
 };
 
-const chartColor = [
-  "#004B95",
-  "#4CB140",
-  "#F0AB00",
-  "#A30000",
-  "#519DE9",
-  "#EC7A08",
-  "#f00757",
-  "#009596",
-  "#5752D1",
-  "#3c5c04",
-  "#ca3220",
-];
 function SourceChart({ summaryData }) {
   const [activeIndex, setActiveIndex] = useState(0);
   const aggregatedData = aggregateSourceData(summaryData);
@@ -51,7 +38,7 @@ function SourceChart({ summaryData }) {
             {aggregatedData?.map((entry, index) => (
               <Cell
                 key={`cell-${index}`}
-                fill={chartColor[index % chartColor.length]}
+                fill={ChartColors[index % ChartColors.length]}
               />
             ))}
           </Pie>

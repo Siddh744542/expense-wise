@@ -7,6 +7,7 @@ import Categories from "./Categories";
 import ExpenseByCategoryBarchart from "./ExpenseByCategoryBarchart";
 import formatMonth from "@/helper/formatMonth";
 import CategorySpendingRadialChart from "./CategorySpendingRadialChart";
+import CategorySpendingComparison from "./CategorySpendingComparison";
 function ExpenseCategory() {
   const { data: session, status } = useSession();
   const [categoryData, setCategoryData] = useState();
@@ -40,7 +41,6 @@ function ExpenseCategory() {
         <h1 className="text-3xl font-semibold text-primary">
           Category Overview
         </h1>
-        {/* Date Filter */}
         <div className="flex gap-2 items-center">
           <div>
             <label htmlFor="date-filter" className="mr-2 font-medium">
@@ -74,15 +74,15 @@ function ExpenseCategory() {
         </div>
       </div>
 
-      <div className="grid grid-cols-5 gap-4 ">
-        <div className="col-span-2">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+        <div className="col-span-1 lg:col-span-2">
           <Categories
             categoryData={categoryData}
             selectedMonth={selectedMonth}
           />
         </div>
 
-        <div className="h-full col-span-3 bg-white p-4 shadow-md rounded-lg justify-between">
+        <div className="h-full col-span-1 lg:col-span-3 bg-white p-4 shadow-md rounded-lg">
           <h2 className="text-lg text-primary font-semibold pb-2">
             Monthly Expenses by Category
           </h2>
@@ -90,19 +90,17 @@ function ExpenseCategory() {
             expenseCategoryData={categoryData?.categoryExpenses}
           />
         </div>
+      </div>
 
-        <div className="h-full col-span-3 bg-white p-4 shadow-md rounded-lg">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-4">
+        <div className="h-full col-span-1 md:col-span-2 lg:col-span-2 bg-white p-4 shadow-md rounded-lg">
           <CategorySpendingRadialChart
             categoryData={categoryData?.categoryExpenses}
           />
         </div>
 
-        {/* Bottom Right: Top categories comparison (smaller) */}
-        <div className="col-span-2 bg-white p-4 shadow-md rounded-lg">
-          <h2 className="text-lg font-semibold">Top Categories Comparison</h2>
-          <p>This month: XYZ (XX%)</p>
-          <p>Last month: XYZ (XX%)</p>
-          <p>Difference: +/- XX%</p>
+        <div className="col-span-1 md:col-span-2 lg:col-span-2 bg-white p-4 shadow-md rounded-lg">
+          <CategorySpendingComparison selectedMonth={selectedMonth} />
         </div>
       </div>
     </div>

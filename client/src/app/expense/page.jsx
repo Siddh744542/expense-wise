@@ -37,7 +37,7 @@ function Expenses() {
   }, [session, selectedMonth]);
   if (!summaryData) return <div>Loading...</div>;
   return (
-    <div className="p-2 pr-5">
+    <div className=" pr-5">
       {/* header */}
       <div className="flex justify-between items-center py-6">
         <h1 className="text-3xl font-semibold text-primary">

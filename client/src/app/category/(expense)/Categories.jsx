@@ -107,12 +107,13 @@ function Categories({ categoryData, selectedMonth }) {
               className="flex justify-between items-center border-b pb-2 mb-2"
             >
               <div>
-                <p className="text-gray-700 font-medium">
+                <p className="text-gray-700 font-semibold  font-md">
                   {categoryExpense?.category}
                 </p>
-                <p className="text-gray-500">
-                  Spent: ₹{categoryExpense?.amount}
-                </p>
+                <div className="text-gray-500 flex gap-1">
+                  Spent:
+                  <p className="text-black ">₹{categoryExpense?.amount}</p>
+                </div>
               </div>
 
               <div className="flex items-center space-x-2 pr-2">

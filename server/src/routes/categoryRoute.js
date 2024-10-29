@@ -12,4 +12,5 @@ router.get("/getcomparisondata", getComparisonData);
 router.post("/addcategory", addcategory);
 router.put("/updatecategory", updateCategory);
 router.delete("/delete", deleteCategory);
+
 export default router;

@@ -6,17 +6,25 @@ import { useRouter } from "next/navigation";
 import IncomeSummary from "./IncomeSummary";
 import SourceChart from "./SourceChart";
 import IncomeList from "./IncomeList";
+import formatMonth from "@/helper/formatMonth";
 
 function Income() {
   const { data: session, status } = useSession();
   const [summaryData, setSummaryData] = useState();
+  const [selectedMonth, setSelectedMonth] = useState(
+    String(new Date().toISOString().slice(0, 7))
+  );
   const router = useRouter();
+
+  const handleMonthChange = (e) => {
+    setSelectedMonth(e.target.value);
+  };
   const fetchSummary = async () => {
     try {
       const response = await axios.get(
         `${process.env.NEXT_PUBLIC_DOMAIN}/income/summary`,
         {
-          params: { userId: session?.user.id },
+          params: { userId: session?.user.id, month: selectedMonth },
         }
       );
       setSummaryData(response.data);
@@ -25,7 +33,7 @@ function Income() {
 
   useEffect(() => {
     fetchSummary();
-  }, [session]);
+  }, [session, selectedMonth]);
   if (!summaryData) return <div>Loading...</div>;
   return (
     <div className="pr-5">
@@ -42,11 +50,19 @@ function Income() {
             <select
               id="date-filter"
               className="border rounded-md px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-primary"
+              onChange={handleMonthChange}
+              value={selectedMonth}
             >
-              <option value="daily">Daily</option>
-              <option value="weekly">Weekly</option>
-              <option value="monthly">Monthly</option>
-              <option value="custom">Custom</option>
+              <option value="">Select Month</option>
+              {summaryData?.availableMonths?.length > 0 ? (
+                summaryData.availableMonths.map((month) => (
+                  <option key={month} value={month}>
+                    {formatMonth(month)}
+                  </option>
+                ))
+              ) : (
+                <option disabled>No months available</option>
+              )}
             </select>
           </div>
 

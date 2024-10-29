@@ -23,7 +23,7 @@ function SourceChart({ summaryData }) {
   return (
     <div className="bg-white p-5 rounded-lg shadow">
       <h2 className="text-lg font-semibold text-primary">Income by Source</h2>
-      <ResponsiveContainer width="100%" height={400}>
+      <ResponsiveContainer width="100%" height={350}>
         <PieChart>
           <Pie
             data={aggregatedData}

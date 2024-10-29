@@ -8,6 +8,11 @@ import axios from "axios";
 const AddIncome = ({ searchParams }) => {
   const router = useRouter();
   const { data: session, status } = useSession();
+  const [sourceData, setSourceData] = useState();
+  const [selectedMonth, setSelectedMonth] = useState(
+    String(new Date().toISOString().slice(0, 7))
+  );
+
   const today = new Date().toISOString().split("T")[0]; // Get current date in 'YYYY-MM-DD' format
 
   const [formData, setFormData] = useState({
@@ -20,6 +25,7 @@ const AddIncome = ({ searchParams }) => {
   const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
+    fetchSummary();
     if (Object.keys(searchParams).length > 0) {
       setFormData({
         date: searchParams.date?.split("T")[0] || today,
@@ -31,7 +37,19 @@ const AddIncome = ({ searchParams }) => {
     } else {
       setIsEditing(false);
     }
-  }, [searchParams]);
+  }, [searchParams, session]);
+
+  const fetchSummary = async () => {
+    try {
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_DOMAIN}/income/summary`,
+        {
+          params: { userId: session?.user.id, month: selectedMonth },
+        }
+      );
+      setSourceData(response.data);
+    } catch (err) {}
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -39,6 +57,11 @@ const AddIncome = ({ searchParams }) => {
       ...prevFormData,
       [name]: value,
     }));
+    if (name === "date") {
+      const updatedMonth = value.slice(0, 7);
+      setSelectedMonth(updatedMonth);
+      fetchSummary();
+    }
   };
 
   const handleSubmit = (e) => {
@@ -140,10 +163,11 @@ const AddIncome = ({ searchParams }) => {
               <option value="" disabled>
                 Select Source
               </option>
-              <option value="Salary">Salary</option>
-              <option value="Freelance">Freelance</option>
-              <option value="Investments">Investments</option>
-              <option value="Other">Other</option>
+              {sourceData?.sources.map((source) => (
+                <option key={source.source} value={source.source}>
+                  {source.source}
+                </option>
+              ))}
             </select>
           </div>
 

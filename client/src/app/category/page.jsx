@@ -1,14 +1,20 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import ExpenseCategory from "./(expense)/ExpenseCategory";
-import IncomeSource from "./IncomeSource";
+import IncomeSource from "./(income)/IncomeSource";
 
-function Category() {
+function Category({ searchParams }) {
   const [isExpense, setIsExpense] = useState(true);
 
   const toggleCategory = () => {
     setIsExpense(!isExpense);
   };
+
+  useEffect(() => {
+    if (Object.keys(searchParams).length > 0) {
+      if (searchParams.isexpense == "false") setIsExpense(false);
+    }
+  }, [searchParams]);
   return (
     <div className="pr-5">
       <div className="flex flex-col items-center">

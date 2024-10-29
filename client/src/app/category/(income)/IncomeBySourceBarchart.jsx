@@ -10,15 +10,15 @@ import {
 } from "recharts";
 import ChartColors from "@/helper/ChartColors";
 
-const aggregateCategoryData = (categoryData) => {
-  return categoryData?.map((expense, index) => ({
-    name: expense.category,
-    value: expense.amount,
+const aggregateSourceData = (incomeSourceData) => {
+  return incomeSourceData?.map((source, index) => ({
+    name: source.source,
+    value: source.total,
     fill: ChartColors[index % ChartColors.length],
   }));
 };
-function ExpenseByCategoryBarchart({ expenseCategoryData }) {
-  const aggregatedData = aggregateCategoryData(expenseCategoryData);
+function IncomeBySourceBarchart({ incomeSourceData }) {
+  const aggregatedData = aggregateSourceData(incomeSourceData);
   return (
     <ResponsiveContainer width="100%" height={300}>
       <BarChart data={aggregatedData}>
@@ -31,4 +31,4 @@ function ExpenseByCategoryBarchart({ expenseCategoryData }) {
   );
 }
 
-export default ExpenseByCategoryBarchart;
+export default IncomeBySourceBarchart;

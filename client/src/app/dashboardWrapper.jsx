@@ -19,9 +19,9 @@ const DashboardWrappper = ({ children }) => {
         />
       )}
       <main
-        className={`flex flex-col w-full h-full ${
-          isVerified && "py-7  md:pl-72"
-        } ${isSideBarCollapsed ? "md:pl-24" : "md:pl-72"}`}
+        className={`flex flex-col w-full h-full ${isVerified && "py-7"} ${
+          isSideBarCollapsed ? "md:pl-24" : "md:pl-72"
+        }`}
       >
         {children}
       </main>

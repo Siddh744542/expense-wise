@@ -70,6 +70,7 @@ function Categories({ categoryData, selectedMonth }) {
             userId: session?.user.id,
             categoryId: selectedCategory,
             deleteExpenses: deleteExpenses,
+            month: selectedMonth,
           },
         }),
         {

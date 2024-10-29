@@ -60,21 +60,27 @@ export const addIncome = async (req, res) => {
 };
 
 export const getSummary = async (req, res) => {
-  const { userId } = req.query;
-  const currentMonth = new Date().toISOString().slice(0, 7);
+  const { userId, month } = req.query;
   const monthlySummary = await MonthlyIncome.findOne({
     userId: userId,
-    month: currentMonth,
+    month: month,
   });
+  const availableMonths = await MonthlyIncome.distinct("month", { userId });
 
   if (!monthlySummary) {
-    return res.json({ sources: [], totalIncome: 0 });
+    return res.json({ sources: [], totalIncome: 0, availableMonths });
   }
 
   res.json({
     totalIncome: monthlySummary.totalIncome,
     sources: monthlySummary.sources,
+    availableMonths,
   });
+  try {
+  } catch (error) {
+    console.error("Error fetching summary:", error);
+    res.status(500).json({ message: "Failed to fetch summary." });
+  }
 };
 
 export const getIncome = async (req, res) => {

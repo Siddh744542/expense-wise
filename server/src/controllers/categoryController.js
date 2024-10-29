@@ -54,10 +54,9 @@ export const updateCategory = async (req, res) => {
     return res.status(400).json({ message: "Required fields are missing." });
   }
   try {
-    const selectedMonth = month;
     let monthlyExpense = await MonthlyExpense.findOne({
       userId: new mongoose.Types.ObjectId(userId),
-      month: selectedMonth,
+      month: month,
     });
 
     if (!monthlyExpense) {
@@ -88,13 +87,12 @@ export const updateCategory = async (req, res) => {
 };
 
 export const deleteCategory = async (req, res) => {
-  const { userId, categoryId, deleteExpenses } = req.body;
+  const { userId, categoryId, deleteExpenses, month } = req.body;
 
   try {
-    const currentMonth = new Date().toISOString().slice(0, 7);
     const monthlyExpense = await MonthlyExpense.findOne({
       userId,
-      month: currentMonth,
+      month: month,
     });
 
     if (!monthlyExpense) {

@@ -25,7 +25,7 @@ const formatRadialBarData = (categoryData) => {
   });
 
   formattedData.unshift({
-    name: "Max",
+    name: "i",
     spent: 100,
     fill: "transparent",
   });
@@ -38,14 +38,14 @@ const CategorySpendingRadialChart = ({ categoryData }) => {
 
   return (
     <div className="">
-      <h2 className="text-xl text-primary-500 font-semibold text-center ">
-        Spending by Category
+      <h2 className="text-lg text-primary-500 font-semibold text-left ">
+        Spending Limit Reached per Category
       </h2>
       <div className="h-72 flex-grow">
         <ResponsiveContainer width="100%" height="100%">
           <RadialBarChart
             cx="50%"
-            cy="50%"
+            cy="44%"
             innerRadius="5%"
             outerRadius="90%"
             barSize={15}
@@ -66,7 +66,7 @@ const CategorySpendingRadialChart = ({ categoryData }) => {
             />
             <Tooltip
               formatter={(value, name, props) => [
-                name !== "Max"
+                name !== "i"
                   ? `${props.payload.amount} / ${props.payload.limit} (${value}%)`
                   : "",
                 name,

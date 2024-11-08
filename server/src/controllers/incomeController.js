@@ -1,3 +1,4 @@
+import { importLastMonthIncomeSources } from "../../helper/importLastMonthIncomeSource.js";
 import DailyIncome from "../../models/incomeModel.js";
 import MonthlyIncome from "../../models/monthlyIncome.js";
 
@@ -61,22 +62,22 @@ export const addIncome = async (req, res) => {
 
 export const getSummary = async (req, res) => {
   const { userId, month } = req.query;
-  const monthlySummary = await MonthlyIncome.findOne({
-    userId: userId,
-    month: month,
-  });
-  const availableMonths = await MonthlyIncome.distinct("month", { userId });
 
-  if (!monthlySummary) {
-    return res.json({ sources: [], totalIncome: 0, availableMonths });
-  }
-
-  res.json({
-    totalIncome: monthlySummary.totalIncome,
-    sources: monthlySummary.sources,
-    availableMonths,
-  });
   try {
+    let monthlySummary = await MonthlyIncome.findOne({ userId, month });
+    if (!monthlySummary) {
+      monthlySummary = await importLastMonthIncomeSources(userId, month);
+    }
+    const availableMonths = await MonthlyIncome.distinct("month", { userId });
+
+    if (!monthlySummary) {
+      return res.json({ sources: [], totalIncome: 0, availableMonths });
+    }
+    res.json({
+      totalIncome: monthlySummary.totalIncome,
+      sources: monthlySummary.sources,
+      availableMonths,
+    });
   } catch (error) {
     console.error("Error fetching summary:", error);
     res.status(500).json({ message: "Failed to fetch summary." });

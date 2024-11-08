@@ -4,6 +4,7 @@ import { useSession } from "next-auth/react";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import axios from "axios";
+import Link from "next/link";
 
 const AddIncome = ({ searchParams }) => {
   const router = useRouter();
@@ -123,12 +124,10 @@ const AddIncome = ({ searchParams }) => {
   };
   return (
     <div className="!w-1/2 px- mx-auto mt-10 space-y-4">
-      {/* Title Outside of the Box */}
       <h2 className="text-3xl font-semibold text-primary-700 text-center mb-4">
         {isEditing ? "Update Income" : "Add Income"}
       </h2>
 
-      {/* White Boxed Form */}
       <div className="p-6 bg-white shadow-md rounded-md">
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Date Input */}
@@ -152,23 +151,30 @@ const AddIncome = ({ searchParams }) => {
             <label htmlFor="source" className="text-gray-600 mb-1">
               Source
             </label>
-            <select
-              name="source"
-              id="source"
-              value={formData.source}
-              onChange={handleChange}
-              className="border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring focus:border-primary-500"
-              required
-            >
-              <option value="" disabled>
-                Select Source
-              </option>
-              {sourceData?.sources.map((source) => (
-                <option key={source.source} value={source.source}>
-                  {source.source}
+            <div className="flex gap-2">
+              <select
+                name="source"
+                id="source"
+                value={formData.source}
+                onChange={handleChange}
+                className="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring focus:border-primary-500"
+                required
+              >
+                <option value="" disabled>
+                  Select Source
                 </option>
-              ))}
-            </select>
+                {sourceData?.sources.map((source) => (
+                  <option key={source.source} value={source.source}>
+                    {source.source}
+                  </option>
+                ))}
+              </select>
+              <Link href={"/category/addincomesource"}>
+                <button className="w-max bg-primary text-white p-2 rounded-lg hover:bg-primary-600 transition">
+                  Add Source
+                </button>
+              </Link>
+            </div>
           </div>
 
           {/* Amount Input */}

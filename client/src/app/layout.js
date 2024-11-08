@@ -5,7 +5,7 @@ import { options } from "./api/auth/[...nextauth]/options";
 import SessionProviderWrapper from "./SessionProviderWrapper";
 import { Toaster } from "react-hot-toast";
 const roboto = Roboto({
-  weight: ["400", "300", "500", "700", "100"],
+  weight: ["400", "300", "100"],
   subsets: ["latin"],
   variable: "--font-roboto",
 });

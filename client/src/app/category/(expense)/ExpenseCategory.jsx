@@ -82,10 +82,7 @@ function ExpenseCategory() {
           />
         </div>
 
-        <div className="h-full col-span-1 lg:col-span-3 bg-white p-4 shadow-md rounded-lg">
-          <h2 className="text-lg text-primary font-semibold pb-2">
-            Monthly Expenses by Category
-          </h2>
+        <div className="h-full col-span-1 lg:col-span-3 ">
           <ExpenseByCategoryBarchart
             expenseCategoryData={categoryData?.categoryExpenses}
           />
@@ -93,13 +90,13 @@ function ExpenseCategory() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-4">
-        <div className="h-full col-span-1 md:col-span-2 lg:col-span-2 bg-white p-4 shadow-md rounded-lg">
+        <div className="h-full col-span-1 md:col-span-2 lg:col-span-2 ">
           <CategorySpendingRadialChart
             categoryData={categoryData?.categoryExpenses}
           />
         </div>
 
-        <div className="col-span-1 md:col-span-2 lg:col-span-2 bg-white p-6 shadow-md rounded-lg">
+        <div className="col-span-1 md:col-span-2 lg:col-span-2 ">
           <CategorySpendingComparison selectedMonth={selectedMonth} />
         </div>
       </div>

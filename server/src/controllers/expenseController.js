@@ -1,3 +1,4 @@
+import importCategoriesFromLastMonth from "../../helper/importCategoriesFromLastMonth.js";
 import DailyExpense from "../../models/dailyExpense.js";
 
 import MonthlyExpense from "../../models/monthlyExpense.js";
@@ -5,11 +6,25 @@ import MonthlyExpense from "../../models/monthlyExpense.js";
 export const getSummary = async (req, res) => {
   const { userId, month } = req.query;
   try {
-    const monthlySummary = await MonthlyExpense.findOne({
+    let monthlySummary = await MonthlyExpense.findOne({
       userId: userId,
       month,
     });
+
     const availableMonths = await MonthlyExpense.distinct("month", { userId });
+
+    if (!monthlySummary) {
+      const importResult = await importCategoriesFromLastMonth(userId);
+
+      if (importResult.success) {
+        monthlySummary = await MonthlyExpense.findOne({
+          userId: userId,
+          month,
+        });
+      } else {
+        return res.status(500).json({ message: importResult.message });
+      }
+    }
 
     if (!monthlySummary) {
       return res.json({
@@ -23,7 +38,6 @@ export const getSummary = async (req, res) => {
       (sum, category) => sum + category.amount,
       0
     );
-
     res.json({
       totalExpenses,
       categoryExpenses: monthlySummary.categoryExpenses,

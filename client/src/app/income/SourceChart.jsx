@@ -21,7 +21,7 @@ function SourceChart({ summaryData }) {
   const aggregatedData = aggregateSourceData(summaryData);
 
   return (
-    <div className="bg-white p-5 rounded-lg shadow">
+    <div className="bg-white p-5 rounded-lg shadow h-fit">
       <h2 className="text-lg font-semibold text-primary">Income by Source</h2>
       <ResponsiveContainer width="100%" height={350}>
         <PieChart>

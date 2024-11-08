@@ -91,7 +91,7 @@ function IncomeList({ fetchSummary }) {
   };
 
   return (
-    <div className="lg:col-span-3 bg-white p-6 rounded-lg shadow h-[500px] flex flex-col">
+    <div className="lg:col-span-3 bg-white p-6 rounded-lg shadow h-[690px] flex flex-col">
       <h2 className="text-lg font-semibold text-primary mb-4">Income List</h2>
 
       {/* Scrollable List */}
@@ -160,7 +160,7 @@ function IncomeList({ fetchSummary }) {
       </ul>
 
       {/* Pagination Controls */}
-      <div className="flex justify-between mt-4 pt-4 border-t sticky bottom-0 bg-white">
+      <div className="flex justify-between mt-4 pt-4 border-t  bottom-0 bg-white">
         <button
           className="bg-gray-200 p-2 rounded hover:bg-gray-300 disabled:opacity-50"
           onClick={() => fetchExpenses(currentPage - 1)}

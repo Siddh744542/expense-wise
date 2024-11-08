@@ -2,7 +2,7 @@ import React from "react";
 
 function IncomeSummary({ summaryData }) {
   return (
-    <div className="bg-white p-6 rounded-lg shadow h-auto">
+    <div className="bg-white p-6 rounded-lg shadow ">
       <div className="space-y-2">
         <div className="space-y-2">
           <div className="text-primary-600 font-semibold text-xl flex justify-between">

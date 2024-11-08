@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { signOut } from "next-auth/react";
 import {
@@ -19,10 +19,15 @@ import {
 } from "lucide-react";
 
 function SidebarLink({ label, Icon, href, isCollapsed }) {
+  const router = useRouter();
   const pathname = usePathname();
   const isActive =
     pathname == href || (pathname === "/" && href === "/dashboard");
 
+  function onLogout() {
+    signOut();
+    router.push("/login");
+  }
   return (
     <Link href={href} className="flex">
       <div className={`${isActive ? "bg-primary" : "bg-white"} w-1`}></div>
@@ -103,12 +108,6 @@ function Sidebar({ isCollapsed, toggleSidebar }) {
           isCollapsed={isCollapsed}
         />
         <SidebarLink
-          label="Charts"
-          Icon={ChartSpline}
-          href="/charts"
-          isCollapsed={isCollapsed}
-        />
-        <SidebarLink
           label="Category"
           Icon={LayoutList}
           href="/category"
@@ -132,7 +131,7 @@ function Sidebar({ isCollapsed, toggleSidebar }) {
           {/* Logout Section */}
           <div className="flex items-center px-6 cursor-pointer text-black hover:text-gray-700">
             <LogOut className="mr-2" size={20} />
-            <button className="text-sm font-semibold" onClick={() => signOut()}>
+            <button className="text-sm font-semibold" onClick={onLogout}>
               Logout
             </button>
           </div>

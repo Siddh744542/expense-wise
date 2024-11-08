@@ -37,7 +37,7 @@ const CategorySpendingRadialChart = ({ categoryData }) => {
   const radialBarData = formatRadialBarData(categoryData);
 
   return (
-    <div className="">
+    <div className="h-full bg-white p-6 shadow-md rounded-lg">
       <h2 className="text-lg text-primary-500 font-semibold text-left ">
         Spending Limit Reached per Category
       </h2>
@@ -48,7 +48,7 @@ const CategorySpendingRadialChart = ({ categoryData }) => {
             cy="44%"
             innerRadius="5%"
             outerRadius="90%"
-            barSize={15}
+            barSize={16}
             data={radialBarData}
             startAngle={90}
             endAngle={-270}
@@ -59,9 +59,9 @@ const CategorySpendingRadialChart = ({ categoryData }) => {
               dataKey="spent"
               label={{
                 position: "insideStart",
-                fill: "#fff",
+                fill: "#ffff",
                 formatter: (value) => (value !== 100 ? `${value}%` : ""),
-                fontSize: 14,
+                fontSize: 15,
               }}
             />
             <Tooltip

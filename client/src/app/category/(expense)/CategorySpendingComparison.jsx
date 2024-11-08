@@ -3,7 +3,7 @@ import { ArrowUp, ArrowDown } from "lucide-react";
 import axios from "axios";
 import { useSession } from "next-auth/react";
 
-const CategoryComparison = ({ selectedMonth }) => {
+const CategorySpendingComparison = ({ selectedMonth }) => {
   const { data: session, status } = useSession();
   const [comparisonData, setComparisonData] = useState([]);
   const [error, setError] = useState(null);
@@ -30,7 +30,7 @@ const CategoryComparison = ({ selectedMonth }) => {
   }, [session, selectedMonth]);
 
   return (
-    <div>
+    <div className="bg-white p-6 shadow-md rounded-lg">
       <div className="mb-3">
         <h2 className="text-xl text-primary-500 font-semibold">
           Category Comparison
@@ -81,4 +81,4 @@ const CategoryComparison = ({ selectedMonth }) => {
   );
 };
 
-export default CategoryComparison;
+export default CategorySpendingComparison;

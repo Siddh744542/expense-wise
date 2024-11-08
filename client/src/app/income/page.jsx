@@ -93,7 +93,7 @@ function Income() {
 
       {/* Grid Layout */}
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
-        <div className="lg:col-span-2 grid grid-rows-1 gap-6">
+        <div className="lg:col-span-2 grid gap-6">
           {/* Income Summary Section */}
           <IncomeSummary summaryData={summaryData} />
           {/* Pie Chart Section */}

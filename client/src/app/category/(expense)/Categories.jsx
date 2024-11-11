@@ -1,7 +1,6 @@
 import React, { useState } from "react";
-import { Pen, Trash2 } from "lucide-react";
+import { Pen, Trash2, X } from "lucide-react";
 import Link from "next/link";
-import { X } from "lucide-react";
 import { useSession } from "next-auth/react";
 import toast from "react-hot-toast";
 import axios from "axios";
@@ -9,7 +8,6 @@ import { useRouter } from "next/navigation";
 
 function getExpenseColor(expense, limit) {
   const percentage = (expense / limit) * 100;
-
   if (percentage <= 10) {
     return "bg-progress-100"; // 0-10% of limit used
   } else if (percentage <= 20) {
@@ -30,11 +28,8 @@ function getExpenseColor(expense, limit) {
     return "bg-progress-900"; // Over limit
   }
 }
-
-// Modal Component for confirmation
 const ConfirmDeleteModal = ({ isOpen, onClose, handleDelete }) => {
   if (!isOpen) return null;
-
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50">
       <div className="bg-black opacity-50 absolute inset-0"></div>
@@ -45,12 +40,10 @@ const ConfirmDeleteModal = ({ isOpen, onClose, handleDelete }) => {
         >
           <X className="w-5 h-5 text-gray-600" />
         </button>
-
         <h3 className="text-lg font-semibold mb-4">Delete Category</h3>
         <p className="mb-4">
           Do you want to delete all expenses for this category as well?
         </p>
-
         <div className="flex justify-end space-x-4">
           <button
             className="px-4 py-2 bg-gray-300 text-black rounded hover:bg-gray-400"
@@ -69,23 +62,19 @@ const ConfirmDeleteModal = ({ isOpen, onClose, handleDelete }) => {
     </div>
   );
 };
-
 function Categories({ categoryData, selectedMonth }) {
   const { data: session, status } = useSession();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const router = useRouter();
-
   const openModal = (categoryId) => {
     setSelectedCategory(categoryId);
     setIsModalOpen(true);
   };
-
   const closeModal = () => {
     setIsModalOpen(false);
     setSelectedCategory(null);
   };
-
   const handleDeleteCategory = async (deleteExpenses) => {
     try {
       await toast.promise(
@@ -110,7 +99,6 @@ function Categories({ categoryData, selectedMonth }) {
       closeModal();
     }
   };
-
   return (
     <div className="h-[370px] bg-white p-5 pr-1 rounded-lg shadow flex flex-col">
       {/* Total Expenses */}
@@ -122,7 +110,6 @@ function Categories({ categoryData, selectedMonth }) {
           </div>
         </div>
       </div>
-
       {/* Category Expenses List */}
       <div className="mt-2 flex-1 overflow-y-auto space-y-2 py-0.5">
         {categoryData?.categoryExpenses.length > 0 ? (
@@ -140,7 +127,6 @@ function Categories({ categoryData, selectedMonth }) {
                   <p className="text-black ">₹{categoryExpense?.amount}</p>
                 </div>
               </div>
-
               <div className="flex items-center space-x-2 pr-2">
                 <div
                   className={`${getExpenseColor(
@@ -150,7 +136,6 @@ function Categories({ categoryData, selectedMonth }) {
                 >
                   Limit: ₹{categoryExpense?.limit}
                 </div>
-
                 {/* Edit Button */}
                 <Link
                   href={{
@@ -167,7 +152,6 @@ function Categories({ categoryData, selectedMonth }) {
                     <Pen className="w-4 h-4" />
                   </button>
                 </Link>
-
                 {/* Delete Button */}
                 <button
                   className="p-1 rounded hover:bg-red-400 hover:text-white transition-colors"
@@ -182,7 +166,6 @@ function Categories({ categoryData, selectedMonth }) {
           <p className="text-gray-600">No category expenses available</p>
         )}
       </div>
-
       {/* Confirmation Modal */}
       <ConfirmDeleteModal
         isOpen={isModalOpen}
@@ -192,5 +175,4 @@ function Categories({ categoryData, selectedMonth }) {
     </div>
   );
 }
-
 export default Categories;

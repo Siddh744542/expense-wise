@@ -31,10 +31,8 @@ app.use("/expense", expenseRoutes); //http://localhost:8000/expense
 app.use("/income", incomeRoutes); //http://localhost:8000/income
 app.use("/category", categoryRoutes); //http://localhost:8000/category
 app.use("/incomesource", incomeSourceRoutes); //http://localhost:8000/incomesource
-
 // server
 const port = Number(process.env.PORT) || 3001;
-
 app.listen(port, "0.0.0.0", () => {
   console.log(`server running on port ${port}`);
 });

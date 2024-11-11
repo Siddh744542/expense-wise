@@ -1,5 +1,4 @@
 import CredentialsProvider from "next-auth/providers/credentials";
-
 export const options = {
   providers: [
     CredentialsProvider({
@@ -9,7 +8,6 @@ export const options = {
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials, req) {
-        // e.g. return { id: 1, name: 'J Smith', email: 'jsmith@example.com' }
         const res = await fetch(
           `${process.env.NEXT_PUBLIC_DOMAIN}/users/login`,
           {

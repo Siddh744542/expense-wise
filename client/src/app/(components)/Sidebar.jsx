@@ -1,37 +1,25 @@
 "use client";
-import React, { useState } from "react";
+import React from "react";
 import Link from "next/link";
-import { useRouter, usePathname } from "next/navigation";
-import { useSession } from "next-auth/react";
-import { signOut } from "next-auth/react";
+import { usePathname } from "next/navigation";
+import { useSession, signOut } from "next-auth/react";
 import {
   LayoutDashboard,
   ReceiptIndianRupee,
-  ChartSpline,
   LayoutList,
   Sprout,
   Wallet,
   CircleUserRound,
   LogOut,
   Menu,
-  ChevronRight,
-  ChevronLeft,
 } from "lucide-react";
-
 function SidebarLink({ label, Icon, href, isCollapsed }) {
-  const router = useRouter();
   const pathname = usePathname();
   const isActive =
     pathname == href || (pathname === "/" && href === "/dashboard");
-
-  function onLogout() {
-    signOut();
-    router.push("/login");
-  }
   return (
     <Link href={href} className="flex">
       <div className={`${isActive ? "bg-primary" : "bg-white"} w-1`}></div>
-
       <div
         className={`flex items-center p-3 px-5 w-full transition-all duration-300 ${
           isActive
@@ -53,10 +41,12 @@ function SidebarLink({ label, Icon, href, isCollapsed }) {
     </Link>
   );
 }
-
 function Sidebar({ isCollapsed, toggleSidebar }) {
   const { data: session } = useSession();
-
+  function onLogout() {
+    signOut();
+    router.push("/login");
+  }
   return (
     <div
       className={`fixed flex flex-col bg-white overflow-hidden h-full shadow-md z-40 transition-all duration-300 ${
@@ -72,7 +62,6 @@ function Sidebar({ isCollapsed, toggleSidebar }) {
           <Menu size={24} />
         </button>
       </div>
-
       {/* Heading */}
       <div
         className={`flex items-center ${
@@ -86,7 +75,6 @@ function Sidebar({ isCollapsed, toggleSidebar }) {
           </h1>
         )}
       </div>
-
       {/* Links */}
       <div className="flex-grow mt-4">
         <SidebarLink
@@ -114,7 +102,6 @@ function Sidebar({ isCollapsed, toggleSidebar }) {
           isCollapsed={isCollapsed}
         />
       </div>
-
       {/* Profile Section */}
       {!isCollapsed && (
         <div className="block mb-6 bg-white">
@@ -127,7 +114,6 @@ function Sidebar({ isCollapsed, toggleSidebar }) {
               <p className="text-gray-500 text-xs">{session?.user.email}</p>
             </div>
           </div>
-
           {/* Logout Section */}
           <div className="flex items-center px-6 cursor-pointer text-black hover:text-gray-700">
             <LogOut className="mr-2" size={20} />
@@ -140,5 +126,4 @@ function Sidebar({ isCollapsed, toggleSidebar }) {
     </div>
   );
 }
-
 export default Sidebar;

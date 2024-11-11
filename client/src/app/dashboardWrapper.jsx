@@ -7,6 +7,8 @@ const DashboardWrappper = ({ children }) => {
   const [isSideBarCollapsed, setIsSideBarColapsed] = useState(false);
   const { data: session, status } = useSession();
   const isVerified = status === "authenticated" ? true : false;
+  console.log(session);
+
   const toggleSidebar = () => {
     setIsSideBarColapsed(!isSideBarCollapsed);
   };
@@ -20,7 +22,7 @@ const DashboardWrappper = ({ children }) => {
       )}
       <main
         className={`flex flex-col w-full h-full ${isVerified && "py-7"} ${
-          isSideBarCollapsed ? "md:pl-24" : "md:pl-72"
+          isSideBarCollapsed ? "pl-24 md:pl-24" : "pl-72 md:pl-72"
         }`}
       >
         {children}

@@ -51,31 +51,33 @@ function Dashboard() {
         <h1 className="text-3xl font-semibold text-primary">Dashboard</h1>
       </div>
       <div className="grid grid-cols-10 gap-6 py-4">
-        <div className="col-span-3">
+        <div className="col-span-10 md:col-span-3">
           <MonthlyOverview
             expenseData={categoryData}
             incomeData={incomeSummary}
           />
         </div>
 
-        <div className="col-span-3 bg-white p-6 shadow-md rounded-lg">
+        <div className="col-span-10 md:col-span-3 bg-white p-6 shadow-md rounded-lg">
           <TopThreeOverview
             expenseData={categoryData}
             incomeData={incomeSummary}
           />
         </div>
 
-        <div className="h-full col-span-4">
+        <div className="h-full col-span-10 md:col-span-4">
           <CategorySpendingRadialChart
             categoryData={categoryData?.categoryExpenses}
           />
         </div>
-        <div className="h-full col-span-5">
+
+        <div className="h-full col-span-10 md:col-span-5">
           <ExpenseByCategoryBarchart
             expenseCategoryData={categoryData?.categoryExpenses}
           />
         </div>
-        <div className="col-span-5">
+
+        <div className="col-span-10 md:col-span-5">
           <CategorySpendingComparison selectedMonth={selectedMonth} />
         </div>
       </div>

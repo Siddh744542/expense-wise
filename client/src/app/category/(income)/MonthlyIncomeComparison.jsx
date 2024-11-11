@@ -2,12 +2,10 @@ import React, { useState, useEffect } from "react";
 import { ArrowUp, ArrowDown } from "lucide-react";
 import axios from "axios";
 import { useSession } from "next-auth/react";
-
 function MonthlyIncomeComparison({ selectedMonth }) {
   const { data: session, status } = useSession();
   const [comparisonData, setComparisonData] = useState([]);
   const [error, setError] = useState(null);
-
   const fetchComparisonData = async () => {
     try {
       const response = await axios.get(
@@ -24,7 +22,6 @@ function MonthlyIncomeComparison({ selectedMonth }) {
       setError(err.response.data.message);
     }
   };
-
   useEffect(() => {
     fetchComparisonData();
   }, [session, selectedMonth]);
@@ -46,7 +43,6 @@ function MonthlyIncomeComparison({ selectedMonth }) {
               </h3>
               <p className="text-gray-500">Last month: ₹{item.lastMonth}</p>
             </div>
-
             <div className="text-right">
               <p className="text-lg font-bold">₹{item.thisMonth}</p>
               <div
@@ -70,7 +66,6 @@ function MonthlyIncomeComparison({ selectedMonth }) {
               </div>
             </div>
           </div>
-
           {index < comparisonData.length - 1 && (
             <hr className="my-2 border-gray-300" />
           )}
@@ -79,5 +74,4 @@ function MonthlyIncomeComparison({ selectedMonth }) {
     </div>
   );
 }
-
 export default MonthlyIncomeComparison;

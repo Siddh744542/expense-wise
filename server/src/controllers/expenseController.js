@@ -95,8 +95,6 @@ const updateMonthlyExpense = async (expenseData) => {
 export const addExpense = async (req, res) => {
   try {
     const expenseData = req.body;
-    console.log(expenseData);
-
     const newExpense = new DailyExpense(expenseData);
 
     await newExpense.save();
@@ -147,8 +145,6 @@ export const getExpenses = async (req, res) => {
 export const deleteExpense = async (req, res) => {
   try {
     const { userId, expenseId } = req.body;
-
-    // console.log(req.body);
 
     const expense = await DailyExpense.findOneAndDelete({
       _id: expenseId,

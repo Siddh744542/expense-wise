@@ -31,7 +31,6 @@ function IncomeSource() {
 
   useEffect(() => {
     fetchIncomeSource();
-    console.log(IncomeSourceData);
   }, [session, selectedMonth]);
 
   const handleMonthChange = (e) => {

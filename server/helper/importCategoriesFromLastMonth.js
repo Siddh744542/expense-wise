@@ -23,7 +23,6 @@ async function importCategoriesFromLastMonth(userId) {
     });
 
     if (!lastMonthExpense) {
-      console.log("No data found for last month.");
       return { success: false, message: "No data found for last month." };
     }
 
@@ -42,8 +41,6 @@ async function importCategoriesFromLastMonth(userId) {
     });
 
     await newMonthlyExpense.save();
-
-    console.log("Categories and limits imported successfully from last month.");
     return {
       success: true,
       message: "Categories and limits imported successfully.",

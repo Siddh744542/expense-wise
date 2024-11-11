@@ -25,8 +25,6 @@ export const login = async (req, res, next) => {
 
     const { encyptedpassword, ...userData } = user.toObject();
 
-    console.log("Logged in user:", userData);
-
     return res.status(200).json({
       message: "Login successful.",
       success: true,
@@ -56,8 +54,6 @@ export const signup = async (req, res) => {
       password: hashedPassword,
     });
     const savedUser = await newUser.save();
-    console.log(savedUser);
-
     return res.status(201).json({
       message: "User is created Successfully",
       success: true,

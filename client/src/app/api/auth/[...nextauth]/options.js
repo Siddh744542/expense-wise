@@ -38,13 +38,11 @@ export const options = {
           username: user.user.username,
           email: user.user.email,
         };
-        //console.log("Token user:", token.user);
       }
       return token;
     },
     async session({ session, token }) {
       session.user = token.user;
-      //console.log("Session user:", session.user);
       return session;
     },
   },

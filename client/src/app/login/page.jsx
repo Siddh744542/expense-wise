@@ -18,20 +18,6 @@ const Login = () => {
     } else {
       setError("");
       try {
-        // const response = await axios.post(
-        //   `${process.env.NEXT_PUBLIC_DOMAIN}/users/login`,
-        //   {
-        //     email: email,
-        //     password: password,
-        //   },
-        //   {
-        //     withCredentials: true,
-        //     headers: {
-        //       "Access-Control-Allow-Credentials": true,
-        //       "Access-Control-Allow-Origin": "*",
-        //     },
-        //   }
-        // );
         await signIn("credentials", {
           redirect: "false",
           email: email,
@@ -39,15 +25,12 @@ const Login = () => {
         }).then((result) => {
           if (result?.error) alert("Invalid Credentials!");
           else {
-            console.log("login success");
             toast.success("Login successful");
             window.location.replace("/");
           }
         });
       } catch (error) {
-        // let errorMessage = JSON.parse(error.request.responseText).error;
-        // toast.error(errorMessage);
-        console.log("login failed");
+        toast.error("login failed");
       }
     }
   };

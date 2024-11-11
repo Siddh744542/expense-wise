@@ -32,9 +32,7 @@ const SignUp = () => {
           window.alert("User already exists, please login");
           router.push("/login");
         }
-        let errorMessage = JSON.parse(error.request.responseText).error;
-        toast.error(errorMessage);
-        console.log("Signup failed", error.message);
+        toast.error("Signup failed");
       }
     }
   };

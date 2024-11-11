@@ -23,7 +23,6 @@ export const importLastMonthIncomeSources = async (userId) => {
     });
 
     if (!lastMonthIncome) {
-      console.log("No income sources to import from last month.");
       return null;
     }
     const newIncomeData = new MonthlyIncome({

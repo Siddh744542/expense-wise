@@ -49,9 +49,6 @@ function formatData(expenseData, incomeData) {
 }
 
 const MonthlyOverview = ({ expenseData, incomeData }) => {
-  console.log(expenseData);
-  console.log(incomeData);
-
   const {
     totalExpenses,
     mostSpentCategory,

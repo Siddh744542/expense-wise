@@ -43,8 +43,6 @@ const updateMonthlyIncome = async (incomeData) => {
 export const addIncome = async (req, res) => {
   try {
     const incomeData = req.body;
-    console.log(incomeData);
-
     const newIncome = new DailyIncome(incomeData);
 
     await newIncome.save();

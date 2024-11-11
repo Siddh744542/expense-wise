@@ -14,7 +14,6 @@ function IncomeList({ fetchSummary }) {
 
   useEffect(() => {
     fetchIncome();
-    console.log(incomeData);
   }, [session]);
 
   const fetchIncome = async (page = 1) => {

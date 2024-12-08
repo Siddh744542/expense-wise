@@ -23,6 +23,7 @@ const Login = () => {
           email: email,
           password: password,
         }).then((result) => {
+          console.log(result);
           if (result?.error) alert("Invalid Credentials!");
           else {
             toast.success("Login successful");

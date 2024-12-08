@@ -2,11 +2,12 @@
 import React, { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import toast from "react-hot-toast";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import axios from "axios";
 
-const AddCategoryForm = ({ searchParams }) => {
+const AddCategoryForm = () => {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { data: session } = useSession();
   const [isEditing, setIsEditing] = useState(false);
 
@@ -17,11 +18,11 @@ const AddCategoryForm = ({ searchParams }) => {
   });
 
   useEffect(() => {
-    if (Object.keys(searchParams).length > 0) {
+    if (searchParams.size > 0) {
       setFormData({
-        category: searchParams.category || "",
-        limit: searchParams.limit || "",
-        month: searchParams.month || "",
+        category: searchParams.get("category") || "",
+        limit: searchParams.get("limit") || "",
+        month: searchParams.get("month") || "",
       });
       setIsEditing(true);
     } else {
@@ -81,7 +82,7 @@ const AddCategoryForm = ({ searchParams }) => {
             `${process.env.NEXT_PUBLIC_DOMAIN}/category/updatecategory`,
             {
               userId: session?.user.id,
-              categoryId: searchParams.id,
+              categoryId: searchParams.get("id"),
               ...formData,
             }
           ),

@@ -1,8 +1,9 @@
 "use client";
+
 import React, { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import toast from "react-hot-toast";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import axios from "axios";
 import { X, CircleAlert } from "lucide-react";
 import Link from "next/link";
@@ -52,13 +53,14 @@ const ConfirmLimitModal = ({ isOpen, onClose, handleConfirm, percentage }) => {
   );
 };
 
-const DailyExpenseForm = ({ searchParams }) => {
+const DailyExpenseForm = () => {
   const router = useRouter();
-  const { data: session, status } = useSession();
+  const searchParams = useSearchParams();
+  const { data: session } = useSession();
   const [categoryData, setCategoryData] = useState();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedMonth, setSelectedMonth] = useState(
-    String(new Date().toISOString().slice(0, 7))
+    new Date().toISOString().slice(0, 7)
   );
   const [limitReachedPercentage, setLimitReachedPercentage] = useState();
   const today = new Date().toISOString().split("T")[0];
@@ -75,12 +77,12 @@ const DailyExpenseForm = ({ searchParams }) => {
   }, [session]);
 
   useEffect(() => {
-    if (Object.keys(searchParams).length > 0) {
+    if (searchParams.size > 0) {
       setFormData({
-        date: searchParams.date?.split("T")[0] || today,
-        category: searchParams.category || "",
-        amount: searchParams.amount || "",
-        description: searchParams.description || "",
+        date: searchParams.get("date")?.split("T")[0] || today,
+        category: searchParams.get("category") || "",
+        amount: searchParams.get("amount") || "",
+        description: searchParams.get("description") || "",
       });
       setIsEditing(true);
     } else {
@@ -101,10 +103,6 @@ const DailyExpenseForm = ({ searchParams }) => {
     }
   }, [formData.category, categoryData]);
 
-  const openModal = () => {
-    setIsModalOpen(true);
-  };
-
   const fetchCategory = async () => {
     try {
       const response = await axios.get(
@@ -114,7 +112,9 @@ const DailyExpenseForm = ({ searchParams }) => {
         }
       );
       setCategoryData(response.data);
-    } catch (err) {}
+    } catch (err) {
+      console.error("Error fetching categories:", err);
+    }
   };
 
   const handleChange = (e) => {
@@ -135,7 +135,7 @@ const DailyExpenseForm = ({ searchParams }) => {
     if (confirm) handleSubmit();
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async () => {
     if (isEditing) {
       handleUpdatation();
     } else {
@@ -182,7 +182,7 @@ const DailyExpenseForm = ({ searchParams }) => {
         .promise(
           axios.put(`${process.env.NEXT_PUBLIC_DOMAIN}/expense/updateexpense`, {
             userId: session?.user.id,
-            expenseId: searchParams.id,
+            expenseId: searchParams.get("id"),
             ...formData,
           }),
           {

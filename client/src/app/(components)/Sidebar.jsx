@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
 import {
   LayoutDashboard,
@@ -43,9 +43,11 @@ function SidebarLink({ label, Icon, href, isCollapsed }) {
 }
 function Sidebar({ isCollapsed, toggleSidebar }) {
   const { data: session } = useSession();
+  const router = useRouter();
   function onLogout() {
-    signOut();
-    router.push("/login");
+    signOut({ redirect: false }).then(() => {
+      router.push("/login");
+    });
   }
   return (
     <div

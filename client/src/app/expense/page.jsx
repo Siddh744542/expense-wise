@@ -69,22 +69,6 @@ function Expenses() {
             </select>
           </div>
 
-          {/* Category Filter */}
-          <div>
-            <label htmlFor="category-filter" className="mr-2 font-medium">
-              Category:
-            </label>
-            <select
-              id="category-filter"
-              className="border rounded-md px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-primary"
-            >
-              <option value="all">All Categories</option>
-              <option value="food">Food</option>
-              <option value="transport">Transport</option>
-              <option value="entertainment">Entertainment</option>
-            </select>
-          </div>
-
           <button
             className="bg-action text-white px-4 py-2 rounded-md hover:bg-opacity-90 transition"
             onClick={() => router.push("/expense/addexpense")}

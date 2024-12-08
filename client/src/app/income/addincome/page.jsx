@@ -2,12 +2,13 @@
 import React, { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import toast from "react-hot-toast";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import axios from "axios";
 import Link from "next/link";
 
-const AddIncome = ({ searchParams }) => {
+const AddIncomePage = () => {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { data: session, status } = useSession();
   const [sourceData, setSourceData] = useState();
   const [selectedMonth, setSelectedMonth] = useState(
@@ -27,18 +28,21 @@ const AddIncome = ({ searchParams }) => {
 
   useEffect(() => {
     fetchSummary();
-    if (Object.keys(searchParams).length > 0) {
+  }, [session]);
+
+  useEffect(() => {
+    if (searchParams.size > 0) {
       setFormData({
-        date: searchParams.date?.split("T")[0] || today,
-        source: searchParams.source || "",
-        amount: searchParams.amount || "",
-        description: searchParams.description || "",
+        date: searchParams.get("date")?.split("T")[0] || today,
+        source: searchParams.get("source") || "",
+        amount: searchParams.get("amount") || "",
+        description: searchParams.get("description") || "",
       });
       setIsEditing(true);
     } else {
       setIsEditing(false);
     }
-  }, [searchParams, session]);
+  }, [searchParams]);
 
   const fetchSummary = async () => {
     try {
@@ -106,7 +110,7 @@ const AddIncome = ({ searchParams }) => {
         .promise(
           axios.put(`${process.env.NEXT_PUBLIC_DOMAIN}/income/updateincome`, {
             userId: session?.user.id,
-            incomeId: searchParams.id,
+            incomeId: searchParams.get("id"),
             ...formData,
           }),
           {
@@ -220,4 +224,4 @@ const AddIncome = ({ searchParams }) => {
   );
 };
 
-export default AddIncome;
+export default AddIncomePage;

@@ -2,11 +2,12 @@
 import React, { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import toast from "react-hot-toast";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import axios from "axios";
 
-const AddIncomeSourceForm = ({ searchParams }) => {
+const AddIncomeSourceForm = () => {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { data: session } = useSession();
   const [isEditing, setIsEditing] = useState(false);
 
@@ -16,10 +17,10 @@ const AddIncomeSourceForm = ({ searchParams }) => {
   });
 
   useEffect(() => {
-    if (Object.keys(searchParams).length > 0) {
+    if (searchParams.size > 0) {
       setFormData({
-        source: searchParams.source || "",
-        month: searchParams.month || "",
+        source: searchParams.get("source") || "",
+        month: searchParams.get("month") || "",
       });
       setIsEditing(true);
     } else {
@@ -76,7 +77,7 @@ const AddIncomeSourceForm = ({ searchParams }) => {
         .promise(
           axios.put(`${process.env.NEXT_PUBLIC_DOMAIN}/incomesource/update`, {
             userId: session?.user.id,
-            sourceId: searchParams.id,
+            sourceId: searchParams.get("id"),
             ...formData,
           }),
           {

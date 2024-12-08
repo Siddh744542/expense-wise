@@ -1,18 +1,19 @@
 "use client";
 import React, { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import ExpenseCategory from "./(expense)/ExpenseCategory";
 import IncomeSource from "./(income)/IncomeSource";
 
-function Category({ searchParams }) {
+function Category() {
   const [isExpense, setIsExpense] = useState(true);
-
+  const searchParams = useSearchParams();
   const toggleCategory = () => {
     setIsExpense(!isExpense);
   };
 
   useEffect(() => {
-    if (Object.keys(searchParams).length > 0) {
-      if (searchParams.isexpense == "false") setIsExpense(false);
+    if (searchParams.size > 0) {
+      if (searchParams.get("isexpense") == "false") setIsExpense(false);
     }
   }, [searchParams]);
   return (

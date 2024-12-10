@@ -1,7 +1,7 @@
 "use client";
-import { useState, Suspense } from "react";
+import { useState, Suspense, useEffect } from "react";
 import Sidebar from "./(components)/Sidebar";
-
+import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 const Loader = () => <>Loading...</>;
 const DashboardWrappper = ({ children }) => {
@@ -9,19 +9,19 @@ const DashboardWrappper = ({ children }) => {
   const { data: session, status } = useSession();
   const isVerified = status === "authenticated" ? true : false;
   console.log(session);
-
+  const router = useRouter();
+  useEffect(() => {
+    if ((status === "unauthenticated" || !session) && status !== "loading") {
+      router.push("/login");
+    }
+  }, [status]);
   const toggleSidebar = () => {
     setIsSideBarColapsed(!isSideBarCollapsed);
   };
   return (
     <Suspense fallback={<Loader />}>
       <div className={`flex w-full min-h-screen`}>
-        {isVerified && (
-          <Sidebar
-            isCollapsed={isSideBarCollapsed}
-            toggleSidebar={toggleSidebar}
-          />
-        )}
+        {isVerified && <Sidebar isCollapsed={isSideBarCollapsed} toggleSidebar={toggleSidebar} />}
         <main
           className={`flex flex-col w-full h-full ${isVerified && "py-7"} ${
             isSideBarCollapsed ? "pl-24 md:pl-24" : "pl-72 md:pl-72"
@@ -33,5 +33,4 @@ const DashboardWrappper = ({ children }) => {
     </Suspense>
   );
 };
-
 export default DashboardWrappper;

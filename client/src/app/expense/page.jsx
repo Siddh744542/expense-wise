@@ -11,9 +11,7 @@ import formatMonth from "@/helper/formatMonth";
 function Expenses() {
   const { data: session, status } = useSession();
   const [summaryData, setSummaryData] = useState();
-  const [selectedMonth, setSelectedMonth] = useState(
-    String(new Date().toISOString().slice(0, 7))
-  );
+  const [selectedMonth, setSelectedMonth] = useState(String(new Date().toISOString().slice(0, 7)));
   const router = useRouter();
 
   const handleMonthChange = (e) => {
@@ -22,12 +20,9 @@ function Expenses() {
 
   const fetchSummary = async () => {
     try {
-      const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_DOMAIN}/expense/summary`,
-        {
-          params: { userId: session?.user.id, month: selectedMonth },
-        }
-      );
+      const response = await axios.get(`${process.env.NEXT_PUBLIC_DOMAIN}/expense/summary`, {
+        params: { userId: session?.user.id, month: selectedMonth }
+      });
       setSummaryData(response.data);
     } catch (err) {}
   };
@@ -36,13 +31,12 @@ function Expenses() {
     fetchSummary();
   }, [session, selectedMonth]);
   if (!summaryData) return <div>Loading...</div>;
+
   return (
     <div className=" pr-5">
       {/* header */}
       <div className="flex justify-between items-center py-6">
-        <h1 className="text-3xl font-semibold text-primary">
-          Expenses Overview
-        </h1>
+        <h1 className="text-3xl font-semibold text-primary">Expenses Overview</h1>
 
         <div className="flex space-x-4">
           {/* Date Filter */}

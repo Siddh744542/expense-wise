@@ -1,38 +1,45 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import axios from "axios";
 import toast from "react-hot-toast";
 import { signIn } from "next-auth/react";
-
+import { useSession } from "next-auth/react";
 const Login = () => {
+  const { data: session, status } = useSession();
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  useEffect(() => {
+    if (status === "authenticated") {
+      router.push("/");
+    }
+  }, [status]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     if (!email || !password) {
       setError("Both fields are required");
+      toast.error("Both fields are required");
+      return;
+    }
+
+    const result = await signIn("credentials", {
+      redirect: false,
+      email: email,
+      password: password
+    });
+
+    if (result.error) {
+      toast.error("Invalid Credentials!");
+      setEmail("");
+      setPassword("");
     } else {
-      setError("");
-      try {
-        await signIn("credentials", {
-          redirect: "false",
-          email: email,
-          password: password,
-        }).then((result) => {
-          console.log(result);
-          if (result?.error) alert("Invalid Credentials!");
-          else {
-            toast.success("Login successful");
-            window.location.replace("/");
-          }
-        });
-      } catch (error) {
-        toast.error("login failed");
-      }
+      toast.success("Login successful");
+      setEmail("");
+      setPassword("");
+      router.push("/dashboard");
     }
   };
 
@@ -43,9 +50,7 @@ const Login = () => {
         {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2">
-              Email:
-            </label>
+            <label className="block text-gray-700 text-sm font-bold mb-2">Email:</label>
             <input
               type="email"
               value={email}
@@ -56,9 +61,7 @@ const Login = () => {
             />
           </div>
           <div className="mb-6">
-            <label className="block text-gray-700 text-sm font-bold mb-2">
-              Password:
-            </label>
+            <label className="block text-gray-700 text-sm font-bold mb-2">Password:</label>
             <input
               type="password"
               name="password"

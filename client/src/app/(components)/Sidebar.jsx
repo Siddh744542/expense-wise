@@ -11,12 +11,13 @@ import {
   Wallet,
   CircleUserRound,
   LogOut,
-  Menu,
+  ChevronLeft,
+  ChevronRight
 } from "lucide-react";
+
 function SidebarLink({ label, Icon, href, isCollapsed }) {
   const pathname = usePathname();
-  const isActive =
-    pathname == href || (pathname === "/" && href === "/dashboard");
+  const isActive = pathname == href || (pathname === "/" && href === "/dashboard");
   return (
     <Link href={href} className="flex">
       <div className={`${isActive ? "bg-primary" : "bg-white"} w-1`}></div>
@@ -27,56 +28,55 @@ function SidebarLink({ label, Icon, href, isCollapsed }) {
             : "bg-white text-gray-700 hover:bg-background"
         } ${isCollapsed ? "justify-center" : ""}`}
       >
-        {Icon && (
-          <Icon
-            className={`h-6 w-6 ${isActive ? "text-primary" : "text-black"}`}
-          />
-        )}
+        {Icon && <Icon className={`h-6 w-6 ${isActive ? "text-primary" : "text-black"}`} />}
         {!isCollapsed && (
-          <span className={`font-medium ml-3 ${isActive ? "font-bold" : ""}`}>
-            {label}
-          </span>
+          <span className={`font-medium ml-3 ${isActive ? "font-bold" : ""}`}>{label}</span>
         )}
       </div>
     </Link>
   );
 }
+
 function Sidebar({ isCollapsed, toggleSidebar }) {
   const { data: session } = useSession();
   const router = useRouter();
+
   function onLogout() {
     signOut({ redirect: false }).then(() => {
       router.push("/login");
     });
   }
+
   return (
     <div
-      className={`fixed flex flex-col bg-white overflow-hidden h-full shadow-md z-40 transition-all duration-300 ${
+      className={`fixed flex flex-col bg-white h-full shadow-md z-40 transition-all duration-300 ${
         isCollapsed ? "w-16" : "w-60"
       }`}
     >
-      {/* Toggle Icon */}
-      <div className="flex justify-start p-4">
-        <button
-          onClick={toggleSidebar}
-          className="text-gray-700 focus:outline-none"
-        >
-          <Menu size={24} />
-        </button>
+      {/* Sidebar Header */}
+      <div className="flex items-center px-4 py-4">
+        <div className="flex items-center">
+          <Wallet className="text-primary" size={32} />
+          {!isCollapsed && (
+            <h1 className="text-primary font-extrabold text-xl ml-2 text-ellipsis max-w-[125px] whitespace-nowrap overflow-hidden">
+              Expense Wise
+            </h1>
+          )}
+        </div>
       </div>
-      {/* Heading */}
-      <div
-        className={`flex items-center ${
-          isCollapsed ? "justify-center" : "justify-start px-4"
-        }  pt-2`}
+
+      {/* Collapse/Expand Button */}
+      <button
+        onClick={toggleSidebar}
+        className="absolute top-4 -right-4 bg-white border border-gray-300 rounded-full p-1 shadow-md focus:outline-none hover:bg-gray-100 transition-all duration-300 z-50"
       >
-        <Wallet className="text-primary" size={32} />
-        {!isCollapsed && (
-          <h1 className="text-primary font-extrabold text-xl ml-2">
-            Expense Wise
-          </h1>
+        {isCollapsed ? (
+          <ChevronRight size={24} className="text-gray-500" />
+        ) : (
+          <ChevronLeft size={24} className="text-gray-500" />
         )}
-      </div>
+      </button>
+
       {/* Links */}
       <div className="flex-grow mt-4">
         <SidebarLink
@@ -91,12 +91,7 @@ function Sidebar({ isCollapsed, toggleSidebar }) {
           href="/expense"
           isCollapsed={isCollapsed}
         />
-        <SidebarLink
-          label="Income"
-          Icon={Sprout}
-          href="/income"
-          isCollapsed={isCollapsed}
-        />
+        <SidebarLink label="Income" Icon={Sprout} href="/income" isCollapsed={isCollapsed} />
         <SidebarLink
           label="Category"
           Icon={LayoutList}
@@ -104,15 +99,14 @@ function Sidebar({ isCollapsed, toggleSidebar }) {
           isCollapsed={isCollapsed}
         />
       </div>
+
       {/* Profile Section */}
       {!isCollapsed && (
         <div className="block mb-6 bg-white">
           <div className="flex items-center px-5 mb-4">
             <CircleUserRound size={38} className="text-gray-500 mr-3" />
             <div>
-              <h3 className="text-black font-semibold">
-                {session?.user.username}
-              </h3>
+              <h3 className="text-black font-semibold">{session?.user.username}</h3>
               <p className="text-gray-500 text-xs">{session?.user.email}</p>
             </div>
           </div>
@@ -128,4 +122,5 @@ function Sidebar({ isCollapsed, toggleSidebar }) {
     </div>
   );
 }
+
 export default Sidebar;

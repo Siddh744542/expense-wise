@@ -1,15 +1,22 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import toast from "react-hot-toast";
+import { useSession } from "next-auth/react";
 const SignUp = () => {
   const router = useRouter();
+  const { data: session, status } = useSession();
   const [userName, setUserName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
+  useEffect(() => {
+    if (status === "authenticated") {
+      router.push("/");
+    }
+  }, [status]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -23,7 +30,7 @@ const SignUp = () => {
         await axios.post(`${process.env.NEXT_PUBLIC_DOMAIN}/users/signup`, {
           username: userName,
           email: email,
-          password: password,
+          password: password
         });
         toast.success("Signup success, please login");
         router.push("/login");
@@ -44,9 +51,7 @@ const SignUp = () => {
         {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2">
-              UserName:
-            </label>
+            <label className="block text-gray-700 text-sm font-bold mb-2">UserName:</label>
             <input
               type="text"
               value={userName}
@@ -56,9 +61,7 @@ const SignUp = () => {
             />
           </div>
           <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2">
-              Email:
-            </label>
+            <label className="block text-gray-700 text-sm font-bold mb-2">Email:</label>
             <input
               type="email"
               value={email}
@@ -68,9 +71,7 @@ const SignUp = () => {
             />
           </div>
           <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2">
-              Password:
-            </label>
+            <label className="block text-gray-700 text-sm font-bold mb-2">Password:</label>
             <input
               type="password"
               value={password}
@@ -80,9 +81,7 @@ const SignUp = () => {
             />
           </div>
           <div className="mb-6">
-            <label className="block text-gray-700 text-sm font-bold mb-2">
-              Confirm Password:
-            </label>
+            <label className="block text-gray-700 text-sm font-bold mb-2">Confirm Password:</label>
             <input
               type="password"
               value={confirmPassword}

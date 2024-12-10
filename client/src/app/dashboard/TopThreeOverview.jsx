@@ -9,7 +9,7 @@ function formatTopThreeData(expenseData, incomeData) {
       ?.map((category) => ({
         category: category.category,
         amount: category.amount,
-        percentage: ((category.amount / totalExpenses) * 100).toFixed(2),
+        percentage: ((category.amount / totalExpenses) * 100).toFixed(2)
       }))
       .sort((a, b) => b.amount - a.amount)
       .slice(0, 3) || [];
@@ -19,7 +19,7 @@ function formatTopThreeData(expenseData, incomeData) {
       ?.map((source) => ({
         source: source.source,
         total: source.total,
-        percentage: ((source.total / totalIncome) * 100).toFixed(2),
+        percentage: ((source.total / totalIncome) * 100).toFixed(2)
       }))
       .sort((a, b) => b.total - a.total)
       .slice(0, 3) || [];
@@ -28,16 +28,11 @@ function formatTopThreeData(expenseData, incomeData) {
 }
 
 const TopThreeOverview = ({ expenseData, incomeData }) => {
-  const { topExpenseCategories, topIncomeSources } = formatTopThreeData(
-    expenseData,
-    incomeData
-  );
+  const { topExpenseCategories, topIncomeSources } = formatTopThreeData(expenseData, incomeData);
 
   return (
     <div>
-      <h2 className="text-xl font-semibold text-primary-500 mb-3">
-        Top Categories & Sources
-      </h2>
+      <h2 className="text-xl font-semibold text-primary-500 mb-3">Top Categories & Sources</h2>
 
       {/* Top 3 Expense Categories */}
       <div className="space-y-2 mb-3">

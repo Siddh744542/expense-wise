@@ -35,7 +35,7 @@ function Expenses() {
   return (
     <div className=" pr-5">
       {/* header */}
-      <div className="flex justify-between items-center py-6">
+      <div className="flex justify-between items-center py-2">
         <h1 className="text-3xl font-semibold text-primary">Expenses Overview</h1>
 
         <div className="flex space-x-4">
@@ -73,7 +73,7 @@ function Expenses() {
       </div>
 
       {/* Grid Layout */}
-      <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 py-4">
         <div className="lg:col-span-2 grid grid-rows-1 gap-6">
           {/* Expense Summary Section */}
           <ExpenseSummary summaryData={summaryData} />

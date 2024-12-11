@@ -23,7 +23,7 @@ const DashboardWrappper = ({ children }) => {
       <div className={`flex w-full min-h-screen`}>
         {isVerified && <Sidebar isCollapsed={isSideBarCollapsed} toggleSidebar={toggleSidebar} />}
         <main
-          className={`flex flex-col w-full h-full ${isVerified && "py-7"} ${
+          className={`flex flex-col w-full h-full ${isVerified && "py-4"} ${
             isSideBarCollapsed ? "pl-24 md:pl-24" : "pl-72 md:pl-72"
           }`}
         >

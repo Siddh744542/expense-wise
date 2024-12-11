@@ -68,7 +68,7 @@ function Sidebar({ isCollapsed, toggleSidebar }) {
       {/* Collapse/Expand Button */}
       <button
         onClick={toggleSidebar}
-        className="absolute top-4 -right-4 bg-white border border-gray-300 rounded-full p-1 shadow-md focus:outline-none hover:bg-gray-100 transition-all duration-300 z-50"
+        className="absolute top-4 -right-4 bg-white border border-gray-300 rounded-full p-0.5 shadow-md focus:outline-none hover:bg-gray-100 transition-all duration-300 z-50"
       >
         {isCollapsed ? (
           <ChevronRight size={24} className="text-gray-500" />
@@ -78,7 +78,7 @@ function Sidebar({ isCollapsed, toggleSidebar }) {
       </button>
 
       {/* Links */}
-      <div className="flex-grow mt-4">
+      <div className="flex-grow">
         <SidebarLink
           label="Dashboard"
           Icon={LayoutDashboard}

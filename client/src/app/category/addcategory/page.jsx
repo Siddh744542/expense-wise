@@ -14,15 +14,15 @@ const AddCategoryForm = () => {
   const [formData, setFormData] = useState({
     category: "",
     limit: "",
-    month: "",
+    month: ""
   });
 
   useEffect(() => {
-    if (searchParams.size > 0) {
+    if (searchParams.size > 0 && searchParams.has("category")) {
       setFormData({
         category: searchParams.get("category") || "",
         limit: searchParams.get("limit") || "",
-        month: searchParams.get("month") || "",
+        month: searchParams.get("month") || ""
       });
       setIsEditing(true);
     } else {
@@ -34,7 +34,7 @@ const AddCategoryForm = () => {
     const { name, value } = e.target;
     setFormData({
       ...formData,
-      [name]: value,
+      [name]: value
     });
   };
 
@@ -53,19 +53,19 @@ const AddCategoryForm = () => {
         .promise(
           axios.post(`${process.env.NEXT_PUBLIC_DOMAIN}/category/addcategory`, {
             userId: session?.user.id,
-            ...formData,
+            ...formData
           }),
           {
             loading: "Adding category...",
             success: "Category added successfully!",
-            error: "Failed to add category.",
+            error: "Failed to add category."
           }
         )
         .then(() => {
           setFormData({
             category: "",
             limit: "",
-            month: "",
+            month: ""
           });
           router.push("/category");
         });
@@ -78,18 +78,15 @@ const AddCategoryForm = () => {
     try {
       await toast
         .promise(
-          axios.put(
-            `${process.env.NEXT_PUBLIC_DOMAIN}/category/updatecategory`,
-            {
-              userId: session?.user.id,
-              categoryId: searchParams.get("id"),
-              ...formData,
-            }
-          ),
+          axios.put(`${process.env.NEXT_PUBLIC_DOMAIN}/category/updatecategory`, {
+            userId: session?.user.id,
+            categoryId: searchParams.get("id"),
+            ...formData
+          }),
           {
             loading: "Updating category...",
             success: "Category updated successfully!",
-            error: "Failed to update category.",
+            error: "Failed to update category."
           }
         )
         .then(() => {

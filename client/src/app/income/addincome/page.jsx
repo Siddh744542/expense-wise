@@ -11,9 +11,7 @@ const AddIncomePage = () => {
   const searchParams = useSearchParams();
   const { data: session, status } = useSession();
   const [sourceData, setSourceData] = useState();
-  const [selectedMonth, setSelectedMonth] = useState(
-    String(new Date().toISOString().slice(0, 7))
-  );
+  const [selectedMonth, setSelectedMonth] = useState(String(new Date().toISOString().slice(0, 7)));
 
   const today = new Date().toISOString().split("T")[0]; // Get current date in 'YYYY-MM-DD' format
 
@@ -21,7 +19,7 @@ const AddIncomePage = () => {
     date: today,
     source: "",
     amount: "",
-    description: "",
+    description: ""
   });
 
   const [isEditing, setIsEditing] = useState(false);
@@ -31,12 +29,12 @@ const AddIncomePage = () => {
   }, [session]);
 
   useEffect(() => {
-    if (searchParams.size > 0) {
+    if (searchParams.size > 0 && searchParams.has("amount")) {
       setFormData({
         date: searchParams.get("date")?.split("T")[0] || today,
         source: searchParams.get("source") || "",
         amount: searchParams.get("amount") || "",
-        description: searchParams.get("description") || "",
+        description: searchParams.get("description") || ""
       });
       setIsEditing(true);
     } else {
@@ -46,12 +44,9 @@ const AddIncomePage = () => {
 
   const fetchSummary = async () => {
     try {
-      const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_DOMAIN}/income/summary`,
-        {
-          params: { userId: session?.user.id, month: selectedMonth },
-        }
-      );
+      const response = await axios.get(`${process.env.NEXT_PUBLIC_DOMAIN}/income/summary`, {
+        params: { userId: session?.user.id, month: selectedMonth }
+      });
       setSourceData(response.data);
     } catch (err) {}
   };
@@ -60,7 +55,7 @@ const AddIncomePage = () => {
     const { name, value } = e.target;
     setFormData((prevFormData) => ({
       ...prevFormData,
-      [name]: value,
+      [name]: value
     }));
     if (name === "date") {
       const updatedMonth = value.slice(0, 7);
@@ -83,12 +78,12 @@ const AddIncomePage = () => {
         .promise(
           axios.post(`${process.env.NEXT_PUBLIC_DOMAIN}/income/addincome`, {
             userId: session?.user.id,
-            ...formData,
+            ...formData
           }),
           {
             loading: "Adding income...",
             success: "Income Added successfully!",
-            error: "Failed to Add income.",
+            error: "Failed to Add income."
           }
         )
         .then(() => {
@@ -96,7 +91,7 @@ const AddIncomePage = () => {
             date: today,
             source: "",
             amount: "",
-            description: "",
+            description: ""
           });
           router.push("/income");
         });
@@ -111,12 +106,12 @@ const AddIncomePage = () => {
           axios.put(`${process.env.NEXT_PUBLIC_DOMAIN}/income/updateincome`, {
             userId: session?.user.id,
             incomeId: searchParams.get("id"),
-            ...formData,
+            ...formData
           }),
           {
             loading: "Updating income...",
             success: "Income updated successfully!",
-            error: "Failed to update income.",
+            error: "Failed to update income."
           }
         )
         .then(() => {

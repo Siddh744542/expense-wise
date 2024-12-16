@@ -4,20 +4,42 @@ import { useSession } from "next-auth/react";
 import axios from "axios";
 import ExpenseSummary from "./ExpenseSummary";
 import CategoryChart from "./CategoryChart";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import ExpenseList from "./ExpenseList";
 import formatMonth from "@/helper/formatMonth";
 
 function Expenses() {
   const { data: session, status } = useSession();
-  const [summaryData, setSummaryData] = useState();
-  const [selectedMonth, setSelectedMonth] = useState(String(new Date().toISOString().slice(0, 7)));
   const router = useRouter();
 
+  const searchParams = useSearchParams();
+  const initialMonth = searchParams.get("month");
+  const [selectedMonth, setSelectedMonth] = useState(initialMonth);
+
+  const [summaryData, setSummaryData] = useState();
+  const [availableMonths, setAvailableMonths] = useState();
+
   const handleMonthChange = (e) => {
-    setSelectedMonth(e.target.value);
+    const newMonth = e.target.value;
+    setSelectedMonth(newMonth);
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("month", newMonth);
+    router.push(`?${params.toString()}`, { shallow: true });
   };
 
+  const fetchAvailableMonth = async () => {
+    try {
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_DOMAIN}/dashboard/getavailablemonths`,
+        {
+          params: { userId: session?.user.id }
+        }
+      );
+      setAvailableMonths(response.data?.months);
+    } catch (err) {
+      console.error(err);
+    }
+  };
   const fetchSummary = async () => {
     try {
       const response = await axios.get(`${process.env.NEXT_PUBLIC_DOMAIN}/expense/summary`, {
@@ -28,8 +50,12 @@ function Expenses() {
   };
 
   useEffect(() => {
+    fetchAvailableMonth();
+  }, [session]);
+  useEffect(() => {
     fetchSummary();
   }, [session, selectedMonth]);
+
   if (!summaryData) return <div>Loading...</div>;
 
   return (
@@ -51,8 +77,8 @@ function Expenses() {
               value={selectedMonth}
             >
               <option value="">Select Month</option>
-              {summaryData?.availableMonths?.length > 0 ? (
-                summaryData.availableMonths.map((month) => (
+              {availableMonths?.length > 0 ? (
+                availableMonths?.map((month) => (
                   <option key={month} value={month}>
                     {formatMonth(month)}
                   </option>

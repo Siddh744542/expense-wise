@@ -24,14 +24,11 @@ const ConfirmLimitModal = ({ isOpen, onClose, handleConfirm, percentage }) => {
 
         <div className="flex items-center mb-4">
           <CircleAlert className="w-6 h-6 text-yellow-500 mr-2" />
-          <h3 className="text-lg font-semibold text-yellow-700">
-            Warning: Limit Reached
-          </h3>
+          <h3 className="text-lg font-semibold text-yellow-700">Warning: Limit Reached</h3>
         </div>
 
         <p className="text-yellow-800 mb-4">
-          You have reached <strong>{percentage}%</strong> of your limit. Do you
-          want to add more?
+          You have reached <strong>{percentage}%</strong> of your limit. Do you want to add more?
         </p>
 
         <div className="flex justify-end space-x-4">
@@ -59,9 +56,7 @@ const DailyExpenseForm = () => {
   const { data: session } = useSession();
   const [categoryData, setCategoryData] = useState();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedMonth, setSelectedMonth] = useState(
-    new Date().toISOString().slice(0, 7)
-  );
+  const [selectedMonth, setSelectedMonth] = useState(new Date().toISOString().slice(0, 7));
   const [limitReachedPercentage, setLimitReachedPercentage] = useState();
   const today = new Date().toISOString().split("T")[0];
   const [isEditing, setIsEditing] = useState(false);
@@ -69,7 +64,7 @@ const DailyExpenseForm = () => {
     date: today,
     category: "",
     amount: "",
-    description: "",
+    description: ""
   });
 
   useEffect(() => {
@@ -77,12 +72,12 @@ const DailyExpenseForm = () => {
   }, [session]);
 
   useEffect(() => {
-    if (searchParams.size > 0) {
+    if (searchParams.size > 0 && searchParams.has("amount")) {
       setFormData({
         date: searchParams.get("date")?.split("T")[0] || today,
         category: searchParams.get("category") || "",
         amount: searchParams.get("amount") || "",
-        description: searchParams.get("description") || "",
+        description: searchParams.get("description") || ""
       });
       setIsEditing(true);
     } else {
@@ -95,22 +90,16 @@ const DailyExpenseForm = () => {
       (cat) => cat.category === formData.category
     );
     if (categoryDetails) {
-      const percentage = (
-        (categoryDetails.amount / categoryDetails.limit) *
-        100
-      ).toFixed(2);
+      const percentage = ((categoryDetails.amount / categoryDetails.limit) * 100).toFixed(2);
       setLimitReachedPercentage(percentage);
     }
   }, [formData.category, categoryData]);
 
   const fetchCategory = async () => {
     try {
-      const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_DOMAIN}/expense/summary`,
-        {
-          params: { userId: session?.user.id, month: selectedMonth },
-        }
-      );
+      const response = await axios.get(`${process.env.NEXT_PUBLIC_DOMAIN}/expense/summary`, {
+        params: { userId: session?.user.id, month: selectedMonth }
+      });
       setCategoryData(response.data);
     } catch (err) {
       console.error("Error fetching categories:", err);
@@ -121,7 +110,7 @@ const DailyExpenseForm = () => {
     const { name, value } = e.target;
     setFormData({
       ...formData,
-      [name]: value,
+      [name]: value
     });
     if (name === "date") {
       const updatedMonth = value.slice(0, 7);
@@ -154,12 +143,12 @@ const DailyExpenseForm = () => {
         .promise(
           axios.post(`${process.env.NEXT_PUBLIC_DOMAIN}/expense/addexpense`, {
             userId: session?.user.id,
-            ...formData,
+            ...formData
           }),
           {
             loading: "Adding expense...",
             success: "Expense Added successfully!",
-            error: "Failed to Add expense.",
+            error: "Failed to Add expense."
           }
         )
         .then(() => {
@@ -167,7 +156,7 @@ const DailyExpenseForm = () => {
             date: today,
             category: "",
             amount: "",
-            description: "",
+            description: ""
           });
           router.push("/expense");
         });
@@ -183,12 +172,12 @@ const DailyExpenseForm = () => {
           axios.put(`${process.env.NEXT_PUBLIC_DOMAIN}/expense/updateexpense`, {
             userId: session?.user.id,
             expenseId: searchParams.get("id"),
-            ...formData,
+            ...formData
           }),
           {
             loading: "Updating expense...",
             success: "Expense updated successfully!",
-            error: "Failed to update expense.",
+            error: "Failed to update expense."
           }
         )
         .then(() => {
@@ -240,10 +229,7 @@ const DailyExpenseForm = () => {
                     Select Category
                   </option>
                   {categoryData?.categoryExpenses.map((categories) => (
-                    <option
-                      key={categories.category}
-                      value={categories.category}
-                    >
+                    <option key={categories.category} value={categories.category}>
                       {categories.category}
                     </option>
                   ))}

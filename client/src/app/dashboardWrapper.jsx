@@ -1,7 +1,7 @@
 "use client";
 import { useState, Suspense, useEffect } from "react";
 import Sidebar from "./(components)/Sidebar";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 const Loader = () => <>Loading...</>;
 const DashboardWrappper = ({ children }) => {
@@ -10,11 +10,22 @@ const DashboardWrappper = ({ children }) => {
   const isVerified = status === "authenticated" ? true : false;
   console.log(session);
   const router = useRouter();
+  const searchParams = useSearchParams();
   useEffect(() => {
     if ((status === "unauthenticated" || !session) && status !== "loading") {
       router.push("/login");
     }
   }, [status]);
+  useEffect(() => {
+    const currentMonth = new Date().toISOString().slice(0, 7); 
+    const month = searchParams.get("month");
+
+    if (!month) {
+      const params = new URLSearchParams(searchParams.toString());
+      params.set("month", currentMonth);
+      router.replace(`?${params.toString()}`, { shallow: true });
+    }
+  }, [searchParams]);
   const toggleSidebar = () => {
     setIsSideBarColapsed(!isSideBarCollapsed);
   };

@@ -13,14 +13,14 @@ const AddIncomeSourceForm = () => {
 
   const [formData, setFormData] = useState({
     source: "",
-    month: "",
+    month: ""
   });
 
   useEffect(() => {
-    if (searchParams.size > 0) {
+    if (searchParams.size > 0 && searchParams.has("source")) {
       setFormData({
         source: searchParams.get("source") || "",
-        month: searchParams.get("month") || "",
+        month: searchParams.get("month") || ""
       });
       setIsEditing(true);
     } else {
@@ -32,7 +32,7 @@ const AddIncomeSourceForm = () => {
     const { name, value } = e.target;
     setFormData({
       ...formData,
-      [name]: value,
+      [name]: value
     });
   };
 
@@ -51,18 +51,18 @@ const AddIncomeSourceForm = () => {
         .promise(
           axios.post(`${process.env.NEXT_PUBLIC_DOMAIN}/incomesource/add`, {
             userId: session?.user.id,
-            ...formData,
+            ...formData
           }),
           {
             loading: "Adding income source...",
             success: "income source added successfully!",
-            error: "Failed to add income source.",
+            error: "Failed to add income source."
           }
         )
         .then(() => {
           setFormData({
             source: "",
-            month: "",
+            month: ""
           });
           router.push("/category?isexpense=false");
         });
@@ -78,12 +78,12 @@ const AddIncomeSourceForm = () => {
           axios.put(`${process.env.NEXT_PUBLIC_DOMAIN}/incomesource/update`, {
             userId: session?.user.id,
             sourceId: searchParams.get("id"),
-            ...formData,
+            ...formData
           }),
           {
             loading: "Updating income source...",
             success: "Income Source updated successfully!",
-            error: "Failed to update income source.",
+            error: "Failed to update income source."
           }
         )
         .then(() => {

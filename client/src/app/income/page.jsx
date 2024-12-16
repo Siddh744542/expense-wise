@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import axios from "axios";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import IncomeSummary from "./IncomeSummary";
 import SourceChart from "./SourceChart";
 import IncomeList from "./IncomeList";
@@ -10,12 +10,34 @@ import formatMonth from "@/helper/formatMonth";
 
 function Income() {
   const { data: session, status } = useSession();
+
+  const searchParams = useSearchParams();
+  const initialMonth = searchParams.get("month");
+  const [selectedMonth, setSelectedMonth] = useState(initialMonth);
+
   const [summaryData, setSummaryData] = useState();
-  const [selectedMonth, setSelectedMonth] = useState(String(new Date().toISOString().slice(0, 7)));
+  const [availableMonths, setAvailableMonths] = useState();
   const router = useRouter();
 
   const handleMonthChange = (e) => {
-    setSelectedMonth(e.target.value);
+    const newMonth = e.target.value;
+    setSelectedMonth(newMonth);
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("month", newMonth);
+    router.push(`?${params.toString()}`, { shallow: true });
+  };
+  const fetchAvailableMonth = async () => {
+    try {
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_DOMAIN}/dashboard/getavailablemonths`,
+        {
+          params: { userId: session?.user.id }
+        }
+      );
+      setAvailableMonths(response.data?.months);
+    } catch (err) {
+      console.error(err);
+    }
   };
   const fetchSummary = async () => {
     try {
@@ -25,6 +47,10 @@ function Income() {
       setSummaryData(response.data);
     } catch (err) {}
   };
+
+  useEffect(() => {
+    fetchAvailableMonth();
+  }, [session]);
 
   useEffect(() => {
     fetchSummary();
@@ -49,8 +75,8 @@ function Income() {
               value={selectedMonth}
             >
               <option value="">Select Month</option>
-              {summaryData?.availableMonths?.length > 0 ? (
-                summaryData.availableMonths.map((month) => (
+              {availableMonths?.length > 0 ? (
+                availableMonths?.map((month) => (
                   <option key={month} value={month}>
                     {formatMonth(month)}
                   </option>

@@ -18,16 +18,12 @@ function ExpenseList({ fetchSummary }) {
 
   const fetchExpenses = async (page = 1) => {
     try {
-      const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_DOMAIN}/expense/getexpense`,
-        {
-          params: {
-            userId: session?.user.id,
-            page: page,
-          },
+      const response = await axios.get(`${process.env.NEXT_PUBLIC_DOMAIN}/expense/getexpense`, {
+        params: {
+          userId: session?.user.id,
+          page: page
         }
-      );
-
+      });
       setExpenseData(response.data.expenses);
       setCurrentPage(response.data.currentPage);
       setTotalPages(response.data.totalPages);
@@ -39,16 +35,13 @@ function ExpenseList({ fetchSummary }) {
   const handleDelete = async (expenseId) => {
     toast
       .promise(
-        axios.delete(
-          `${process.env.NEXT_PUBLIC_DOMAIN}/expense/deleteexpense`,
-          {
-            data: { userId: session?.user.id, expenseId: expenseId },
-          }
-        ),
+        axios.delete(`${process.env.NEXT_PUBLIC_DOMAIN}/expense/deleteexpense`, {
+          data: { userId: session?.user.id, expenseId: expenseId }
+        }),
         {
           loading: "Deleting expense...",
           success: "Expense deleted successfully!",
-          error: "Failed to delete expense.",
+          error: "Failed to delete expense."
         }
       )
       .then(() => {
@@ -67,22 +60,16 @@ function ExpenseList({ fetchSummary }) {
       date: today,
       category: expense.category,
       amount: expense.amount,
-      description: expense.description,
+      description: expense.description
     };
 
     try {
       toast
-        .promise(
-          axios.post(
-            `${process.env.NEXT_PUBLIC_DOMAIN}/expense/addexpense`,
-            repeatData
-          ),
-          {
-            loading: "Repeating expense...",
-            success: "Expense repeated successfully!",
-            error: "Failed to repeat expense.",
-          }
-        )
+        .promise(axios.post(`${process.env.NEXT_PUBLIC_DOMAIN}/expense/addexpense`, repeatData), {
+          loading: "Repeating expense...",
+          success: "Expense repeated successfully!",
+          error: "Failed to repeat expense."
+        })
         .then(() => {
           fetchExpenses();
           fetchSummary();
@@ -98,33 +85,23 @@ function ExpenseList({ fetchSummary }) {
 
       <ul className="space-y-3 flex-grow overflow-y-auto">
         {expenseData?.map((expense) => (
-          <li
-            key={expense?._id}
-            className="flex justify-between items-center border-b pb-2"
-          >
+          <li key={expense?._id} className="flex justify-between items-center border-b pb-2">
             <div className="flex flex-col gap-1">
-              <span className="text-gray-800 font-medium">
-                {expense?.category}
-              </span>
+              <span className="text-gray-800 font-medium">{expense?.category}</span>
               <div className="flex items-center gap-2 text-sm text-gray-500">
                 <span>
                   {new Date(expense?.date).toLocaleDateString("en-IN", {
                     day: "2-digit",
                     month: "short",
-                    year: "numeric",
+                    year: "numeric"
                   })}
                 </span>
-                |
-                <span className="italic text-gray-600">
-                  {expense?.description}
-                </span>
+                |<span className="italic text-gray-600">{expense?.description}</span>
               </div>
             </div>
 
             <div className="flex items-center gap-4">
-              <span className="text-lg font-bold text-gray-900">
-                ₹{expense?.amount}
-              </span>
+              <span className="text-lg font-bold text-gray-900">₹{expense?.amount}</span>
               <div className="flex items-center gap-1">
                 <Link
                   href={{
@@ -134,8 +111,8 @@ function ExpenseList({ fetchSummary }) {
                       date: expense.date,
                       category: expense.category,
                       amount: expense.amount,
-                      description: expense.description,
-                    },
+                      description: expense.description
+                    }
                   }}
                 >
                   <button className="p-1 rounded hover:bg-primary-300 hover:text-white transition-colors">

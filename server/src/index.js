@@ -12,6 +12,7 @@ import expenseRoutes from "../src/routes/expenseRoute.js";
 import incomeRoutes from "../src/routes/incomeRoute.js";
 import categoryRoutes from "../src/routes/categoryRoute.js";
 import incomeSourceRoutes from "../src/routes/incomeSourceRoute.js";
+import dashBoardRoutes from "../src/routes/DashboardRoute.js";
 // configuration
 dotenv.config();
 const app = express();
@@ -31,6 +32,7 @@ app.use("/expense", expenseRoutes); //http://localhost:8000/expense
 app.use("/income", incomeRoutes); //http://localhost:8000/income
 app.use("/category", categoryRoutes); //http://localhost:8000/category
 app.use("/incomesource", incomeSourceRoutes); //http://localhost:8000/incomesource
+app.use("/dashboard", dashBoardRoutes);
 // server
 const port = Number(process.env.PORT) || 3001;
 app.listen(port, "0.0.0.0", () => {

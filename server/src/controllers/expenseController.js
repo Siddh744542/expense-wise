@@ -11,8 +11,6 @@ export const getSummary = async (req, res) => {
       month,
     });
 
-    const availableMonths = await MonthlyExpense.distinct("month", { userId });
-
     if (!monthlySummary) {
       const importResult = await importCategoriesFromLastMonth(userId);
 
@@ -30,7 +28,6 @@ export const getSummary = async (req, res) => {
       return res.json({
         categoryExpenses: [],
         totalExpenses: 0,
-        availableMonths,
       });
     }
 
@@ -41,7 +38,6 @@ export const getSummary = async (req, res) => {
     res.json({
       totalExpenses,
       categoryExpenses: monthlySummary.categoryExpenses,
-      availableMonths,
     });
   } catch (error) {
     console.error("Error fetching summary:", error);

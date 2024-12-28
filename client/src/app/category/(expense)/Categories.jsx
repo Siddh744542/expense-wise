@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Pen, Trash2, X } from "lucide-react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import toast from "react-hot-toast";
 import axios from "axios";
-import { useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 function getExpenseColor(expense, limit) {
   const percentage = (expense / limit) * 100;
@@ -41,9 +42,7 @@ const ConfirmDeleteModal = ({ isOpen, onClose, handleDelete }) => {
           <X className="w-5 h-5 text-gray-600" />
         </button>
         <h3 className="text-lg font-semibold mb-4">Delete Category</h3>
-        <p className="mb-4">
-          Do you want to delete all expenses for this category as well?
-        </p>
+        <p className="mb-4">Do you want to delete all expenses for this category as well?</p>
         <div className="flex justify-end space-x-4">
           <button
             className="px-4 py-2 bg-gray-300 text-black rounded hover:bg-gray-400"
@@ -62,11 +61,19 @@ const ConfirmDeleteModal = ({ isOpen, onClose, handleDelete }) => {
     </div>
   );
 };
-function Categories({ categoryData, selectedMonth }) {
+function Categories({ categoryData }) {
   const { data: session, status } = useSession();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const searchParams = useSearchParams();
+  const [selectedMonth, setSelectedMonth] = useState(null);
+
   const [selectedCategory, setSelectedCategory] = useState(null);
-  const router = useRouter();
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    setSelectedMonth(searchParams.get("month"));
+  }, [searchParams]);
+
   const openModal = (categoryId) => {
     setSelectedCategory(categoryId);
     setIsModalOpen(true);
@@ -75,39 +82,38 @@ function Categories({ categoryData, selectedMonth }) {
     setIsModalOpen(false);
     setSelectedCategory(null);
   };
-  const handleDeleteCategory = async (deleteExpenses) => {
-    try {
-      await toast.promise(
-        axios.delete(`${process.env.NEXT_PUBLIC_DOMAIN}/category/delete`, {
-          data: {
-            userId: session?.user.id,
-            categoryId: selectedCategory,
-            deleteExpenses: deleteExpenses,
-            month: selectedMonth,
-          },
-        }),
-        {
-          loading: "Deleting category...",
-          success: "Category deleted successfully!",
-          error: "Failed to delete category.",
+  const handleDeleteCategory = (deleteExpenses) => {
+    deleteCategory.mutate(deleteExpenses);
+  };
+
+  const deleteCategory = useMutation({
+    mutationFn: async (deleteExpenses) => {
+      await axios.delete(`${process.env.NEXT_PUBLIC_DOMAIN}/category/delete`, {
+        data: {
+          userId: session?.user.id,
+          categoryId: selectedCategory,
+          deleteExpenses: deleteExpenses,
+          month: selectedMonth
         }
-      );
+      });
+    },
+    onSuccess: () => {
+      toast.success("Category deleted successfully!");
       closeModal();
-      router.reload();
-    } catch (error) {
-      console.error("Error deleting category:", error);
+      queryClient.invalidateQueries(["categoryData", session?.user?.id, selectedMonth]);
+    },
+    onError: () => {
+      toast.error("Failed to delete category.");
       closeModal();
     }
-  };
+  });
   return (
     <div className="h-[370px] bg-white p-5 pr-1 rounded-lg shadow flex flex-col">
       {/* Total Expenses */}
       <div className="space-y-2 pr-5">
         <div className="text-primary-500 font-semibold text-xl flex justify-between">
           Total Expenses:
-          <div className="text-action font-bold text-2xl">
-            ₹{categoryData?.totalExpenses || 0}
-          </div>
+          <div className="text-action font-bold text-2xl">₹{categoryData?.totalExpenses || 0}</div>
         </div>
       </div>
       {/* Category Expenses List */}
@@ -119,9 +125,7 @@ function Categories({ categoryData, selectedMonth }) {
               className="flex justify-between items-center border-b pb-2 mb-2"
             >
               <div>
-                <p className="text-gray-700 font-semibold  font-md">
-                  {categoryExpense?.category}
-                </p>
+                <p className="text-gray-700 font-semibold  font-md">{categoryExpense?.category}</p>
                 <div className="text-gray-500 flex gap-1">
                   Spent:
                   <p className="text-black ">₹{categoryExpense?.amount}</p>
@@ -144,8 +148,8 @@ function Categories({ categoryData, selectedMonth }) {
                       id: categoryExpense._id,
                       category: categoryExpense.category,
                       limit: categoryExpense.limit,
-                      month: selectedMonth,
-                    },
+                      month: selectedMonth
+                    }
                   }}
                 >
                   <button className="p-1 rounded hover:bg-primary-300 hover:text-white transition-colors">

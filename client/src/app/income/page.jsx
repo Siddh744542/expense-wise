@@ -7,17 +7,27 @@ import IncomeSummary from "./IncomeSummary";
 import SourceChart from "./SourceChart";
 import IncomeList from "./IncomeList";
 import formatMonth from "@/helper/formatMonth";
+import { useQuery } from "@tanstack/react-query";
+import { fetchAvailableMonths } from "../expense/page";
+import { Loader } from "../dashboardWrapper";
+
+const fetchSummary = async ({ userId, month }) => {
+  const response = await axios.get(`${process.env.NEXT_PUBLIC_DOMAIN}/income/summary`, {
+    params: { userId, month }
+  });
+  return response.data;
+};
 
 function Income() {
   const { data: session, status } = useSession();
-
   const searchParams = useSearchParams();
-  const initialMonth = searchParams.get("month");
-  const [selectedMonth, setSelectedMonth] = useState(initialMonth);
-
-  const [summaryData, setSummaryData] = useState();
-  const [availableMonths, setAvailableMonths] = useState();
+  const [selectedMonth, setSelectedMonth] = useState(null);
   const router = useRouter();
+
+  useEffect(() => {
+    const initialMonth = searchParams.get("month");
+    setSelectedMonth(initialMonth);
+  }, [searchParams]);
 
   const handleMonthChange = (e) => {
     const newMonth = e.target.value;
@@ -26,36 +36,21 @@ function Income() {
     params.set("month", newMonth);
     router.push(`?${params.toString()}`, { shallow: true });
   };
-  const fetchAvailableMonth = async () => {
-    try {
-      const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_DOMAIN}/dashboard/getavailablemonths`,
-        {
-          params: { userId: session?.user.id }
-        }
-      );
-      setAvailableMonths(response.data?.months);
-    } catch (err) {
-      console.error(err);
-    }
-  };
-  const fetchSummary = async () => {
-    try {
-      const response = await axios.get(`${process.env.NEXT_PUBLIC_DOMAIN}/income/summary`, {
-        params: { userId: session?.user.id, month: selectedMonth }
-      });
-      setSummaryData(response.data);
-    } catch (err) {}
-  };
 
-  useEffect(() => {
-    fetchAvailableMonth();
-  }, [session]);
+  const { data: availableMonths, isLoading: isLoadingMonths } = useQuery({
+    queryKey: ["availableMonths", session?.user?.id],
+    queryFn: () => fetchAvailableMonths(session?.user?.id),
+    enabled: !!session?.user?.id
+  });
 
-  useEffect(() => {
-    fetchSummary();
-  }, [session, selectedMonth]);
-  if (!summaryData) return <div>Loading...</div>;
+  // Fetch summary data
+  const { data: summaryData, isLoading: isLoadingSummary } = useQuery({
+    queryKey: ["incomeSummaryData", session?.user?.id, selectedMonth],
+    queryFn: () => fetchSummary({ userId: session?.user?.id, month: selectedMonth }),
+    enabled: !!session?.user?.id && !!selectedMonth
+  });
+
+  if (isLoadingMonths || isLoadingSummary) return <Loader />;
   return (
     <div className="pr-5">
       {/* header */}
@@ -72,7 +67,7 @@ function Income() {
               id="date-filter"
               className="border rounded-md px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-primary"
               onChange={handleMonthChange}
-              value={selectedMonth}
+              value={selectedMonth || ""}
             >
               <option value="">Select Month</option>
               {availableMonths?.length > 0 ? (
@@ -105,7 +100,7 @@ function Income() {
           <SourceChart summaryData={summaryData?.sources} />
         </div>
         {/* Expense List Section */}
-        <IncomeList fetchSummary={fetchSummary} />
+        <IncomeList />
       </div>
     </div>
   );

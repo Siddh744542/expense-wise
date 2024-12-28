@@ -2,22 +2,55 @@
 import React, { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import axios from "axios";
+import { useQuery } from "@tanstack/react-query";
 import ExpenseSummary from "./ExpenseSummary";
 import CategoryChart from "./CategoryChart";
 import { useRouter, useSearchParams } from "next/navigation";
 import ExpenseList from "./ExpenseList";
 import formatMonth from "@/helper/formatMonth";
+import { Loader } from "../dashboardWrapper";
+
+export const fetchAvailableMonths = async (userId) => {
+  const response = await axios.get(
+    `${process.env.NEXT_PUBLIC_DOMAIN}/dashboard/getavailablemonths`,
+    {
+      params: { userId }
+    }
+  );
+  return response.data?.months;
+};
+
+const fetchSummaryData = async ({ userId, month }) => {
+  const response = await axios.get(`${process.env.NEXT_PUBLIC_DOMAIN}/expense/summary`, {
+    params: { userId, month }
+  });
+  return response.data;
+};
 
 function Expenses() {
   const { data: session, status } = useSession();
   const router = useRouter();
 
   const searchParams = useSearchParams();
-  const initialMonth = searchParams.get("month");
-  const [selectedMonth, setSelectedMonth] = useState(initialMonth);
+  const [selectedMonth, setSelectedMonth] = useState();
 
-  const [summaryData, setSummaryData] = useState();
-  const [availableMonths, setAvailableMonths] = useState();
+  useEffect(() => {
+    const initialMonth = searchParams.get("month");
+    setSelectedMonth(initialMonth);
+  }, [searchParams]);
+  // Fetch available months
+  const { data: availableMonths, isLoading: isLoadingMonths } = useQuery({
+    queryKey: ["availableMonths", session?.user?.id],
+    queryFn: () => fetchAvailableMonths(session?.user?.id),
+    enabled: !!session?.user?.id
+  });
+
+  // Fetch summary data
+  const { data: summaryData, isLoading: isLoadingSummary } = useQuery({
+    queryKey: ["expenseSummaryData", session?.user?.id, selectedMonth],
+    queryFn: () => fetchSummaryData({ userId: session?.user?.id, month: selectedMonth }),
+    enabled: !!session?.user?.id && !!selectedMonth
+  });
 
   const handleMonthChange = (e) => {
     const newMonth = e.target.value;
@@ -27,36 +60,9 @@ function Expenses() {
     router.push(`?${params.toString()}`, { shallow: true });
   };
 
-  const fetchAvailableMonth = async () => {
-    try {
-      const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_DOMAIN}/dashboard/getavailablemonths`,
-        {
-          params: { userId: session?.user.id }
-        }
-      );
-      setAvailableMonths(response.data?.months);
-    } catch (err) {
-      console.error(err);
-    }
-  };
-  const fetchSummary = async () => {
-    try {
-      const response = await axios.get(`${process.env.NEXT_PUBLIC_DOMAIN}/expense/summary`, {
-        params: { userId: session?.user.id, month: selectedMonth }
-      });
-      setSummaryData(response.data);
-    } catch (err) {}
-  };
-
-  useEffect(() => {
-    fetchAvailableMonth();
-  }, [session]);
-  useEffect(() => {
-    fetchSummary();
-  }, [session, selectedMonth]);
-
-  if (!summaryData) return <div>Loading...</div>;
+  if (isLoadingMonths || isLoadingSummary) {
+    return <Loader />;
+  }
 
   return (
     <div className=" pr-5">
@@ -107,7 +113,7 @@ function Expenses() {
           <CategoryChart summaryData={summaryData?.categoryExpenses} />
         </div>
         {/* Expense List Section */}
-        <ExpenseList fetchSummary={fetchSummary} />
+        <ExpenseList />
       </div>
     </div>
   );

@@ -1,6 +1,8 @@
 import mongoose from "mongoose";
 import MonthlyIncome from "../../models/monthlyIncome.js";
 import DailyIncome from "../../models/incomeModel.js";
+import { getIncomeSummaryData } from "./incomeController.js";
+import { getIncomeComparisonData } from "../../utils/getComparisonData.js";
 
 export const addIncomeSource = async (req, res) => {
   const { userId, source, month } = req.body;
@@ -123,58 +125,22 @@ export const updateIncomeSource = async (req, res) => {
     res.status(500).json({ message: "Internal server error." });
   }
 };
-export const getComparisonData = async (req, res) => {
+
+export const getSourceData = async (req, res) => {
   const { userId, month } = req.query;
 
   if (!userId || !month) {
     return res.status(400).json({ message: "User ID and month are required." });
   }
-
   try {
-    const thisMonthData = await MonthlyIncome.findOne({ userId, month });
-    const lastMonth = new Date(
-      new Date(month).setMonth(new Date(month).getMonth() - 1)
-    );
-    const lastMonthString = lastMonth.toISOString().slice(0, 7); // Format: 'YYYY-MM'
-
-    const lastMonthData = await MonthlyIncome.findOne({
-      userId,
-      month: lastMonthString,
+    const summaryData = await getIncomeSummaryData(userId, month);
+    const comparisonData = await getIncomeComparisonData(userId, month);
+    res.status(200).json({
+      summaryData: summaryData || [],
+      comparisonData: comparisonData || [],
     });
-
-    if (!lastMonthData) {
-      return res
-        .status(404)
-        .json({ message: "No data available for the last month." });
-    }
-
-    const comparisonData = [];
-    const categories = new Set();
-
-    thisMonthData?.sources.forEach((source) => {
-      categories.add(source.source);
-      comparisonData.push({
-        source: source.source,
-        lastMonth:
-          lastMonthData?.sources.find((item) => item.source === source.source)
-            ?.total || 0,
-        thisMonth: source.total,
-      });
-    });
-
-    lastMonthData.sources.forEach((source) => {
-      if (!categories.has(source.source)) {
-        comparisonData.push({
-          category: source.source,
-          lastMonth: source.total,
-          thisMonth: 0,
-        });
-      }
-    });
-
-    res.status(200).json(comparisonData);
-  } catch (err) {
-    console.error("Error fetching monthly income:", err);
-    res.status(500).json({ message: "Internal server error" });
+  } catch (error) {
+    console.error("Error fetching source data:", error);
+    res.status(500).json({ message: "Failed to fetch source data." });
   }
 };

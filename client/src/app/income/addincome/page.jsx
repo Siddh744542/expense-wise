@@ -5,15 +5,19 @@ import toast from "react-hot-toast";
 import { useRouter, useSearchParams } from "next/navigation";
 import axios from "axios";
 import Link from "next/link";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 const AddIncomePage = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
+
+  const queryClient = useQueryClient();
   const { data: session, status } = useSession();
   const [sourceData, setSourceData] = useState();
-  const [selectedMonth, setSelectedMonth] = useState(String(new Date().toISOString().slice(0, 7)));
+  const initialMonth = searchParams.get("month");
+  const [selectedMonth, setSelectedMonth] = useState(initialMonth);
 
-  const today = new Date().toISOString().split("T")[0]; // Get current date in 'YYYY-MM-DD' format
+  const today = new Date().toISOString().split("T")[0];
 
   const [formData, setFormData] = useState({
     date: today,
@@ -25,8 +29,8 @@ const AddIncomePage = () => {
   const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
-    fetchSummary();
-  }, [session]);
+    fetchSources();
+  }, [session, selectedMonth]);
 
   useEffect(() => {
     if (searchParams.size > 0 && searchParams.has("amount")) {
@@ -42,9 +46,9 @@ const AddIncomePage = () => {
     }
   }, [searchParams]);
 
-  const fetchSummary = async () => {
+  const fetchSources = async () => {
     try {
-      const response = await axios.get(`${process.env.NEXT_PUBLIC_DOMAIN}/income/summary`, {
+      const response = await axios.get(`${process.env.NEXT_PUBLIC_DOMAIN}/income/getsources`, {
         params: { userId: session?.user.id, month: selectedMonth }
       });
       setSourceData(response.data);
@@ -64,63 +68,49 @@ const AddIncomePage = () => {
     }
   };
 
+  // Add income mutation
+  const addMutation = useMutation({
+    mutationFn: async (data) => {
+      return axios.post(`${process.env.NEXT_PUBLIC_DOMAIN}/income/addincome`, data);
+    },
+    onSuccess: () => {
+      toast.success("Income added successfully!");
+      queryClient.invalidateQueries(["incomes", { page: 1 }]);
+      queryClient.invalidateQueries(["incomeSummaryData", session?.user?.id, selectedMonth]);
+      router.push("/income");
+    },
+    onError: () => {
+      toast.error("Failed to add income.");
+    }
+  });
+
+  // Update income mutation
+  const updateMutation = useMutation({
+    mutationFn: async (data) => {
+      return axios.put(`${process.env.NEXT_PUBLIC_DOMAIN}/income/updateincome`, data);
+    },
+    onSuccess: () => {
+      toast.success("Income updated successfully!");
+      queryClient.invalidateQueries(["incomes", { page: 1 }]);
+      queryClient.invalidateQueries(["incomeSummaryData", session?.user?.id, selectedMonth]);
+      router.push("/income");
+    },
+    onError: () => {
+      toast.error("Failed to update income.");
+    }
+  });
+
   const handleSubmit = (e) => {
     e.preventDefault();
+    const data = { userId: session?.user.id, ...formData };
+
     if (isEditing) {
-      handleUpdatation();
+      updateMutation.mutate({ ...data, incomeId: searchParams.get("id") });
     } else {
-      handleAdd();
+      addMutation.mutate(data);
     }
   };
-  const handleAdd = async () => {
-    try {
-      await toast
-        .promise(
-          axios.post(`${process.env.NEXT_PUBLIC_DOMAIN}/income/addincome`, {
-            userId: session?.user.id,
-            ...formData
-          }),
-          {
-            loading: "Adding income...",
-            success: "Income Added successfully!",
-            error: "Failed to Add income."
-          }
-        )
-        .then(() => {
-          setFormData({
-            date: today,
-            source: "",
-            amount: "",
-            description: ""
-          });
-          router.push("/income");
-        });
-    } catch (error) {
-      console.error("Error adding income:", error);
-    }
-  };
-  const handleUpdatation = async () => {
-    try {
-      await toast
-        .promise(
-          axios.put(`${process.env.NEXT_PUBLIC_DOMAIN}/income/updateincome`, {
-            userId: session?.user.id,
-            incomeId: searchParams.get("id"),
-            ...formData
-          }),
-          {
-            loading: "Updating income...",
-            success: "Income updated successfully!",
-            error: "Failed to update income."
-          }
-        )
-        .then(() => {
-          router.push("/income");
-        });
-    } catch (err) {
-      console.error("Error updating income:", err);
-    }
-  };
+
   return (
     <div className="!w-1/2 px- mx-auto mt-10 space-y-4">
       <h2 className="text-3xl font-semibold text-primary-700 text-center mb-4">
@@ -162,7 +152,7 @@ const AddIncomePage = () => {
                 <option value="" disabled>
                   Select Source
                 </option>
-                {sourceData?.sources.map((source) => (
+                {sourceData?.map((source) => (
                   <option key={source.source} value={source.source}>
                     {source.source}
                   </option>

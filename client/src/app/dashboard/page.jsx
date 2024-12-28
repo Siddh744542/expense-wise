@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import CategorySpendingRadialChart from "../category/(expense)/CategorySpendingRadialChart";
 import { useSession } from "next-auth/react";
 import axios from "axios";
@@ -9,18 +9,25 @@ import ExpenseByCategoryBarchart from "../category/(expense)/ExpenseByCategoryBa
 import CategorySpendingComparison from "../category/(expense)/CategorySpendingComparison";
 import { useRouter, useSearchParams } from "next/navigation";
 import formatMonth from "@/helper/formatMonth";
+import { fetchAvailableMonths } from "../expense/page";
+import { useQuery } from "@tanstack/react-query";
+import { Loader } from "../dashboardWrapper";
 
+export const fetchDashboardData = async (userId, month) => {
+  const response = await axios.get(`${process.env.NEXT_PUBLIC_DOMAIN}/dashboard`, {
+    params: { userId, month }
+  });
+  return response.data;
+};
 function Dashboard() {
   const { data: session, status } = useSession();
   const router = useRouter();
-  const [categoryData, setCategoryData] = useState();
-  const [incomeSummary, setIncomeSummary] = useState();
-
   const searchParams = useSearchParams();
-  const initialMonth = searchParams.get("month");
-  const [selectedMonth, setSelectedMonth] = useState(initialMonth);
+  const [selectedMonth, setSelectedMonth] = useState(null);
 
-  const [availableMonths, setAvailableMonths] = useState();
+  useEffect(() => {
+    setSelectedMonth(searchParams.get("month"));
+  }, [searchParams]);
 
   const handleMonthChange = (e) => {
     const newMonth = e.target.value;
@@ -29,45 +36,22 @@ function Dashboard() {
     params.set("month", newMonth);
     router.push(`?${params.toString()}`, { shallow: true });
   };
+  const { data: availableMonths, isLoading: isLoadingMonths } = useQuery({
+    queryKey: ["availableMonths", session?.user?.id],
+    queryFn: () => fetchAvailableMonths(session?.user?.id),
+    enabled: !!session?.user?.id
+  });
 
-  const fetchAvailableMonth = async () => {
-    try {
-      const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_DOMAIN}/dashboard/getavailablemonths`,
-        {
-          params: { userId: session?.user.id }
-        }
-      );
-      setAvailableMonths(response.data?.months);
-    } catch (err) {
-      console.error(err);
-    }
-  };
-  const fetchIncomeSummary = async () => {
-    try {
-      const response = await axios.get(`${process.env.NEXT_PUBLIC_DOMAIN}/income/summary`, {
-        params: { userId: session?.user.id, month: selectedMonth }
-      });
-      setIncomeSummary(response.data);
-    } catch (err) {}
-  };
-  const fetchExpenseCategory = async () => {
-    try {
-      const response = await axios.get(`${process.env.NEXT_PUBLIC_DOMAIN}/expense/summary`, {
-        params: { userId: session?.user.id, month: selectedMonth }
-      });
-      setCategoryData(response.data);
-    } catch (err) {}
-  };
+  const { data: dashbaordData, isLoading: isLoadingDashboardData } = useQuery({
+    queryKey: ["dashboardData", session?.user?.id, selectedMonth],
+    queryFn: () => fetchDashboardData(session?.user?.id, selectedMonth),
+    enabled: !!session?.user?.id && !!selectedMonth
+  });
 
-  useEffect(() => {
-    fetchIncomeSummary();
-    fetchExpenseCategory();
-  }, [session, selectedMonth]);
+  if (isLoadingMonths || isLoadingDashboardData) {
+    return <Loader />;
+  }
 
-  useEffect(() => {
-    fetchAvailableMonth();
-  }, [session]);
   return (
     <div className="pr-5">
       {/* header */}
@@ -101,23 +85,33 @@ function Dashboard() {
       </div>
       <div className="grid grid-cols-10 gap-6 py-4">
         <div className="col-span-10 md:col-span-3">
-          <MonthlyOverview expenseData={categoryData} incomeData={incomeSummary} />
+          <MonthlyOverview
+            expenseData={dashbaordData?.expenseData}
+            incomeData={dashbaordData?.incomeData}
+          />
         </div>
 
         <div className="col-span-10 md:col-span-3 bg-white p-6 shadow-md rounded-lg">
-          <TopThreeOverview expenseData={categoryData} incomeData={incomeSummary} />
+          <TopThreeOverview
+            expenseData={dashbaordData?.expenseData}
+            incomeData={dashbaordData?.incomeData}
+          />
         </div>
 
         <div className="h-full col-span-10 md:col-span-4">
-          <CategorySpendingRadialChart categoryData={categoryData?.categoryExpenses} />
+          <CategorySpendingRadialChart
+            categoryData={dashbaordData?.expenseData?.categoryExpenses}
+          />
         </div>
 
         <div className="h-full col-span-10 md:col-span-5">
-          <ExpenseByCategoryBarchart expenseCategoryData={categoryData?.categoryExpenses} />
+          <ExpenseByCategoryBarchart
+            expenseCategoryData={dashbaordData?.expenseData?.categoryExpenses}
+          />
         </div>
 
         <div className="col-span-10 md:col-span-5">
-          <CategorySpendingComparison selectedMonth={selectedMonth} />
+          <CategorySpendingComparison comparisonData={dashbaordData?.comparisonData} />
         </div>
       </div>
     </div>

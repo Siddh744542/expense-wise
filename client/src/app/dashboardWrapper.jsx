@@ -3,21 +3,31 @@ import { useState, Suspense, useEffect } from "react";
 import Sidebar from "./(components)/Sidebar";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
-const Loader = () => <>Loading...</>;
-const DashboardWrappper = ({ children }) => {
-  const [isSideBarCollapsed, setIsSideBarColapsed] = useState(false);
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
+export const Loader = () => (
+  <div className="flex items-center justify-center w-full h-screen">
+    <img src="/loader.svg" alt="Loading..." className="w-24 h-24" />
+  </div>
+);
+const DashboardWrapper = ({ children }) => {
+  const [isSideBarCollapsed, setIsSideBarCollapsed] = useState(false);
   const { data: session, status } = useSession();
-  const isVerified = status === "authenticated" ? true : false;
-  console.log(session);
   const router = useRouter();
   const searchParams = useSearchParams();
+
+  const queryClient = new QueryClient({
+    defaultOptions: { queries: { staleTime: 1000 * 60 * 2, retry: 2 } }
+  });
+
   useEffect(() => {
-    if ((status === "unauthenticated" || !session) && status !== "loading") {
+    if (status === "unauthenticated" || (!session && status !== "loading")) {
       router.push("/login");
     }
-  }, [status]);
+  }, [status, session, router]);
+
   useEffect(() => {
-    const currentMonth = new Date().toISOString().slice(0, 7); 
+    const currentMonth = new Date().toISOString().slice(0, 7);
     const month = searchParams.get("month");
 
     if (!month) {
@@ -25,23 +35,33 @@ const DashboardWrappper = ({ children }) => {
       params.set("month", currentMonth);
       router.replace(`?${params.toString()}`, { shallow: true });
     }
-  }, [searchParams]);
+  }, [searchParams, router]);
+
   const toggleSidebar = () => {
-    setIsSideBarColapsed(!isSideBarCollapsed);
+    setIsSideBarCollapsed((prev) => !prev);
   };
+
+  if (status === "loading") {
+    return <Loader />;
+  }
   return (
     <Suspense fallback={<Loader />}>
-      <div className={`flex w-full min-h-screen`}>
-        {isVerified && <Sidebar isCollapsed={isSideBarCollapsed} toggleSidebar={toggleSidebar} />}
-        <main
-          className={`flex flex-col w-full h-full ${isVerified && "py-4"} ${
-            isSideBarCollapsed ? "pl-24 md:pl-24" : "pl-72 md:pl-72"
-          }`}
-        >
-          {children}
-        </main>
-      </div>
+      <QueryClientProvider client={queryClient}>
+        <div className="flex w-full min-h-screen">
+          {status === "authenticated" && (
+            <Sidebar isCollapsed={isSideBarCollapsed} toggleSidebar={toggleSidebar} />
+          )}
+          <main
+            className={`flex flex-col w-full h-full ${
+              status === "authenticated" ? "py-4" : ""
+            } ${isSideBarCollapsed ? "pl-24 md:pl-24" : "pl-72 md:pl-72"}`}
+          >
+            {children}
+          </main>
+        </div>
+      </QueryClientProvider>
     </Suspense>
   );
 };
-export default DashboardWrappper;
+
+export default DashboardWrapper;

@@ -8,45 +8,37 @@ import ExpenseByCategoryBarchart from "./ExpenseByCategoryBarchart";
 import formatMonth from "@/helper/formatMonth";
 import CategorySpendingRadialChart from "./CategorySpendingRadialChart";
 import CategorySpendingComparison from "./CategorySpendingComparison";
+import { useQuery } from "@tanstack/react-query";
+import { fetchAvailableMonths } from "@/app/expense/page";
+import { Loader } from "@/app/dashboardWrapper";
+
+const fetchCategoryData = async (userId, month) => {
+  const response = await axios.get(`${process.env.NEXT_PUBLIC_DOMAIN}/category`, {
+    params: { userId, month }
+  });
+  return response.data;
+};
 function ExpenseCategory() {
   const { data: session, status } = useSession();
-
-  const searchParams = useSearchParams();
-  const initialMonth = searchParams.get("month");
-  const [selectedMonth, setSelectedMonth] = useState(initialMonth);
-
-  const [categoryData, setCategoryData] = useState();
-  const [availableMonths, setAvailableMonths] = useState();
   const router = useRouter();
-
-  const fetchAvailableMonth = async () => {
-    try {
-      const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_DOMAIN}/dashboard/getavailablemonths`,
-        {
-          params: { userId: session?.user.id }
-        }
-      );
-      setAvailableMonths(response.data?.months);
-    } catch (err) {
-      console.error(err);
-    }
-  };
-  const fetchCategory = async () => {
-    try {
-      const response = await axios.get(`${process.env.NEXT_PUBLIC_DOMAIN}/expense/summary`, {
-        params: { userId: session?.user.id, month: selectedMonth }
-      });
-      setCategoryData(response.data);
-    } catch (err) {}
-  };
+  const searchParams = useSearchParams();
+  const [selectedMonth, setSelectedMonth] = useState(null);
 
   useEffect(() => {
-    fetchAvailableMonth();
-  }, [session]);
-  useEffect(() => {
-    fetchCategory();
-  }, [session, selectedMonth]);
+    setSelectedMonth(searchParams.get("month"));
+  }, [searchParams]);
+
+  const { data: availableMonths, isLoading: isLoadingMonths } = useQuery({
+    queryKey: ["availableMonths", session?.user?.id],
+    queryFn: () => fetchAvailableMonths(session?.user?.id),
+    enabled: !!session?.user?.id
+  });
+
+  const { data: categoryData, isLoading: isLoadingCategory } = useQuery({
+    queryKey: ["categoryData", session?.user?.id, selectedMonth],
+    queryFn: () => fetchCategoryData(session?.user?.id, selectedMonth),
+    enabled: !!session?.user?.id && !!selectedMonth
+  });
 
   const handleMonthChange = (e) => {
     const newMonth = e.target.value;
@@ -55,6 +47,8 @@ function ExpenseCategory() {
     params.set("month", newMonth);
     router.push(`?${params.toString()}`, { shallow: true });
   };
+
+  if (isLoadingMonths || isLoadingCategory) return <Loader />;
   return (
     <div className="pr-4">
       <div className="flex justify-between items-center pb-3">
@@ -68,7 +62,7 @@ function ExpenseCategory() {
               id="date-filter"
               className="border rounded-md px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-primary"
               onChange={handleMonthChange}
-              value={selectedMonth}
+              value={selectedMonth || ""}
             >
               <option value="">Select Month</option>
               {availableMonths?.length > 0 ? (
@@ -94,21 +88,23 @@ function ExpenseCategory() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
         <div className="col-span-1 lg:col-span-2">
-          <Categories categoryData={categoryData} selectedMonth={selectedMonth} />
+          <Categories categoryData={categoryData?.summaryData} />
         </div>
 
         <div className="h-full col-span-1 lg:col-span-3 ">
-          <ExpenseByCategoryBarchart expenseCategoryData={categoryData?.categoryExpenses} />
+          <ExpenseByCategoryBarchart
+            expenseCategoryData={categoryData?.summaryData?.categoryExpenses}
+          />
         </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-4">
         <div className="h-full col-span-1 md:col-span-2 lg:col-span-2 ">
-          <CategorySpendingRadialChart categoryData={categoryData?.categoryExpenses} />
+          <CategorySpendingRadialChart categoryData={categoryData?.summaryData?.categoryExpenses} />
         </div>
 
         <div className="col-span-1 md:col-span-2 lg:col-span-2 ">
-          <CategorySpendingComparison selectedMonth={selectedMonth} />
+          <CategorySpendingComparison comparisonData={categoryData?.comparisonData} />
         </div>
       </div>
     </div>

@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@tanstack/react-query": "^5.62.8",
     "axios": "^1.7.7",
     "dotenv": "^16.4.5",
     "lucide-react": "^0.451.0",
@@ -21,6 +22,7 @@
     "recharts": "^2.13.0"
   },
   "devDependencies": {
+    "@tanstack/react-query-devtools": "^5.62.8",
     "eslint": "^8",
     "eslint-config-next": "14.2.6",
     "postcss": "^8",

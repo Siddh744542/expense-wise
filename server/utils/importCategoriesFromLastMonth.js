@@ -41,10 +41,7 @@ async function importCategoriesFromLastMonth(userId) {
     });
 
     await newMonthlyExpense.save();
-    return {
-      success: true,
-      message: "Categories and limits imported successfully.",
-    };
+    return newMonthlyExpense;
   } catch (error) {
     console.error("Error importing categories and limits:", error);
     return {

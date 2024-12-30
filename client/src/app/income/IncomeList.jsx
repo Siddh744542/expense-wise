@@ -5,89 +5,83 @@ import toast from "react-hot-toast";
 import { Pen, Trash2, Repeat, LogIn } from "lucide-react";
 import axios from "axios";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-function IncomeList({ fetchSummary }) {
-  const { data: session, status } = useSession();
-  const [incomeData, setIncomeData] = useState();
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState();
+const fetchIncomePaginated = async (page, userId) => {
+  return await axios
+    .get(`${process.env.NEXT_PUBLIC_DOMAIN}/income/getincome`, {
+      params: {
+        userId,
+        page
+      }
+    })
+    .then((res) => {
+      const hasNext = page < res.data.totalPages;
+      return {
+        ...res.data,
+        nextPage: hasNext ? page + 1 : undefined,
+        previousPage: page > 1 ? page - 1 : undefined
+      };
+    });
+};
 
+function IncomeList() {
+  const { data: session } = useSession();
+  const searchParams = useSearchParams();
+  const [page, setPage] = useState(1);
+  const queryClient = useQueryClient();
+  const [selectedMonth, setSelectedMonth] = useState(null);
   useEffect(() => {
-    fetchIncome();
-  }, [session]);
+    const initialMonth = searchParams.get("month");
+    setSelectedMonth(initialMonth);
+  }, [searchParams]);
+  // Fetch expenses with React Query
+  const { status, error, data } = useQuery({
+    queryKey: ["incomes", { page }],
+    queryFn: () => fetchIncomePaginated(page, session?.user.id),
+    keepPreviousData: true,
+    enabled: !!session?.user.id
+  });
 
-  const fetchIncome = async (page = 1) => {
-    try {
-      const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_DOMAIN}/income/getincome`,
-        {
-          params: {
-            userId: session?.user.id,
-            page: page,
-          },
-        }
-      );
-
-      setIncomeData(response.data.incomes);
-      setCurrentPage(response.data.currentPage);
-      setTotalPages(response.data.totalPages);
-    } catch (err) {
-      console.error("Error fetching Income:", err);
-    }
-  };
-
-  const handleDelete = async (incomeId) => {
-    toast
-      .promise(
-        axios.delete(`${process.env.NEXT_PUBLIC_DOMAIN}/income/deleteincome`, {
-          data: { userId: session?.user.id, incomeId: incomeId },
-        }),
-        {
-          loading: "Deleting income...",
-          success: "Income deleted successfully!",
-          error: "Failed to delete income.",
-        }
-      )
-      .then(() => {
-        fetchIncome();
-        fetchSummary();
-      })
-      .catch((err) => {
-        console.error("Error deleting income:", err);
+  // Delete income mutation
+  const deleteIncomeMutation = useMutation({
+    mutationFn: async (incomeId) => {
+      await axios.delete(`${process.env.NEXT_PUBLIC_DOMAIN}/income/deleteincome`, {
+        data: { userId: session?.user.id, incomeId: incomeId }
       });
-  };
-
-  const handleRepeat = async (income) => {
-    const today = new Date().toISOString().split("T")[0];
-    const repeatData = {
-      userId: session?.user.id,
-      date: today,
-      source: income.source,
-      amount: income.amount,
-      description: income.description,
-    };
-
-    try {
-      toast
-        .promise(
-          axios.post(
-            `${process.env.NEXT_PUBLIC_DOMAIN}/income/addincome`,
-            repeatData
-          ),
-          {
-            loading: "Repeating income...",
-            success: "Income repeated successfully!",
-            error: "Failed to repeat income.",
-          }
-        )
-        .then(() => {
-          fetchIncome();
-          fetchSummary();
-        });
-    } catch (err) {
-      console.error("Error repeating expense:", err);
+    },
+    onSuccess: () => {
+      toast.success("Income deleted successfully!");
+      queryClient.invalidateQueries(["incomes", { page }]);
+      queryClient.invalidateQueries(["incomeSummaryData", session?.user?.id, selectedMonth]);
+    },
+    onError: () => {
+      toast.error("Failed to delete income.");
     }
-  };
+  });
+  const repeatIncomeMutation = useMutation({
+    mutationFn: async (income) => {
+      const today = new Date().toISOString().split("T")[0];
+      const repeatData = {
+        userId: session?.user.id,
+        date: today,
+        source: income.source,
+        amount: income.amount,
+        description: income.description
+      };
+      await axios.post(`${process.env.NEXT_PUBLIC_DOMAIN}/income/addincome`, repeatData);
+    },
+
+    onSuccess: () => {
+      toast.success("Income repeated successfully!");
+      queryClient.invalidateQueries(["incomes", { page }]);
+      queryClient.invalidateQueries(["incomeSummaryData", session?.user?.id, selectedMonth]);
+    },
+    onError: () => {
+      toast.error("Failed to repeat income.");
+    }
+  });
 
   return (
     <div className="lg:col-span-3 bg-white p-6 rounded-lg shadow h-[690px] flex flex-col">
@@ -95,34 +89,24 @@ function IncomeList({ fetchSummary }) {
 
       {/* Scrollable List */}
       <ul className="space-y-3 flex-grow overflow-y-auto">
-        {incomeData?.map((income) => (
-          <li
-            key={income?._id}
-            className="flex justify-between items-center border-b pb-2"
-          >
+        {data?.incomes.map((income) => (
+          <li key={income?._id} className="flex justify-between items-center border-b pb-2">
             <div className="flex flex-col gap-1">
-              <span className="text-gray-800 font-medium">
-                {income?.source}
-              </span>
+              <span className="text-gray-800 font-medium">{income?.source}</span>
               <div className="flex items-center gap-2 text-sm text-gray-500">
                 <span>
                   {new Date(income?.date).toLocaleDateString("en-IN", {
                     day: "2-digit",
                     month: "short",
-                    year: "numeric",
+                    year: "numeric"
                   })}
                 </span>
-                |
-                <span className="italic text-gray-600">
-                  {income?.description}
-                </span>
+                |<span className="italic text-gray-600">{income?.description}</span>
               </div>
             </div>
 
             <div className="flex items-center gap-4">
-              <span className="text-lg font-bold text-gray-900">
-                ₹{income?.amount}
-              </span>
+              <span className="text-lg font-bold text-gray-900">₹{income?.amount}</span>
               <div className="flex items-center gap-1">
                 <Link
                   href={{
@@ -132,8 +116,8 @@ function IncomeList({ fetchSummary }) {
                       date: income.date,
                       source: income.source,
                       amount: income.amount,
-                      description: income.description,
-                    },
+                      description: income.description
+                    }
                   }}
                 >
                   <button className="p-1 rounded hover:bg-primary-300 hover:text-white transition-colors">
@@ -142,13 +126,13 @@ function IncomeList({ fetchSummary }) {
                 </Link>
                 <button
                   className="p-1 rounded hover:bg-red-400 hover:text-white transition-colors"
-                  onClick={() => handleDelete(income?._id)}
+                  onClick={() => deleteIncomeMutation.mutate(income?._id)}
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>
                 <button
                   className="p-1 rounded hover:bg-action-300 hover:text-white transition-colors"
-                  onClick={() => handleRepeat(income)}
+                  onClick={() => repeatIncomeMutation.mutate(income)}
                 >
                   <Repeat className="w-4 h-4" />
                 </button>
@@ -162,18 +146,18 @@ function IncomeList({ fetchSummary }) {
       <div className="flex justify-between mt-4 pt-4 border-t  bottom-0 bg-white">
         <button
           className="bg-gray-200 p-2 rounded hover:bg-gray-300 disabled:opacity-50"
-          onClick={() => fetchExpenses(currentPage - 1)}
-          disabled={currentPage === 1}
+          onClick={() => setPage(data.previousPage)}
+          disabled={data?.currentPage === 1}
         >
           Previous
         </button>
         <span className="text-gray-600">
-          Page {currentPage} of {totalPages}
+          Page {data?.currentPage} of {data?.totalPages}
         </span>
         <button
           className="bg-gray-200 p-2 rounded hover:bg-gray-300 disabled:opacity-50"
-          onClick={() => fetchExpenses(currentPage + 1)}
-          disabled={currentPage === totalPages}
+          onClick={() => setPage(data.nextPage)}
+          disabled={data?.currentPage === data?.totalPages}
         >
           Next
         </button>

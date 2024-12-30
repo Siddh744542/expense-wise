@@ -1,51 +1,48 @@
-import importCategoriesFromLastMonth from "../../helper/importCategoriesFromLastMonth.js";
+import importCategoriesFromLastMonth from "../../utils/importCategoriesFromLastMonth.js";
 import DailyExpense from "../../models/dailyExpense.js";
-
 import MonthlyExpense from "../../models/monthlyExpense.js";
 
-export const getSummary = async (req, res) => {
-  const { userId, month } = req.query;
+export const getExpenseSummaryData = async (userId, month) => {
   try {
     let monthlySummary = await MonthlyExpense.findOne({
       userId: userId,
       month,
     });
 
-    const availableMonths = await MonthlyExpense.distinct("month", { userId });
-
     if (!monthlySummary) {
-      const importResult = await importCategoriesFromLastMonth(userId);
-
-      if (importResult.success) {
-        monthlySummary = await MonthlyExpense.findOne({
-          userId: userId,
-          month,
-        });
-      } else {
-        return res.status(500).json({ message: importResult.message });
-      }
-    }
-
-    if (!monthlySummary) {
-      return res.json({
-        categoryExpenses: [],
-        totalExpenses: 0,
-        availableMonths,
-      });
+      monthlySummary = await importCategoriesFromLastMonth(userId);
     }
 
     const totalExpenses = monthlySummary.categoryExpenses.reduce(
       (sum, category) => sum + category.amount,
       0
     );
-    res.json({
-      totalExpenses,
-      categoryExpenses: monthlySummary.categoryExpenses,
-      availableMonths,
-    });
+    return {
+      totalExpenses: totalExpenses || 0,
+      categoryExpenses: monthlySummary.categoryExpenses || [],
+    };
   } catch (error) {
     console.error("Error fetching summary:", error);
-    res.status(500).json({ message: "Failed to fetch summary." });
+    throw new Error("Unable to fetch expense summary.");
+  }
+};
+export const getExpenseSummary = async (req, res) => {
+  const { userId, month } = req.query;
+
+  if (!userId || !month) {
+    return res.status(400).json({
+      message: "Both userId and month are required.",
+    });
+  }
+  try {
+    const summaryData = await getExpenseSummaryData(userId, month);
+    res.status(200).json(summaryData);
+  } catch (error) {
+    res.status(500).json({
+      message:
+        error.message ||
+        "An unexpected error occurred while fetching the summary.",
+    });
   }
 };
 

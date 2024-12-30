@@ -1,10 +1,12 @@
+"use client";
 import { Pen, Trash2, X } from "lucide-react";
 import Link from "next/link";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import toast from "react-hot-toast";
 import axios from "axios";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 const ConfirmDeleteModal = ({ isOpen, onClose, handleDelete }) => {
   if (!isOpen) return null;
@@ -21,9 +23,7 @@ const ConfirmDeleteModal = ({ isOpen, onClose, handleDelete }) => {
         </button>
 
         <h3 className="text-lg font-semibold mb-4">Delete Source</h3>
-        <p className="mb-4">
-          Do you want to delete all income for this Source as well?
-        </p>
+        <p className="mb-4">Do you want to delete all income for this Source as well?</p>
 
         <div className="flex justify-end space-x-4">
           <button
@@ -44,11 +44,17 @@ const ConfirmDeleteModal = ({ isOpen, onClose, handleDelete }) => {
   );
 };
 
-function SourceSummary({ summaryData, selectedMonth }) {
+function SourceSummary({ summaryData, refetch }) {
   const { data: session, status } = useSession();
+  const searchParams = useSearchParams();
+  const queryClient = useQueryClient();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedSource, setSelectedSource] = useState(null);
-  const router = useRouter();
+  const [selectedMonth, setSelectedMonth] = useState(null);
+
+  useEffect(() => {
+    setSelectedMonth(searchParams.get("month"));
+  }, [searchParams]);
 
   const openModal = (categoryId) => {
     setSelectedSource(categoryId);
@@ -60,39 +66,40 @@ function SourceSummary({ summaryData, selectedMonth }) {
     setSelectedSource(null);
   };
 
-  const handleDeleteCategory = async (deleteIncomes) => {
-    try {
-      await toast.promise(
-        axios.delete(`${process.env.NEXT_PUBLIC_DOMAIN}/incomesource/delete`, {
-          data: {
-            userId: session?.user.id,
-            sourceId: selectedSource,
-            deleteIncomes: deleteIncomes,
-            month: selectedMonth,
-          },
-        }),
-        {
-          loading: "Deleting source of Income...",
-          success: "Source of Income deleted successfully!",
-          error: "Failed to delete source of Income.",
+  const handleDeleteSource = (deleteIncomes) => {
+    deleteSource.mutate(deleteIncomes);
+  };
+
+  const deleteSource = useMutation({
+    mutationFn: async (deleteIncomes) => {
+      await axios.delete(`${process.env.NEXT_PUBLIC_DOMAIN}/incomesource/delete`, {
+        data: {
+          userId: session?.user.id,
+          sourceId: selectedSource,
+          deleteIncomes: deleteIncomes,
+          month: selectedMonth
         }
-      );
+      });
+    },
+    onSuccess: async () => {
+      toast.success("Income Source deleted successfully!");
+      await refetch();
       closeModal();
-      router.reload();
-    } catch (error) {
-      console.error("Error deleting source of Income:", error);
+      // queryClient.invalidateQueries(["sourceData"]);
+    },
+    onError: () => {
+      toast.error("Failed to delete Income Source.");
       closeModal();
     }
-  };
+  });
+
   return (
     <div className="bg-white p-6 rounded-lg shadow h-full">
       <div className="space-y-2">
         <div className="space-y-2 pb-1">
           <div className="text-primary-500 font-semibold text-xl flex justify-between">
             Total Income:
-            <div className="text-action font-bold text-2xl">
-              ₹{summaryData?.totalIncome || 0}
-            </div>
+            <div className="text-action font-bold text-2xl">₹{summaryData?.totalIncome || 0}</div>
           </div>
         </div>
 
@@ -113,8 +120,8 @@ function SourceSummary({ summaryData, selectedMonth }) {
                       query: {
                         id: source._id,
                         source: source.source,
-                        month: selectedMonth,
-                      },
+                        month: selectedMonth
+                      }
                     }}
                   >
                     <button className="p-1 rounded hover:bg-primary-300 hover:text-white transition-colors">
@@ -142,7 +149,7 @@ function SourceSummary({ summaryData, selectedMonth }) {
       <ConfirmDeleteModal
         isOpen={isModalOpen}
         onClose={closeModal}
-        handleDelete={handleDeleteCategory}
+        handleDelete={handleDeleteSource}
       />
       {/* {error && <p className="text-red-500">{error}</p>} */}
     </div>

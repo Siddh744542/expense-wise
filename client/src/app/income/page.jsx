@@ -2,43 +2,59 @@
 import React, { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import axios from "axios";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import IncomeSummary from "./IncomeSummary";
 import SourceChart from "./SourceChart";
 import IncomeList from "./IncomeList";
 import formatMonth from "@/helper/formatMonth";
+import { useQuery } from "@tanstack/react-query";
+import { fetchAvailableMonths } from "../expense/page";
+import { Loader } from "../dashboardWrapper";
+
+const fetchSummary = async ({ userId, month }) => {
+  const response = await axios.get(`${process.env.NEXT_PUBLIC_DOMAIN}/income/summary`, {
+    params: { userId, month }
+  });
+  return response.data;
+};
 
 function Income() {
   const { data: session, status } = useSession();
-  const [summaryData, setSummaryData] = useState();
-  const [selectedMonth, setSelectedMonth] = useState(
-    String(new Date().toISOString().slice(0, 7))
-  );
+  const searchParams = useSearchParams();
+  const [selectedMonth, setSelectedMonth] = useState(null);
   const router = useRouter();
 
+  useEffect(() => {
+    const initialMonth = searchParams.get("month");
+    setSelectedMonth(initialMonth);
+  }, [searchParams]);
+
   const handleMonthChange = (e) => {
-    setSelectedMonth(e.target.value);
-  };
-  const fetchSummary = async () => {
-    try {
-      const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_DOMAIN}/income/summary`,
-        {
-          params: { userId: session?.user.id, month: selectedMonth },
-        }
-      );
-      setSummaryData(response.data);
-    } catch (err) {}
+    const newMonth = e.target.value;
+    setSelectedMonth(newMonth);
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("month", newMonth);
+    router.push(`?${params.toString()}`, { shallow: true });
   };
 
-  useEffect(() => {
-    fetchSummary();
-  }, [session, selectedMonth]);
-  if (!summaryData) return <div>Loading...</div>;
+  const { data: availableMonths, isLoading: isLoadingMonths } = useQuery({
+    queryKey: ["availableMonths", session?.user?.id],
+    queryFn: () => fetchAvailableMonths(session?.user?.id),
+    enabled: !!session?.user?.id
+  });
+
+  // Fetch summary data
+  const { data: summaryData, isLoading: isLoadingSummary } = useQuery({
+    queryKey: ["incomeSummaryData", session?.user?.id, selectedMonth],
+    queryFn: () => fetchSummary({ userId: session?.user?.id, month: selectedMonth }),
+    enabled: !!session?.user?.id && !!selectedMonth
+  });
+
+  if (isLoadingMonths || isLoadingSummary) return <Loader />;
   return (
     <div className="pr-5">
       {/* header */}
-      <div className="flex justify-between items-center py-6">
+      <div className="flex justify-between items-center py-2">
         <h1 className="text-3xl font-semibold text-primary">Income Overview</h1>
 
         <div className="flex space-x-4">
@@ -51,11 +67,11 @@ function Income() {
               id="date-filter"
               className="border rounded-md px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-primary"
               onChange={handleMonthChange}
-              value={selectedMonth}
+              value={selectedMonth || ""}
             >
               <option value="">Select Month</option>
-              {summaryData?.availableMonths?.length > 0 ? (
-                summaryData.availableMonths.map((month) => (
+              {availableMonths?.length > 0 ? (
+                availableMonths?.map((month) => (
                   <option key={month} value={month}>
                     {formatMonth(month)}
                   </option>
@@ -76,7 +92,7 @@ function Income() {
       </div>
 
       {/* Grid Layout */}
-      <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 py-4">
         <div className="lg:col-span-2 grid gap-6">
           {/* Income Summary Section */}
           <IncomeSummary summaryData={summaryData} />
@@ -84,7 +100,7 @@ function Income() {
           <SourceChart summaryData={summaryData?.sources} />
         </div>
         {/* Expense List Section */}
-        <IncomeList fetchSummary={fetchSummary} />
+        <IncomeList />
       </div>
     </div>
   );

@@ -1,4 +1,4 @@
-import { importLastMonthIncomeSources } from "../../helper/importLastMonthIncomeSource.js";
+import { importLastMonthIncomeSources } from "../../utils/importLastMonthIncomeSource.js";
 import DailyIncome from "../../models/incomeModel.js";
 import MonthlyIncome from "../../models/monthlyIncome.js";
 
@@ -58,30 +58,52 @@ export const addIncome = async (req, res) => {
   }
 };
 
-export const getSummary = async (req, res) => {
+export const getIncomeSummary = async (req, res) => {
   const { userId, month } = req.query;
 
-  try {
-    let monthlySummary = await MonthlyIncome.findOne({ userId, month });
-    if (!monthlySummary) {
-      monthlySummary = await importLastMonthIncomeSources(userId, month);
-    }
-    const availableMonths = await MonthlyIncome.distinct("month", { userId });
-
-    if (!monthlySummary) {
-      return res.json({ sources: [], totalIncome: 0, availableMonths });
-    }
-    res.json({
-      totalIncome: monthlySummary.totalIncome,
-      sources: monthlySummary.sources,
-      availableMonths,
+  if (!userId || !month) {
+    return res.status(400).json({
+      message: "Both userId and month are required.",
     });
+  }
+
+  try {
+    const incomeSummaryData = await getIncomeSummaryData(userId, month);
+    res.status(200).json(incomeSummaryData);
   } catch (error) {
-    console.error("Error fetching summary:", error);
-    res.status(500).json({ message: "Failed to fetch summary." });
+    res.status(500).json({
+      message:
+        error.message ||
+        "An unexpected error occurred while fetching the income summary.",
+    });
   }
 };
 
+export const getSources = async (req, res) => {
+  const { userId, month } = req.query;
+
+  try {
+    if (!userId || !month) {
+      return res
+        .status(400)
+        .json({ message: "userId and month are required." });
+    }
+
+    const monthlyIncome = await MonthlyIncome.findOne(
+      { userId, month },
+      { sources: 1, _id: 0 }
+    );
+
+    if (!monthlyIncome) {
+      return res
+        .status(404)
+        .json({ message: "No data found for the given user and month." });
+    }
+    res.status(200).json(monthlyIncome.sources);
+  } catch (error) {
+    res.status(500).json({ message: "Failed to fetch sources.", error });
+  }
+};
 export const getIncome = async (req, res) => {
   try {
     const { userId } = req.query;
@@ -249,5 +271,27 @@ export const updateIncome = async (req, res) => {
       .json({ message: "Income updated successfully", updatedIncome });
   } catch (error) {
     res.status(500).json({ message: "Error updating income", error });
+  }
+};
+
+export const getIncomeSummaryData = async (userId, month) => {
+  try {
+    let monthlySummary = await MonthlyIncome.findOne({ userId, month });
+
+    if (!monthlySummary) {
+      monthlySummary = await importLastMonthIncomeSources(userId, month);
+    }
+
+    if (!monthlySummary) {
+      return { sources: [], totalIncome: 0 };
+    }
+
+    return {
+      totalIncome: monthlySummary.totalIncome || 0,
+      sources: monthlySummary.sources || [],
+    };
+  } catch (error) {
+    console.error("Error fetching income summary data:", error);
+    throw new Error("Unable to fetch income summary.");
   }
 };

@@ -1,6 +1,8 @@
 import MonthlyExpense from "../../models/monthlyExpense.js";
 import DailyExpense from "../../models/dailyExpense.js";
 import mongoose from "mongoose";
+import { getExpenseSummaryData } from "./expenseController.js";
+import { getExpenseComparisonData } from "../../utils/getComparisonData.js";
 
 export const addcategory = async (req, res) => {
   const { userId, category, limit, month } = req.body;
@@ -127,7 +129,8 @@ export const deleteCategory = async (req, res) => {
     return res.status(500).json({ message: "Internal server error" });
   }
 };
-export const getComparisonData = async (req, res) => {
+
+export const getCategoryData = async (req, res) => {
   const { userId, month } = req.query;
 
   if (!userId || !month) {
@@ -135,51 +138,14 @@ export const getComparisonData = async (req, res) => {
   }
 
   try {
-    const thisMonthData = await MonthlyExpense.findOne({ userId, month });
-    const lastMonth = new Date(
-      new Date(month).setMonth(new Date(month).getMonth() - 1)
-    );
-    const lastMonthString = lastMonth.toISOString().slice(0, 7); // Format: 'YYYY-MM'
-
-    const lastMonthData = await MonthlyExpense.findOne({
-      userId,
-      month: lastMonthString,
+    const summaryData = await getExpenseSummaryData(userId, month);
+    const comparisonData = await getExpenseComparisonData(userId, month);
+    res.status(200).json({
+      summaryData: summaryData || [],
+      comparisonData: comparisonData || [],
     });
-
-    if (!lastMonthData) {
-      return res
-        .status(404)
-        .json({ message: "No data available for the last month." });
-    }
-
-    const comparisonData = [];
-    const categories = new Set();
-
-    thisMonthData?.categoryExpenses.forEach((expense) => {
-      categories.add(expense.category);
-      comparisonData.push({
-        category: expense.category,
-        lastMonth:
-          lastMonthData?.categoryExpenses.find(
-            (item) => item.category === expense.category
-          )?.amount || 0,
-        thisMonth: expense.amount,
-      });
-    });
-
-    lastMonthData.categoryExpenses.forEach((expense) => {
-      if (!categories.has(expense.category)) {
-        comparisonData.push({
-          category: expense.category,
-          lastMonth: expense.amount,
-          thisMonth: 0,
-        });
-      }
-    });
-
-    res.status(200).json(comparisonData);
-  } catch (err) {
-    console.error("Error fetching monthly expenses:", err);
-    res.status(500).json({ message: "Internal server error" });
+  } catch (error) {
+    console.error("Error fetching category data:", error);
+    res.status(500).json({ message: "Failed to fetch category data." });
   }
 };

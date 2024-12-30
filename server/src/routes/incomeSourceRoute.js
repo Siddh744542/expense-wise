@@ -3,12 +3,12 @@ import {
   addIncomeSource,
   deleteIncomeSource,
   updateIncomeSource,
-  getComparisonData,
+  getSourceData,
 } from "../controllers/incomeSourceController.js";
 
 const router = Router();
 
-router.get("/getcomparisondata", getComparisonData);
+router.get("/", getSourceData);
 router.post("/add", addIncomeSource);
 router.put("/update", updateIncomeSource);
 router.delete("/delete", deleteIncomeSource);

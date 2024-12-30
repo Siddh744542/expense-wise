@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import Link from "next/link";
-import { useRouter, usePathname } from "next/navigation";
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
 import {
   LayoutDashboard,
@@ -17,9 +17,16 @@ import {
 
 function SidebarLink({ label, Icon, href, isCollapsed }) {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const hrefWithParams = {
+    pathname: href,
+    query: {
+      month: searchParams.get("month")
+    }
+  };
   const isActive = pathname == href || (pathname === "/" && href === "/dashboard");
   return (
-    <Link href={href} className="flex">
+    <Link href={hrefWithParams} className="flex">
       <div className={`${isActive ? "bg-primary" : "bg-white"} w-1`}></div>
       <div
         className={`flex items-center p-3 px-5 w-full transition-all duration-300 ${
@@ -68,7 +75,7 @@ function Sidebar({ isCollapsed, toggleSidebar }) {
       {/* Collapse/Expand Button */}
       <button
         onClick={toggleSidebar}
-        className="absolute top-4 -right-4 bg-white border border-gray-300 rounded-full p-1 shadow-md focus:outline-none hover:bg-gray-100 transition-all duration-300 z-50"
+        className="absolute top-4 -right-4 bg-white border border-gray-300 rounded-full p-0.5 shadow-md focus:outline-none hover:bg-gray-100 transition-all duration-300 z-50"
       >
         {isCollapsed ? (
           <ChevronRight size={24} className="text-gray-500" />
@@ -78,7 +85,7 @@ function Sidebar({ isCollapsed, toggleSidebar }) {
       </button>
 
       {/* Links */}
-      <div className="flex-grow mt-4">
+      <div className="flex-grow">
         <SidebarLink
           label="Dashboard"
           Icon={LayoutDashboard}

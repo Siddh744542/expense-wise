@@ -4,25 +4,28 @@ import { useSession } from "next-auth/react";
 import toast from "react-hot-toast";
 import { useRouter, useSearchParams } from "next/navigation";
 import axios from "axios";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 const AddCategoryForm = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { data: session } = useSession();
+  const queryClient = useQueryClient();
   const [isEditing, setIsEditing] = useState(false);
-
   const [formData, setFormData] = useState({
     category: "",
     limit: "",
-    month: "",
+    month: ""
   });
+  const [selectedMonth, setSelectedMonth] = useState(null);
 
   useEffect(() => {
-    if (searchParams.size > 0) {
+    setSelectedMonth(searchParams.get("month"));
+    if (searchParams.size > 0 && searchParams.has("category")) {
       setFormData({
         category: searchParams.get("category") || "",
         limit: searchParams.get("limit") || "",
-        month: searchParams.get("month") || "",
+        month: searchParams.get("month") || ""
       });
       setIsEditing(true);
     } else {
@@ -34,69 +37,48 @@ const AddCategoryForm = () => {
     const { name, value } = e.target;
     setFormData({
       ...formData,
-      [name]: value,
+      [name]: value
     });
   };
+
+  const AddMutation = useMutation({
+    mutationFn: async (data) => {
+      await axios.post(`${process.env.NEXT_PUBLIC_DOMAIN}/category/addcategory`, data);
+    },
+    onSuccess: () => {
+      toast.success("Category added successfully!");
+      queryClient.invalidateQueries(["categoryData", session?.user?.id, selectedMonth]);
+      router.push("/category");
+    },
+    onError: () => {
+      toast.error("Failed to add Category.");
+    }
+  });
+
+  const UpdateMutation = useMutation({
+    mutationFn: async (data) => {
+      await axios.put(`${process.env.NEXT_PUBLIC_DOMAIN}/category/updatecategory`, data);
+    },
+    onSuccess: () => {
+      toast.success("Category updated successfully!");
+      queryClient.invalidateQueries(["categoryData", session?.user?.id, selectedMonth]);
+      router.push("/category");
+    },
+    onError: () => {
+      toast.error("Failed to update category.");
+    }
+  });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (isEditing) {
-      handleUpdate();
+      UpdateMutation.mutate({
+        userId: session?.user.id,
+        categoryId: searchParams.get("id"),
+        ...formData
+      });
     } else {
-      handleAdd();
-    }
-  };
-
-  const handleAdd = async () => {
-    try {
-      await toast
-        .promise(
-          axios.post(`${process.env.NEXT_PUBLIC_DOMAIN}/category/addcategory`, {
-            userId: session?.user.id,
-            ...formData,
-          }),
-          {
-            loading: "Adding category...",
-            success: "Category added successfully!",
-            error: "Failed to add category.",
-          }
-        )
-        .then(() => {
-          setFormData({
-            category: "",
-            limit: "",
-            month: "",
-          });
-          router.push("/category");
-        });
-    } catch (error) {
-      console.error("Error adding category:", error);
-    }
-  };
-
-  const handleUpdate = async () => {
-    try {
-      await toast
-        .promise(
-          axios.put(
-            `${process.env.NEXT_PUBLIC_DOMAIN}/category/updatecategory`,
-            {
-              userId: session?.user.id,
-              categoryId: searchParams.get("id"),
-              ...formData,
-            }
-          ),
-          {
-            loading: "Updating category...",
-            success: "Category updated successfully!",
-            error: "Failed to update category.",
-          }
-        )
-        .then(() => {
-          router.push("/category");
-        });
-    } catch (error) {
-      console.error("Error updating category:", error);
+      AddMutation.mutate({ ...formData, userId: session?.user.id });
     }
   };
 

@@ -1,3 +1,4 @@
+"use client";
 import React, { useState, useEffect } from "react";
 import { Pen, Trash2, X } from "lucide-react";
 import Link from "next/link";
@@ -61,8 +62,8 @@ const ConfirmDeleteModal = ({ isOpen, onClose, handleDelete }) => {
     </div>
   );
 };
-function Categories({ categoryData }) {
-  const { data: session, status } = useSession();
+function Categories({ categoryData, refetch }) {
+  const { data: session } = useSession();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const searchParams = useSearchParams();
   const [selectedMonth, setSelectedMonth] = useState(null);
@@ -97,10 +98,13 @@ function Categories({ categoryData }) {
         }
       });
     },
-    onSuccess: () => {
+    onSuccess: async () => {
       toast.success("Category deleted successfully!");
+      console.log("session id ", session?.user.id);
+      console.log("selected month ", selectedMonth);
+      await refetch();
+      //await queryClient.invalidateQueries(["categoryData"]);
       closeModal();
-      queryClient.invalidateQueries(["categoryData", session?.user?.id, selectedMonth]);
     },
     onError: () => {
       toast.error("Failed to delete category.");

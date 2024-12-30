@@ -35,7 +35,11 @@ function IncomeSource() {
     enabled: !!session?.user?.id
   });
 
-  const { data: IncomeSourceData, isLoading: isLoadingSource } = useQuery({
+  const {
+    data: IncomeSourceData,
+    isLoading: isLoadingSource,
+    refetch
+  } = useQuery({
     queryKey: ["sourceData", session?.user?.id, selectedMonth],
     queryFn: () => fetchIncomeSourceData(session?.user?.id, selectedMonth),
     enabled: !!session?.user?.id && !!selectedMonth
@@ -88,7 +92,7 @@ function IncomeSource() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 ">
         <div className="col-span-1 shadow-md lg:col-span-2">
-          <SourceSummary summaryData={IncomeSourceData?.summaryData} />
+          <SourceSummary summaryData={IncomeSourceData?.summaryData} refetch={refetch} />
         </div>
 
         <div className="h-full col-span-1 lg:col-span-3 bg-white p-4 shadow-md rounded-lg">

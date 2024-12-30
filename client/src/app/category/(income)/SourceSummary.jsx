@@ -1,3 +1,4 @@
+"use client";
 import { Pen, Trash2, X } from "lucide-react";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
@@ -43,7 +44,7 @@ const ConfirmDeleteModal = ({ isOpen, onClose, handleDelete }) => {
   );
 };
 
-function SourceSummary({ summaryData }) {
+function SourceSummary({ summaryData, refetch }) {
   const { data: session, status } = useSession();
   const searchParams = useSearchParams();
   const queryClient = useQueryClient();
@@ -80,10 +81,11 @@ function SourceSummary({ summaryData }) {
         }
       });
     },
-    onSuccess: () => {
+    onSuccess: async () => {
       toast.success("Income Source deleted successfully!");
+      await refetch();
       closeModal();
-      queryClient.invalidateQueries(["sourceData", session?.user?.id, selectedMonth]);
+      // queryClient.invalidateQueries(["sourceData"]);
     },
     onError: () => {
       toast.error("Failed to delete Income Source.");

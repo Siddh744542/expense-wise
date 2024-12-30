@@ -34,7 +34,11 @@ function ExpenseCategory() {
     enabled: !!session?.user?.id
   });
 
-  const { data: categoryData, isLoading: isLoadingCategory } = useQuery({
+  const {
+    data: categoryData,
+    isLoading: isLoadingCategory,
+    refetch
+  } = useQuery({
     queryKey: ["categoryData", session?.user?.id, selectedMonth],
     queryFn: () => fetchCategoryData(session?.user?.id, selectedMonth),
     enabled: !!session?.user?.id && !!selectedMonth
@@ -88,7 +92,7 @@ function ExpenseCategory() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
         <div className="col-span-1 lg:col-span-2">
-          <Categories categoryData={categoryData?.summaryData} />
+          <Categories categoryData={categoryData?.summaryData} refetch={refetch} />
         </div>
 
         <div className="h-full col-span-1 lg:col-span-3 ">

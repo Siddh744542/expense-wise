@@ -45,22 +45,20 @@ const DashboardWrapper = ({ children }) => {
     return <Loader />;
   }
   return (
-    <Suspense fallback={<Loader />}>
-      <QueryClientProvider client={queryClient}>
-        <div className="flex w-full min-h-screen">
-          {status === "authenticated" && (
-            <Sidebar isCollapsed={isSideBarCollapsed} toggleSidebar={toggleSidebar} />
-          )}
-          <main
-            className={`flex flex-col w-full h-full ${
-              status === "authenticated" ? "py-4" : ""
-            } ${isSideBarCollapsed ? "pl-24 md:pl-24" : "pl-72 md:pl-72"}`}
-          >
-            {children}
-          </main>
-        </div>
-      </QueryClientProvider>
-    </Suspense>
+    <QueryClientProvider client={queryClient}>
+      <div className="flex w-full min-h-screen">
+        {status === "authenticated" && (
+          <Sidebar isCollapsed={isSideBarCollapsed} toggleSidebar={toggleSidebar} />
+        )}
+        <main
+          className={`flex flex-col w-full h-full ${
+            status === "authenticated" ? "py-4" : ""
+          } ${isSideBarCollapsed ? "pl-24 md:pl-24" : "pl-72 md:pl-72"}`}
+        >
+          {children}
+        </main>
+      </div>
+    </QueryClientProvider>
   );
 };
 

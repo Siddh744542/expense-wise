@@ -44,7 +44,7 @@ const MonthlyOverview = ({ expenseData, incomeData }) => {
   const { totalExpenses, mostSpentCategory, totalIncome, highestIncomeSource, savings } =
     formatData(expenseData, incomeData);
   return (
-    <div className="h-full flex flex-col gap-2 bg-white p-6 shadow-md rounded-lg h-fit-content">
+    <div className="h-full flex flex-col gap-2 bg-white p-5 shadow-md rounded-lg h-fit-content">
       <h2 className="text-xl font-semibold text-primary-500 mb-2">Monthly Overview</h2>
       <div className="flex flex-col gap-0.5">
         <div className="flex justify-between items-center">

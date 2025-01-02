@@ -31,10 +31,10 @@ const TopThreeOverview = ({ expenseData, incomeData }) => {
   const { topExpenseCategories, topIncomeSources } = formatTopThreeData(expenseData, incomeData);
 
   return (
-    <div className="flex flex-col gap-2 bg-white p-6 shadow-md rounded-lg h-fit-content">
+    <div className="flex flex-col gap-2 bg-white p-5 shadow-md rounded-lg h-full">
       <h2 className="text-xl font-semibold text-primary-500">Top Categories & Sources</h2>
       {/* Top 3 Expense Categories */}
-      <div className="">
+      <div className="flex flex-col">
         <h3 className="text-sm font-medium text-red-500">Top Expense Categories</h3>
         <div className="flex flex-col gap-0.5">
           {topExpenseCategories.map((category, index) => (
@@ -52,7 +52,7 @@ const TopThreeOverview = ({ expenseData, incomeData }) => {
       <hr className="border-gray-300" />
 
       {/* Top 3 Income Sources */}
-      <div className="">
+      <div className=" flex flex-col">
         <h3 className="text-blue-500 text-sm">Top Income Sources</h3>
         <div className="flex flex-col gap-0.5">
           {topIncomeSources.map((source, index) => (

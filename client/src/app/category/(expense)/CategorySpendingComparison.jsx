@@ -5,29 +5,29 @@ const CategorySpendingComparison = ({ comparisonData }) => {
   const [error, setError] = useState(null);
 
   return (
-    <div className="bg-white p-6 shadow-md rounded-lg">
-      <div className="mb-3">
+    <div className="bg-white p-5 shadow-md rounded-lg">
+      <div className="mb-2">
         <h2 className="text-xl text-primary-500 font-semibold">Category Comparison</h2>
         <p className="text-sm text-gray-400">This Month vs Last Month</p>
       </div>
       {error && <p className="text-red-500 mb-4">{error}</p>}
       {comparisonData?.map((item, index) => (
         <div key={index}>
-          <div className="flex justify-between items-center mb-2">
+          <div className="flex justify-between items-center mb-">
             <div>
-              <h3 className="text-md text-gray-700 font-semibold">{item.category}</h3>
-              <p className="text-gray-500">Last month: ₹{item.lastMonth}</p>
+              <h3 className="text-sm text-gray-700 font-semibold">{item.category}</h3>
+              <p className="text-gray-500 text-sm">Last month: ₹{item.lastMonth}</p>
             </div>
 
             <div className="text-right">
-              <p className="text-lg font-bold">₹{item.thisMonth}</p>
+              <p className="text-sm font-bold">₹{item.thisMonth}</p>
               <div
                 className={`flex items-center justify-end ${
                   item.thisMonth >= item.lastMonth ? "text-green-500" : "text-red-500"
                 }`}
               >
                 {item.thisMonth >= item.lastMonth ? <ArrowUp size={16} /> : <ArrowDown size={16} />}
-                <span className="ml-1">
+                <span className="ml-1 text-xs">
                   {Math.abs(((item.thisMonth - item.lastMonth) / item.lastMonth) * 100).toFixed(2)}%
                 </span>
               </div>

@@ -19,46 +19,39 @@ function Category() {
   return (
     <div className="pr-5">
       <div className="flex flex-col items-center">
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center gap-4">
           <span
-            className={`cursor-pointer text-lg font-medium ${
+            className={`cursor-pointer text-base font-medium ${
               isExpense ? "text-primary-600 font-semibold" : "text-gray-500"
             }`}
           >
             Expense
           </span>
           <div className="relative">
-            <input
-              type="checkbox"
-              id="toggle"
-              className="hidden"
-              onChange={toggleCategory}
-            />
+            <input type="checkbox" id="toggle" className="hidden" onChange={toggleCategory} />
             <label
               htmlFor="toggle"
-              className={`flex items-center justify-between w-16 h-8 bg-primary-300 rounded-full p-1 cursor-pointer transition-all duration-300 ${
+              className={`flex items-center justify-between w-14 h-7 bg-primary-300 rounded-full p-1 cursor-pointer transition-all duration-300 ${
                 isExpense ? "justify-start" : "justify-end"
               }`}
             >
               <span
-                className={`w-6 h-6 rounded-full bg-white shadow-md transition-transform duration-300 ${
-                  isExpense ? "" : "transform translate-x-8"
+                className={`w-5 h-5 rounded-full bg-white shadow-md transition-transform duration-300 ${
+                  isExpense ? "" : "transform translate-x-7"
                 }`}
               ></span>
             </label>
           </div>
           <span
-            className={`cursor-pointer text-lg font-medium ${
+            className={`cursor-pointer text-base font-medium ${
               isExpense ? "text-gray-600" : "text-primary-600 font-semibold"
             }`}
           >
             Income
           </span>
         </div>
-        <div className=" w-full">
-          {isExpense ? <ExpenseCategory /> : <IncomeSource />}
-        </div>
       </div>
+      <div className="w-full">{isExpense ? <ExpenseCategory /> : <IncomeSource />}</div>
     </div>
   );
 }

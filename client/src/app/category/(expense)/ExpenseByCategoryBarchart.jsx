@@ -15,14 +15,16 @@ function ExpenseByCategoryBarchart({ expenseCategoryData }) {
   return (
     <div className="h-full bg-white p-4 shadow-md rounded-lg">
       <h2 className="text-xl text-primary font-semibold pb-2 px-2">Monthly Expenses by Category</h2>
-      <ResponsiveContainer width="100%" height={240}>
-        <BarChart data={aggregatedData}>
-          <XAxis dataKey="name" />
-          <YAxis />
-          <Tooltip />
-          <Bar dataKey="value" />
-        </BarChart>
-      </ResponsiveContainer>
+      <div className={`flex-grow h-60`}>
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart data={aggregatedData}>
+            <XAxis dataKey="name" />
+            <YAxis />
+            <Tooltip />
+            <Bar dataKey="value" />
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
     </div>
   );
 }

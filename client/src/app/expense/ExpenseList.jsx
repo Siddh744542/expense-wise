@@ -89,7 +89,7 @@ function ExpenseList() {
   if (status === "error") return <h1>{JSON.stringify(error)}</h1>;
 
   return (
-    <div className="flex flex-col gap-3 bg-white p-5 rounded-lg shadow h-full flex flex-col">
+    <div className="flex flex-col gap-3 bg-white p-5 rounded-lg shadow h-full">
       <h2 className="text-xl font-semibold text-primary">Expense List</h2>
 
       <ul className="flex flex-col gap-1.5 flex-grow overflow-y-auto">

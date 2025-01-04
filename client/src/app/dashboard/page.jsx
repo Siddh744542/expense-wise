@@ -57,7 +57,7 @@ function Dashboard() {
       {/* header */}
       <div className="flex justify-between items-center py-2 pt-0">
         <h1 className="text-2xl font-semibold text-primary">Dashboard</h1>
-        <div className="flex space-x-4">
+        <div className="flex flex-col gap-4">
           {/* Date Filter */}
           <div>
             <label htmlFor="date-filter" className="mr-2 text-sm font-medium">

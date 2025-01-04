@@ -108,7 +108,7 @@ export const getIncome = async (req, res) => {
   try {
     const { userId } = req.query;
     const page = parseInt(req.query.page) || 1;
-    const limit = 10;
+    const limit = 9;
 
     if (!userId) {
       return res.status(400).json({ message: "User ID is required." });

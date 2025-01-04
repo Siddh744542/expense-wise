@@ -54,7 +54,7 @@ function ExpenseCategory() {
 
   if (isLoadingMonths || isLoadingCategory) return <Loader />;
   return (
-    <div className="">
+    <div>
       <div className="flex justify-between items-center py-2 pt-0">
         <h1 className="text-2xl font-semibold text-primary">Category Overview</h1>
         <div className="flex gap-4">
@@ -111,7 +111,7 @@ function ExpenseCategory() {
           <div className="md:col-span-2 lg:col-span-2 h-full">
             <CategorySpendingRadialChart
               categoryData={categoryData?.summaryData?.categoryExpenses}
-              categoryPage={true}
+              isCategoryPage={true}
             />
           </div>
           {/* Category Spending Comparison */}

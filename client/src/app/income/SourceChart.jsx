@@ -9,22 +9,21 @@ const aggregateSourceData = (sourceIncomes) => {
   }));
 };
 
-function SourceChart({ summaryData }) {
+function SourceChart({ summaryData, isCategory }) {
   const [activeIndex, setActiveIndex] = useState(0);
   const aggregatedData = aggregateSourceData(summaryData);
 
   return (
-    <div className="flex flex-col bg-white p-5 rounded-lg shadow self-end h-full">
+    <div className="flex flex-col bg-white p-5 rounded-lg shadow-md self-end h-full">
       <h2 className="text-lg font-semibold text-primary">Income by Source</h2>
-      <div className="flex-1">
+      <div className={`${isCategory ? "h-52" : "h-72"}`}>
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
             <Pie
               data={aggregatedData}
               cx="50%"
               cy="50%"
-              label
-              outerRadius={100}
+              outerRadius={isCategory ? 80 : 100}
               fill="#888fd8"
               dataKey="value"
               onMouseEnter={(_, index) => setActiveIndex(index)}
@@ -34,7 +33,7 @@ function SourceChart({ summaryData }) {
               ))}
             </Pie>
             <Tooltip />
-            <Legend iconSize={0} height={0} />
+            <Legend iconSize={0} height={13} />
           </PieChart>
         </ResponsiveContainer>
       </div>

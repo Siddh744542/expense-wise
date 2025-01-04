@@ -17,7 +17,7 @@ function IncomeSummary({ summaryData }) {
             summaryData?.sources.map((source, index) => (
               <>
                 <div key={source?._id} className="flex justify-between items-center">
-                  <p className="text-gray-700 text-sm font-medium">{source?.source}:</p>
+                  <p className="text-gray-600 font-semibold text-sm ">{source?.source}:</p>
                   <p className="text-gray-500 text-sm"> ₹{source?.total}</p>
                 </div>
                 {index < summaryData.sources.length - 1 && <hr className="border-gray-300" />}

@@ -116,7 +116,7 @@ function Categories({ categoryData, refetch }) {
       <div className="flex flex-col gap-2">
         {/* Total Expenses */}
         <div className="flex flex-col gap-2">
-          <div className="text-primary-600 font-semibold text-xl flex justify-between">
+          <div className="flex justify-between text-primary-600 font-semibold text-xl ">
             Total Expenses:
             <div className="text-action font-bold text-xl">₹{categoryData?.totalExpenses || 0}</div>
           </div>
@@ -158,7 +158,7 @@ function Categories({ categoryData, refetch }) {
                         }
                       }}
                     >
-                      <button className="p-1 rounded hover:bg-primary-300 hover:text-white transition-colors">
+                      <button className="p-1 rounded hover:bg-action-300 hover:text-white transition-colors">
                         <Pen className="w-4 h-4" />
                       </button>
                     </Link>

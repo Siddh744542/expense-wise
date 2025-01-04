@@ -13,15 +13,15 @@ const CategorySpendingComparison = ({ comparisonData }) => {
     }
   }, [comparisonData]);
   return (
-    <div className="bg-white p-5 shadow-md rounded-lg">
-      <div className="mb-2">
+    <div className="h-full flex flex-col gap-2 bg-white p-5 shadow-md rounded-lg">
+      <div className="">
         <h2 className="text-xl text-primary-500 font-semibold">Category Comparison</h2>
         <p className="text-sm text-gray-400">This Month vs Last Month</p>
       </div>
       {error && <p className="text-red-500 mb-4">{error}</p>}
       <div className="flex flex-col">
         {comparisonData?.map((item, index) => (
-          <div key={index}>
+          <div key={index} className="flex flex-col gap-2">
             <div className="flex justify-between items-center">
               <div>
                 <h3 className="text-sm text-gray-700 font-semibold">{item.category}</h3>
@@ -49,8 +49,7 @@ const CategorySpendingComparison = ({ comparisonData }) => {
                 </div>
               </div>
             </div>
-
-            {index < comparisonData.length - 1 && <hr className="my-2 border-gray-300" />}
+            {index < comparisonData.length - 1 && <hr className="border-gray-300" />}
           </div>
         ))}
       </div>

@@ -27,16 +27,14 @@ const formatRadialBarData = (categoryData) => {
   return formattedData;
 };
 
-const CategorySpendingRadialChart = ({ categoryData, categoryPage }) => {
+const CategorySpendingRadialChart = ({ categoryData, isCategoryPage }) => {
   const radialBarData = formatRadialBarData(categoryData);
-  console.log("category Page", categoryPage);
-
   return (
     <div className="h-full bg-white p-4 shadow-md rounded-lg">
       <h2 className="text-lg text-primary-500 font-semibold text-left pl-1">
         Spending Limit Reached per Category
       </h2>
-      <div className={`${categoryPage ? "h-60" : "h-52"} flex-grow`}>
+      <div className={`${isCategoryPage ? "h-56" : "h-52"} flex-grow`}>
         <ResponsiveContainer width="100%" height="100%">
           <RadialBarChart
             cx="50%"

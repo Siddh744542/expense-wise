@@ -3,6 +3,7 @@ import { ArrowUp, ArrowDown } from "lucide-react";
 
 const CategorySpendingComparison = ({ comparisonData }) => {
   const [error, setError] = useState(null);
+
   useEffect(() => {
     if (!comparisonData) {
       setError("No data found");
@@ -21,7 +22,7 @@ const CategorySpendingComparison = ({ comparisonData }) => {
       {error && <p className="text-red-500 mb-4">{error}</p>}
       <div className="flex flex-col">
         {comparisonData?.map((item, index) => (
-          <div key={index} className="flex flex-col gap-2">
+          <div key={index}>
             <div className="flex justify-between items-center">
               <div>
                 <h3 className="text-sm text-gray-700 font-semibold">{item.category}</h3>
@@ -49,7 +50,7 @@ const CategorySpendingComparison = ({ comparisonData }) => {
                 </div>
               </div>
             </div>
-            {index < comparisonData.length - 1 && <hr className="border-gray-300" />}
+            {index < comparisonData.length - 1 && <hr className="border-gray-300 my-1.5" />}
           </div>
         ))}
       </div>

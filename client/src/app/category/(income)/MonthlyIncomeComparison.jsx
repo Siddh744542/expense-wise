@@ -9,7 +9,7 @@ function MonthlyIncomeComparison({ comparisonData }) {
         <p className="text-sm text-gray-400">This Month vs Last Month</p>
       </div>
       {/* {error && <p className="text-red-500 mb-4">{error}</p>} */}
-      <div className="flex flex-col gap-1">
+      <div className="flex flex-col">
         {comparisonData?.map((item, index) => (
           <div key={index}>
             <div className="flex justify-between items-center">
@@ -38,7 +38,7 @@ function MonthlyIncomeComparison({ comparisonData }) {
                 </div>
               </div>
             </div>
-            {index < comparisonData.length - 1 && <hr className="border-gray-300 mt-1" />}
+            {index < comparisonData.length - 1 && <hr className="border-gray-300 my-1.5" />}
           </div>
         ))}
       </div>

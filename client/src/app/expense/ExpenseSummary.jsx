@@ -2,7 +2,7 @@ import React from "react";
 import { getExpenseColor } from "@/helper/GetExpenseColor";
 function ExpenseSummary({ summaryData }) {
   return (
-    <div className="bg-white p-5 rounded-lg shadow h-fit">
+    <div className="bg-white p-5 rounded-lg shadow h-full">
       <div className="flex flex-col gap-2">
         {/* Total Expenses */}
         <div className="flex flex-col gap-2">
@@ -13,11 +13,11 @@ function ExpenseSummary({ summaryData }) {
         </div>
 
         {/* Category Expenses */}
-        <div className="flex flex-col gap-1.5">
+        <div className="flex flex-col">
           {summaryData?.categoryExpenses?.length > 0 ? (
             summaryData.categoryExpenses.map((categoryExpense, index) => (
-              <>
-                <div key={categoryExpense._id} className="flex justify-between items-center">
+              <div key={categoryExpense._id}>
+                <div className="flex justify-between items-center">
                   {/* Category Info */}
                   <div>
                     <p className="text-gray-600 font-semibold text-sm">
@@ -42,9 +42,9 @@ function ExpenseSummary({ summaryData }) {
                   </div>
                 </div>
                 {index < summaryData.categoryExpenses.length - 1 && (
-                  <hr className="border-gray-300" />
+                  <hr className="border-gray-300 my-1" />
                 )}
-              </>
+              </div>
             ))
           ) : (
             <p className="text-gray-600">No category expenses available</p>

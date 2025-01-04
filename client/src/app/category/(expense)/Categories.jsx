@@ -122,10 +122,10 @@ function Categories({ categoryData, refetch }) {
           </div>
         </div>
         {/* Category Expenses List */}
-        <div className="flex flex-col gap-1.5">
+        <div className="flex flex-col">
           {categoryData?.categoryExpenses.length > 0 ? (
             categoryData?.categoryExpenses.map((categoryExpense, index) => (
-              <>
+              <div key={categoryExpense?._id}>
                 <div key={categoryExpense?._id} className="flex justify-between items-center">
                   <div>
                     <p className="text-gray-600 font-semibold text-sm">
@@ -172,9 +172,9 @@ function Categories({ categoryData, refetch }) {
                   </div>
                 </div>
                 {index < categoryData?.categoryExpenses.length - 1 && (
-                  <hr className="border-gray-300" />
+                  <hr className="border-gray-300 my-1.5" />
                 )}
-              </>
+              </div>
             ))
           ) : (
             <p className="text-gray-600">No category expenses available</p>

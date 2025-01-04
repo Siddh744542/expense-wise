@@ -84,14 +84,14 @@ function IncomeList() {
   });
 
   return (
-    <div className="flex flex-col gap-3 bg-white p-5 rounded-lg shadow h-fit flex flex-col">
+    <div className="flex flex-col gap-3 bg-white p-5 rounded-lg shadow h-full">
       <h2 className="text-xl font-semibold text-primary">Income List</h2>
 
       {/* Scrollable List */}
-      <ul className="flex flex-col gap-1.5 flex-grow overflow-y-auto">
+      <ul className="flex flex-col flex-grow overflow-y-auto">
         {data?.incomes.map((income, index) => (
-          <>
-            <li key={income?._id} className="flex justify-between items-center">
+          <div key={income?._id}>
+            <li className="flex justify-between items-center">
               <div className="flex flex-col gap-0.5">
                 <span className="text-gray-800 font-medium text-sm">{income?.source}</span>
                 <div className="flex items-center gap-2 text-xs text-gray-500">
@@ -140,8 +140,8 @@ function IncomeList() {
                 </div>
               </div>
             </li>
-            {index < data?.incomes.length - 1 && <hr className="border-gray-300" />}
-          </>
+            {index < data?.incomes.length - 1 && <hr className="border-gray-300 my-1.5  " />}
+          </div>
         ))}
       </ul>
 

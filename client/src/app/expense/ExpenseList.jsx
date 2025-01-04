@@ -92,10 +92,10 @@ function ExpenseList() {
     <div className="flex flex-col gap-3 bg-white p-5 rounded-lg shadow h-full">
       <h2 className="text-xl font-semibold text-primary">Expense List</h2>
 
-      <ul className="flex flex-col gap-1.5 flex-grow overflow-y-auto">
+      <ul className="flex flex-col flex-grow overflow-y-auto">
         {data?.expenses.map((expense, index) => (
-          <>
-            <li key={expense?._id} className="flex justify-between items-center">
+          <div key={expense?._id}>
+            <li className="flex justify-between items-center">
               <div className="flex flex-col gap-0.5">
                 <span className="text-gray-800 text-sm font-medium">{expense?.category}</span>
                 <div className="flex items-center gap-2 text-xs text-gray-500">
@@ -144,8 +144,8 @@ function ExpenseList() {
                 </div>
               </div>
             </li>
-            {index < data?.expenses.length - 1 && <hr className="border-gray-300" />}
-          </>
+            {index < data?.expenses.length - 1 && <hr className="border-gray-300 my-1.5" />}
+          </div>
         ))}
       </ul>
 

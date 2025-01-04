@@ -15,13 +15,13 @@ function IncomeSummary({ summaryData }) {
         <div className="flex flex-col gap-1.5">
           {summaryData?.sources.length > 0 ? (
             summaryData?.sources.map((source, index) => (
-              <>
-                <div key={source?._id} className="flex justify-between items-center">
+              <div key={source?._id}>
+                <div className="flex justify-between items-center">
                   <p className="text-gray-600 font-semibold text-sm ">{source?.source}:</p>
                   <p className="text-gray-500 text-sm"> ₹{source?.total}</p>
                 </div>
-                {index < summaryData.sources.length - 1 && <hr className="border-gray-300" />}
-              </>
+                {index < summaryData.sources.length - 1 && <hr className="border-gray-300 my-1" />}
+              </div>
             ))
           ) : (
             <p className="text-gray-600">No Income source available</p>

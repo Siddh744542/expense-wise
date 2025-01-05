@@ -28,6 +28,7 @@ const formatRadialBarData = (categoryData) => {
 };
 
 const CategorySpendingRadialChart = ({ categoryData, isCategoryPage }) => {
+  if (!categoryData) return <p className="text-gray-600">No category expenses available</p>;
   const radialBarData = formatRadialBarData(categoryData);
   return (
     <div className="h-full bg-white p-4 shadow-md rounded-lg">
@@ -35,37 +36,43 @@ const CategorySpendingRadialChart = ({ categoryData, isCategoryPage }) => {
         Spending Limit Reached per Category
       </h2>
       <div className={`${isCategoryPage ? "h-56" : "h-52"} flex-grow`}>
-        <ResponsiveContainer width="100%" height="100%">
-          <RadialBarChart
-            cx="50%"
-            cy="44%"
-            innerRadius="5%"
-            outerRadius="105%"
-            barSize={16}
-            data={radialBarData}
-            startAngle={90}
-            endAngle={-270}
-          >
-            <RadialBar
-              background={{ fill: "#f3f4f6" }}
-              clockWise
-              dataKey="spent"
-              label={{
-                position: "insideStart",
-                fill: "#ffff",
-                formatter: (value) => (value !== 100 ? `${value}%` : ""),
-                fontSize: 12
-              }}
-            />
-            <Tooltip
-              formatter={(value, name, props) => [
-                name !== "i" ? `${props.payload.amount} / ${props.payload.limit} (${value}%)` : "",
-                name
-              ]}
-            />
-            <Legend iconSize={0} layout="horizontal" verticalAlign="bottom" align="center" />
-          </RadialBarChart>
-        </ResponsiveContainer>
+        {radialBarData?.length > 0 ? (
+          <ResponsiveContainer width="100%" height="100%">
+            <RadialBarChart
+              cx="50%"
+              cy="44%"
+              innerRadius="5%"
+              outerRadius="105%"
+              barSize={16}
+              data={radialBarData}
+              startAngle={90}
+              endAngle={-270}
+            >
+              <RadialBar
+                background={{ fill: "#f3f4f6" }}
+                clockWise
+                dataKey="spent"
+                label={{
+                  position: "insideStart",
+                  fill: "#ffff",
+                  formatter: (value) => (value !== 100 ? `${value}%` : ""),
+                  fontSize: 12
+                }}
+              />
+              <Tooltip
+                formatter={(value, name, props) => [
+                  name !== "i"
+                    ? `${props.payload.amount} / ${props.payload.limit} (${value}%)`
+                    : "",
+                  name
+                ]}
+              />
+              <Legend iconSize={0} layout="horizontal" verticalAlign="bottom" align="center" />
+            </RadialBarChart>
+          </ResponsiveContainer>
+        ) : (
+          <p className="text-sm text-gray-600">No category expenses available</p>
+        )}
       </div>
     </div>
   );

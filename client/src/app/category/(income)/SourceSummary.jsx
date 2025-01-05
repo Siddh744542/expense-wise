@@ -140,7 +140,7 @@ function SourceSummary({ summaryData, refetch }) {
               </div>
             ))
           ) : (
-            <p className="text-gray-600">No Income source available</p>
+            <p className="text-gray-600 text-sm">No Income source available</p>
           )}
         </div>
       </div>

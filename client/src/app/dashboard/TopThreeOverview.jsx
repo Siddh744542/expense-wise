@@ -41,7 +41,7 @@ const TopThreeOverview = ({ expenseData, incomeData }) => {
         <h3 className="text-sm font-medium text-red-500">Top Expense Categories</h3>
         <div className="flex flex-col gap-0.5">
           {noExpenseData ? (
-            <p className="text-gray-600 text-sm text-center">No data available</p>
+            <p className="text-gray-600 text-sm ">No data available</p>
           ) : (
             topExpenseCategories.map((category, index) => (
               <div key={index} className="flex justify-between items-center">
@@ -63,7 +63,7 @@ const TopThreeOverview = ({ expenseData, incomeData }) => {
         <h3 className="text-blue-500 text-sm">Top Income Sources</h3>
         <div className="flex flex-col gap-0.5">
           {noIncomeData ? (
-            <p className="text-gray-600 text-sm text-center">No data available</p>
+            <p className="text-gray-600 text-sm ">No data available</p>
           ) : (
             topIncomeSources.map((source, index) => (
               <div key={index} className="flex justify-between items-center">

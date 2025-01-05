@@ -1,21 +1,13 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
-import axios from "axios";
-import { useQuery } from "@tanstack/react-query";
 import ExpenseSummary from "./ExpenseSummary";
 import CategoryChart from "./CategoryChart";
 import { useRouter, useSearchParams } from "next/navigation";
 import ExpenseList from "./ExpenseList";
 import { Loader } from "../dashboardWrapper";
 import MonthFilter from "../(components)/MonthFilter";
-
-const fetchSummaryData = async ({ userId, month }) => {
-  const response = await axios.get(`${process.env.NEXT_PUBLIC_DOMAIN}/expense/summary`, {
-    params: { userId, month }
-  });
-  return response.data;
-};
+import { getExpenseSummary } from "@/api/query/expenseQuery";
 
 function Expenses() {
   const { data: session, status } = useSession();
@@ -28,11 +20,10 @@ function Expenses() {
   }, [searchParams]);
 
   // Fetch summary data
-  const { data: summaryData, isLoading: isLoadingSummary } = useQuery({
-    queryKey: ["expenseSummaryData", session?.user?.id, selectedMonth],
-    queryFn: () => fetchSummaryData({ userId: session?.user?.id, month: selectedMonth }),
-    enabled: !!session?.user?.id && !!selectedMonth
-  });
+  const [expenseSummaryData, isLoadingSummary] = getExpenseSummary(
+    session?.user?.id,
+    selectedMonth
+  );
 
   if (selectedMonth === null || isLoadingSummary) {
     return <Loader />;
@@ -61,9 +52,9 @@ function Expenses() {
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-5 py-2">
         <div className="lg:col-span-2 grid grid-rows-1 gap-5">
           {/* Expense Summary Section */}
-          <ExpenseSummary summaryData={summaryData} />
+          <ExpenseSummary summaryData={expenseSummaryData} />
           {/* Pie Chart Section */}
-          <CategoryChart summaryData={summaryData?.categoryExpenses} />
+          <CategoryChart summaryData={expenseSummaryData?.categoryExpenses} />
         </div>
         {/* Expense List Section */}
         <div className="lg:col-span-3">

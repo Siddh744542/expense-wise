@@ -7,6 +7,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import axios from "axios";
 import { X, CircleAlert } from "lucide-react";
 import Link from "next/link";
+import { getCategories } from "@/api/query/expenseQuery";
 
 const ConfirmLimitModal = ({ isOpen, onClose, handleConfirm, percentage }) => {
   if (!isOpen) return null;
@@ -54,7 +55,6 @@ const DailyExpenseForm = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { data: session } = useSession();
-  const [categoryData, setCategoryData] = useState();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedMonth, setSelectedMonth] = useState(new Date().toISOString().slice(0, 7));
   const [limitReachedPercentage, setLimitReachedPercentage] = useState();
@@ -67,10 +67,7 @@ const DailyExpenseForm = () => {
     description: ""
   });
 
-  useEffect(() => {
-    fetchCategory();
-  }, [session]);
-
+  const [categoryData, isCategoryLoading] = getCategories(session?.user.id, selectedMonth);
   useEffect(() => {
     if (searchParams.size > 0 && searchParams.has("amount")) {
       setFormData({
@@ -95,17 +92,6 @@ const DailyExpenseForm = () => {
     }
   }, [formData.category, categoryData]);
 
-  const fetchCategory = async () => {
-    try {
-      const response = await axios.get(`${process.env.NEXT_PUBLIC_DOMAIN}/expense/summary`, {
-        params: { userId: session?.user.id, month: selectedMonth }
-      });
-      setCategoryData(response.data);
-    } catch (err) {
-      console.error("Error fetching categories:", err);
-    }
-  };
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({
@@ -115,7 +101,6 @@ const DailyExpenseForm = () => {
     if (name === "date") {
       const updatedMonth = value.slice(0, 7);
       setSelectedMonth(updatedMonth);
-      fetchCategory();
     }
   };
 

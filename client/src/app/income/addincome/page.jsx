@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import axios from "axios";
 import Link from "next/link";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { getSourceData } from "@/api/query/incomeQuery";
 
 const AddIncomePage = () => {
   const router = useRouter();
@@ -37,16 +38,7 @@ const AddIncomePage = () => {
     }
   }, [searchParams]);
 
-  const { data: sourceData, isLoading: isLoadingMonths } = useQuery({
-    queryKey: ["Sources", session?.user?.id, selectedMonth],
-    queryFn: async () => {
-      const response = await axios.get(`${process.env.NEXT_PUBLIC_DOMAIN}/income/getsources`, {
-        params: { userId: session?.user.id, month: selectedMonth }
-      });
-      return response.data;
-    },
-    enabled: !!session?.user.id && !!selectedMonth
-  });
+  const [sourceData, isLoadingMonths] = getSourceData(session?.user.id, selectedMonth);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -57,7 +49,6 @@ const AddIncomePage = () => {
     if (name === "date") {
       const updatedMonth = value.slice(0, 7);
       setSelectedMonth(updatedMonth);
-      fetchSummary();
     }
   };
 

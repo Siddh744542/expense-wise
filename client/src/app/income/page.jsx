@@ -9,13 +9,7 @@ import IncomeList from "./IncomeList";
 import { useQuery } from "@tanstack/react-query";
 import { Loader } from "../dashboardWrapper";
 import MonthFilter from "../(components)/MonthFilter";
-
-const fetchSummary = async ({ userId, month }) => {
-  const response = await axios.get(`${process.env.NEXT_PUBLIC_DOMAIN}/income/summary`, {
-    params: { userId, month }
-  });
-  return response.data;
-};
+import { getIncomeSummary } from "@/api/query/incomeQuery";
 
 function Income() {
   const { data: session, status } = useSession();
@@ -27,12 +21,7 @@ function Income() {
     setSelectedMonth(searchParams.get("month"));
   }, [searchParams]);
 
-  // Fetch summary data
-  const { data: summaryData, isLoading: isLoadingSummary } = useQuery({
-    queryKey: ["incomeSummaryData", session?.user?.id, selectedMonth],
-    queryFn: () => fetchSummary({ userId: session?.user?.id, month: selectedMonth }),
-    enabled: !!session?.user?.id && !!selectedMonth
-  });
+  const [incomeSummaryData, isLoadingSummary] = getIncomeSummary(session?.user?.id, selectedMonth);
 
   if (selectedMonth === null || isLoadingSummary) return <Loader />;
   return (
@@ -58,9 +47,9 @@ function Income() {
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 py-2">
         <div className="lg:col-span-2 grid gap-6">
           {/* Income Summary Section */}
-          <IncomeSummary summaryData={summaryData} />
+          <IncomeSummary summaryData={incomeSummaryData} />
           {/* Pie Chart Section */}
-          <SourceChart summaryData={summaryData?.sources} />
+          <SourceChart summaryData={incomeSummaryData?.sources} />
         </div>
         {/* Expense List Section */}
         <div className="lg:col-span-3">

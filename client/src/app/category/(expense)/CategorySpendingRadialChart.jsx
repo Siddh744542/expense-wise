@@ -28,11 +28,10 @@ const formatRadialBarData = (categoryData) => {
 };
 
 const CategorySpendingRadialChart = ({ categoryData, isCategoryPage }) => {
-  if (!categoryData) return <p className="text-gray-600">No category expenses available</p>;
   const radialBarData = formatRadialBarData(categoryData);
   return (
     <div className="h-full bg-white p-4 shadow-md rounded-lg">
-      <h2 className="text-lg text-primary-500 font-semibold text-left pl-1">
+      <h2 className="text-lg text-primary-500 font-semibold text-left">
         Spending Limit Reached per Category
       </h2>
       <div className={`${isCategoryPage ? "h-56" : "h-52"} flex-grow`}>

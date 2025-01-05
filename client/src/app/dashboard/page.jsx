@@ -2,22 +2,15 @@
 import React, { useEffect, useState } from "react";
 import CategorySpendingRadialChart from "../category/(expense)/CategorySpendingRadialChart";
 import { useSession } from "next-auth/react";
-import axios from "axios";
 import MonthlyOverview from "./MonthlyOverview";
 import TopThreeOverview from "./TopThreeOverview";
 import ExpenseByCategoryBarchart from "../category/(expense)/ExpenseByCategoryBarchart";
 import CategorySpendingComparison from "../category/(expense)/CategorySpendingComparison";
 import { useSearchParams } from "next/navigation";
-import { useQuery } from "@tanstack/react-query";
 import { Loader } from "../dashboardWrapper";
 import MonthFilter from "../(components)/MonthFilter";
+import { getDashboardData } from "@/api/query/dashboardquery";
 
-export const fetchDashboardData = async (userId, month) => {
-  const response = await axios.get(`${process.env.NEXT_PUBLIC_DOMAIN}/dashboard`, {
-    params: { userId, month }
-  });
-  return response.data;
-};
 function Dashboard() {
   const { data: session, status } = useSession();
   const searchParams = useSearchParams();
@@ -27,11 +20,10 @@ function Dashboard() {
     setSelectedMonth(searchParams.get("month"));
   }, [searchParams]);
 
-  const { data: dashbaordData, isLoading: isLoadingDashboardData } = useQuery({
-    queryKey: ["dashboardData", session?.user?.id, selectedMonth],
-    queryFn: () => fetchDashboardData(session?.user?.id, selectedMonth),
-    enabled: !!session?.user?.id && !!selectedMonth
-  });
+  const [dashbaordData, isLoadingDashboardData] = getDashboardData(
+    session?.user?.id,
+    selectedMonth
+  );
 
   if (selectedMonth === null || isLoadingDashboardData) {
     return <Loader />;

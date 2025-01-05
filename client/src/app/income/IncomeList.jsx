@@ -7,24 +7,7 @@ import axios from "axios";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-
-const fetchIncomePaginated = async (page, userId) => {
-  return await axios
-    .get(`${process.env.NEXT_PUBLIC_DOMAIN}/income/getincome`, {
-      params: {
-        userId,
-        page
-      }
-    })
-    .then((res) => {
-      const hasNext = page < res.data.totalPages;
-      return {
-        ...res.data,
-        nextPage: hasNext ? page + 1 : undefined,
-        previousPage: page > 1 ? page - 1 : undefined
-      };
-    });
-};
+import { getIncomeList } from "@/api/query/incomeQuery";
 
 function IncomeList() {
   const { data: session } = useSession();
@@ -36,17 +19,7 @@ function IncomeList() {
     setSelectedMonth(searchParams.get("month"));
   }, [searchParams]);
   // Fetch expenses with React Query
-  const {
-    status,
-    error,
-    data: incomeList
-  } = useQuery({
-    queryKey: ["incomes", { page }],
-    queryFn: () => fetchIncomePaginated(page, session?.user.id),
-    keepPreviousData: true,
-    enabled: !!session?.user.id
-  });
-
+  const [incomeList, isListLoading] = getIncomeList(page, session?.user?.id);
   // Delete income mutation
   const deleteIncomeMutation = useMutation({
     mutationFn: async (incomeId) => {
@@ -92,7 +65,7 @@ function IncomeList() {
 
       {/* Scrollable List */}
       <ul className="flex flex-col flex-grow overflow-y-auto">
-        {incomeList.incomes?.length > 0 ? (
+        {incomeList?.incomes?.length > 0 ? (
           incomeList?.incomes.map((income, index) => (
             <div key={income?._id}>
               <li className="flex justify-between items-center">

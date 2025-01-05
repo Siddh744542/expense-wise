@@ -1,22 +1,14 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
-import axios from "axios";
 import { useRouter, useSearchParams } from "next/navigation";
 import SourceSummary from "./SourceSummary";
 import IncomeBySourceBarchart from "./IncomeBySourceBarchart";
 import MonthlyIncomeComparison from "./MonthlyIncomeComparison";
 import SourceChart from "@/app/income/SourceChart";
-import { useQuery } from "@tanstack/react-query";
 import { Loader } from "@/app/dashboardWrapper";
 import MonthFilter from "@/app/(components)/MonthFilter";
-
-const fetchIncomeSourceData = async (userId, month) => {
-  const response = await axios.get(`${process.env.NEXT_PUBLIC_DOMAIN}/incomesource`, {
-    params: { userId, month }
-  });
-  return response.data;
-};
+import { getIncomeSourceData } from "@/api/query/category/incomeSourceQuery";
 
 function IncomeSource() {
   const { data: session, status } = useSession();
@@ -28,15 +20,10 @@ function IncomeSource() {
     setSelectedMonth(searchParams.get("month"));
   }, [searchParams]);
 
-  const {
-    data: IncomeSourceData,
-    isLoading: isLoadingSource,
-    refetch
-  } = useQuery({
-    queryKey: ["sourceData", session?.user?.id, selectedMonth],
-    queryFn: () => fetchIncomeSourceData(session?.user?.id, selectedMonth),
-    enabled: !!session?.user?.id && !!selectedMonth
-  });
+  const [incomeSourceData, isLoadingSource, refetch] = getIncomeSourceData(
+    session?.user?.id,
+    selectedMonth
+  );
 
   if (selectedMonth === null || isLoadingSource) return <Loader />;
   return (
@@ -58,21 +45,21 @@ function IncomeSource() {
       <div className="grid grid-cols-1 gap-5 py-2">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-5">
           <div className="lg:col-span-2">
-            <SourceSummary summaryData={IncomeSourceData?.summaryData} refetch={refetch} />
+            <SourceSummary summaryData={incomeSourceData?.summaryData} refetch={refetch} />
           </div>
 
           <div className="lg:col-span-3">
-            <IncomeBySourceBarchart incomeSourceData={IncomeSourceData?.summaryData?.sources} />
+            <IncomeBySourceBarchart incomeSourceData={incomeSourceData?.summaryData?.sources} />
           </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
           <div className="md:col-span-2 lg:col-span-2 h-full">
-            <SourceChart summaryData={IncomeSourceData?.summaryData?.sources} isCategory={true} />
+            <SourceChart summaryData={incomeSourceData?.summaryData?.sources} isCategory={true} />
           </div>
 
           <div className="md:col-span-2 lg:col-span-2 h-full ">
-            <MonthlyIncomeComparison comparisonData={IncomeSourceData?.comparisonData} />
+            <MonthlyIncomeComparison comparisonData={incomeSourceData?.comparisonData} />
           </div>
         </div>
       </div>

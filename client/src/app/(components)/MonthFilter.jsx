@@ -1,20 +1,10 @@
 "use client";
-import { useQuery } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
-import axios from "axios";
 import React from "react";
 import formatMonth from "@/helper/formatMonth";
+import { getAvailableMonths } from "@/api/query/monthFilterQuery";
 
-const fetchAvailableMonths = async (userId) => {
-  const response = await axios.get(
-    `${process.env.NEXT_PUBLIC_DOMAIN}/dashboard/getavailablemonths`,
-    {
-      params: { userId }
-    }
-  );
-  return response.data?.months;
-};
 function MonthFilter({ selectedMonth }) {
   const { data: session, status } = useSession();
   const router = useRouter();
@@ -25,12 +15,8 @@ function MonthFilter({ selectedMonth }) {
     params.set("month", newMonth);
     router.push(`?${params.toString()}`, { shallow: true });
   };
+  const [availableMonths, isLoadingMonths] = getAvailableMonths(session?.user?.id);
 
-  const { data: availableMonths, isLoading: isLoadingMonths } = useQuery({
-    queryKey: ["availableMonths", session?.user?.id],
-    queryFn: () => fetchAvailableMonths(session?.user?.id),
-    enabled: !!session?.user?.id
-  });
   return (
     <div>
       <label htmlFor="date-filter" className="mr-2 text-sm font-medium">

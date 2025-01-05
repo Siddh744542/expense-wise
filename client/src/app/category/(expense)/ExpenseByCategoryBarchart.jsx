@@ -15,7 +15,7 @@ function ExpenseByCategoryBarchart({ expenseCategoryData }) {
   const aggregateData = aggregateCategoryData(expenseCategoryData);
   return (
     <div className="h-full bg-white p-4 shadow-md rounded-lg">
-      <h2 className="text-xl text-primary font-semibold pb-2 px-2">Monthly Expenses by Category</h2>
+      <h2 className="text-xl text-primary font-semibold pb-2">Monthly Expenses by Category</h2>
       <div className={`flex-grow h-60`}>
         {aggregateData?.length > 0 ? (
           <ResponsiveContainer width="100%" height="100%">

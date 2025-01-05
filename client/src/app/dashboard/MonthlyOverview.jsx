@@ -52,7 +52,7 @@ const MonthlyOverview = ({ expenseData, incomeData }) => {
       <h2 className="text-xl font-semibold text-primary-500 mb-2">Monthly Overview</h2>
 
       {noExpenseData && noIncomeData ? (
-        <p className="text-gray-600 text-sm text-center">No data available</p>
+        <p className="text-gray-600 text-sm">No data available</p>
       ) : (
         <>
           <div className="flex flex-col gap-0.5">

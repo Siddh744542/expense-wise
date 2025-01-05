@@ -17,7 +17,7 @@ function CategoryChart({ summaryData }) {
     <div className="h-full bg-white p-4 rounded-lg shadow">
       <h2 className="text-lg font-semibold text-primary">Expense By Category</h2>
       <div className="h-60">
-        {aggregatedData.length > 0 ? (
+        {aggregatedData?.length > 0 ? (
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie

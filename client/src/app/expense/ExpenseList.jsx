@@ -7,24 +7,8 @@ import Link from "next/link";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { useSearchParams } from "next/navigation";
+import { getExpenseList } from "@/api/query/expenseQuery";
 
-async function getExpensePaginated(page, userId) {
-  return await axios
-    .get(`${process.env.NEXT_PUBLIC_DOMAIN}/expense/getexpense`, {
-      params: {
-        userId: userId,
-        page: page
-      }
-    })
-    .then((res) => {
-      const hasNext = page < res.data.totalPages;
-      return {
-        ...res.data,
-        nextPage: hasNext ? page + 1 : undefined,
-        previousPage: page > 1 ? page - 1 : undefined
-      };
-    });
-}
 function ExpenseList() {
   const { data: session } = useSession();
 
@@ -37,17 +21,7 @@ function ExpenseList() {
     setSelectedMonth(initialMonth);
   }, [searchParams]);
   // Fetch expenses with React Query
-  const {
-    status,
-    error,
-    data: expenseList
-  } = useQuery({
-    queryKey: ["expenses", { page }],
-    queryFn: () => getExpensePaginated(page, session?.user.id),
-    keepPreviousData: true,
-    enabled: !!session?.user.id
-  });
-
+  const [expenseList, isLoadingList] = getExpenseList(page, session?.user?.id);
   // Delete expense mutation
   const deleteExpenseMutation = useMutation({
     mutationFn: async (expenseId) => {
@@ -88,9 +62,6 @@ function ExpenseList() {
       toast.error("Failed to repeat expense.");
     }
   });
-
-  if (status === "loading") return <h1>Loading...</h1>;
-  if (status === "error") return <h1>{JSON.stringify(error)}</h1>;
 
   return (
     <div className="flex flex-col gap-3 bg-white p-5 rounded-lg shadow h-full">

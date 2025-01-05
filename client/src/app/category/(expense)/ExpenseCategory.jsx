@@ -1,22 +1,15 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
-import axios from "axios";
 import { useRouter, useSearchParams } from "next/navigation";
 import Categories from "./Categories";
 import ExpenseByCategoryBarchart from "./ExpenseByCategoryBarchart";
 import CategorySpendingRadialChart from "./CategorySpendingRadialChart";
 import CategorySpendingComparison from "./CategorySpendingComparison";
-import { useQuery } from "@tanstack/react-query";
 import { Loader } from "@/app/dashboardWrapper";
 import MonthFilter from "@/app/(components)/MonthFilter";
+import { getExpenseCategoryData } from "@/api/query/category/expenseCategoryQuery";
 
-const fetchCategoryData = async (userId, month) => {
-  const response = await axios.get(`${process.env.NEXT_PUBLIC_DOMAIN}/category`, {
-    params: { userId, month }
-  });
-  return response.data;
-};
 function ExpenseCategory() {
   const { data: session, status } = useSession();
   const router = useRouter();
@@ -27,15 +20,10 @@ function ExpenseCategory() {
     setSelectedMonth(searchParams.get("month"));
   }, [searchParams]);
 
-  const {
-    data: categoryData,
-    isLoading: isLoadingCategory,
-    refetch
-  } = useQuery({
-    queryKey: ["categoryData", session?.user?.id, selectedMonth],
-    queryFn: () => fetchCategoryData(session?.user?.id, selectedMonth),
-    enabled: !!session?.user?.id && !!selectedMonth
-  });
+  const [expenseCategoryData, isLoadingCategory, refetch] = getExpenseCategoryData(
+    session?.user?.id,
+    selectedMonth
+  );
 
   if (selectedMonth === null || isLoadingCategory) return <Loader />;
   return (
@@ -59,12 +47,12 @@ function ExpenseCategory() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-5">
           {/* Categories */}
           <div className="lg:col-span-2">
-            <Categories categoryData={categoryData?.summaryData} refetch={refetch} />
+            <Categories categoryData={expenseCategoryData?.summaryData} refetch={refetch} />
           </div>
           {/* Expense By Category Bar Chart */}
           <div className="lg:col-span-3">
             <ExpenseByCategoryBarchart
-              expenseCategoryData={categoryData?.summaryData?.categoryExpenses}
+              expenseCategoryData={expenseCategoryData?.summaryData?.categoryExpenses}
             />
           </div>
         </div>
@@ -74,13 +62,13 @@ function ExpenseCategory() {
           {/* Category Spending Radial Chart */}
           <div className="md:col-span-2 lg:col-span-2 h-full">
             <CategorySpendingRadialChart
-              categoryData={categoryData?.summaryData?.categoryExpenses}
+              categoryData={expenseCategoryData?.summaryData?.categoryExpenses}
               isCategoryPage={true}
             />
           </div>
           {/* Category Spending Comparison */}
           <div className="md:col-span-2 lg:col-span-2 h-full">
-            <CategorySpendingComparison comparisonData={categoryData?.comparisonData} />
+            <CategorySpendingComparison comparisonData={expenseCategoryData?.comparisonData} />
           </div>
         </div>
       </div>

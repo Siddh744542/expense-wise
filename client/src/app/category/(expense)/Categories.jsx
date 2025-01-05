@@ -112,67 +112,74 @@ function Categories({ categoryData, refetch }) {
     }
   });
   return (
-    <div className="h-[370px] bg-white p-5 pr-1 rounded-lg shadow flex flex-col">
-      {/* Total Expenses */}
-      <div className="space-y-2 pr-5">
-        <div className="text-primary-500 font-semibold text-xl flex justify-between">
-          Total Expenses:
-          <div className="text-action font-bold text-2xl">₹{categoryData?.totalExpenses || 0}</div>
+    <div className="flex flex-col h-full bg-white p-5 rounded-lg shadow">
+      <div className="flex flex-col gap-2">
+        {/* Total Expenses */}
+        <div className="flex flex-col gap-2">
+          <div className="flex justify-between text-primary-600 font-semibold text-xl ">
+            Total Expenses:
+            <div className="text-action font-bold text-xl">₹{categoryData?.totalExpenses || 0}</div>
+          </div>
         </div>
-      </div>
-      {/* Category Expenses List */}
-      <div className="mt-2 flex-1 overflow-y-auto space-y-2 py-0.5">
-        {categoryData?.categoryExpenses.length > 0 ? (
-          categoryData?.categoryExpenses.map((categoryExpense) => (
-            <div
-              key={categoryExpense?._id}
-              className="flex justify-between items-center border-b pb-2 mb-2"
-            >
-              <div>
-                <p className="text-gray-700 font-semibold  font-md">{categoryExpense?.category}</p>
-                <div className="text-gray-500 flex gap-1">
-                  Spent:
-                  <p className="text-black ">₹{categoryExpense?.amount}</p>
+        {/* Category Expenses List */}
+        <div className="flex flex-col">
+          {categoryData?.categoryExpenses.length > 0 ? (
+            categoryData?.categoryExpenses.map((categoryExpense, index) => (
+              <div key={categoryExpense?._id}>
+                <div key={categoryExpense?._id} className="flex justify-between items-center">
+                  <div>
+                    <p className="text-gray-600 font-semibold text-sm">
+                      {categoryExpense?.category}
+                    </p>
+                    <div className="text-gray-500 flex text-sm gap-1">
+                      Spent:
+                      <p className="text-black ">₹{categoryExpense?.amount}</p>
+                    </div>
+                  </div>
+                  <div className="flex text-sm items-center gap-1">
+                    <p>Limit:</p>
+                    <p
+                      className={`${getExpenseColor(
+                        categoryExpense.amount,
+                        categoryExpense.limit
+                      )} text-white rounded-full px-2 py-0.5`}
+                    >
+                      ₹{categoryExpense.limit}
+                    </p>
+                    {/* Edit Button */}
+                    <Link
+                      href={{
+                        pathname: "/category/addcategory",
+                        query: {
+                          id: categoryExpense._id,
+                          category: categoryExpense.category,
+                          limit: categoryExpense.limit,
+                          month: selectedMonth
+                        }
+                      }}
+                    >
+                      <button className="p-1 rounded hover:bg-action-300 hover:text-white transition-colors">
+                        <Pen className="w-4 h-4" />
+                      </button>
+                    </Link>
+                    {/* Delete Button */}
+                    <button
+                      className="p-1 rounded hover:bg-red-400 hover:text-white transition-colors"
+                      onClick={() => openModal(categoryExpense?._id)}
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
                 </div>
+                {index < categoryData?.categoryExpenses.length - 1 && (
+                  <hr className="border-gray-300 my-1.5" />
+                )}
               </div>
-              <div className="flex items-center space-x-2 pr-2">
-                <div
-                  className={`${getExpenseColor(
-                    categoryExpense.amount,
-                    categoryExpense.limit
-                  )}  text-white rounded-full px-4 py-1`}
-                >
-                  Limit: ₹{categoryExpense?.limit}
-                </div>
-                {/* Edit Button */}
-                <Link
-                  href={{
-                    pathname: "/category/addcategory",
-                    query: {
-                      id: categoryExpense._id,
-                      category: categoryExpense.category,
-                      limit: categoryExpense.limit,
-                      month: selectedMonth
-                    }
-                  }}
-                >
-                  <button className="p-1 rounded hover:bg-primary-300 hover:text-white transition-colors">
-                    <Pen className="w-4 h-4" />
-                  </button>
-                </Link>
-                {/* Delete Button */}
-                <button
-                  className="p-1 rounded hover:bg-red-400 hover:text-white transition-colors"
-                  onClick={() => openModal(categoryExpense?._id)}
-                >
-                  <Trash2 className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-          ))
-        ) : (
-          <p className="text-gray-600">No category expenses available</p>
-        )}
+            ))
+          ) : (
+            <p className="text-gray-600">No category expenses available</p>
+          )}
+        </div>
       </div>
       {/* Confirmation Modal */}
       <ConfirmDeleteModal

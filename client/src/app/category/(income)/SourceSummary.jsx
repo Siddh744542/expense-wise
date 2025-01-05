@@ -94,49 +94,49 @@ function SourceSummary({ summaryData, refetch }) {
   });
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow h-full">
-      <div className="space-y-2">
-        <div className="space-y-2 pb-1">
-          <div className="text-primary-500 font-semibold text-xl flex justify-between">
-            Total Income:
-            <div className="text-action font-bold text-2xl">₹{summaryData?.totalIncome || 0}</div>
-          </div>
+    <div className="bg-white p-5 rounded-lg shadow-md h-full">
+      <div className="flex flex-col gap-2">
+        <div className="flex justify-between text-primary-600 font-semibold text-xl">
+          <p>Total Income:</p>
+          <div className="text-action font-bold text-xl">₹{summaryData?.totalIncome || 0}</div>
         </div>
 
-        <div className="space-y-2">
+        <div className="flex flex-col">
           {summaryData?.sources.length > 0 ? (
-            summaryData?.sources.map((source) => (
-              <div
-                key={source?._id}
-                className="flex justify-between items-center border-b pb-2 mb-2"
-              >
-                <p className="text-gray-600 font-semibold">{source?.source}:</p>
+            summaryData?.sources.map((source, index) => (
+              <div key={source?._id}>
+                <div className="flex justify-between items-center">
+                  <p className="text-gray-600 font-semibold text-sm ">{source?.source}:</p>
 
-                <div className="flex space-x-2">
-                  <p className="text-black-500 pr-1">₹{source?.total}</p>
-                  <Link
-                    href={{
-                      pathname: "/category/addincomesource",
-                      query: {
-                        id: source._id,
-                        source: source.source,
-                        month: selectedMonth
-                      }
-                    }}
-                  >
-                    <button className="p-1 rounded hover:bg-primary-300 hover:text-white transition-colors">
-                      <Pen className="w-4 h-4" />
+                  <div className="flex items-center gap-1.5">
+                    <p className="text-gray-500 text-sm">₹{source?.total}</p>
+                    <Link
+                      href={{
+                        pathname: "/category/addincomesource",
+                        query: {
+                          id: source._id,
+                          source: source.source,
+                          month: selectedMonth
+                        }
+                      }}
+                    >
+                      <button className="p-1 rounded hover:bg-action-300 hover:text-white transition-colors">
+                        <Pen className="w-4 h-4" />
+                      </button>
+                    </Link>
+
+                    {/* Delete Button */}
+                    <button
+                      className="p-1 rounded hover:bg-red-400 hover:text-white transition-colors"
+                      onClick={() => openModal(source?._id)}
+                    >
+                      <Trash2 className="w-4 h-4" />
                     </button>
-                  </Link>
-
-                  {/* Delete Button */}
-                  <button
-                    className="p-1 rounded hover:bg-red-400 hover:text-white transition-colors"
-                    onClick={() => openModal(source?._id)}
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
+                  </div>
                 </div>
+                {index < summaryData.sources.length - 1 && (
+                  <hr className="border-gray-300 my-1.5" />
+                )}
               </div>
             ))
           ) : (

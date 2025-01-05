@@ -35,9 +35,9 @@ function SidebarLink({ label, Icon, href, isCollapsed }) {
             : "bg-white text-gray-700 hover:bg-background"
         } ${isCollapsed ? "justify-center" : ""}`}
       >
-        {Icon && <Icon className={`h-6 w-6 ${isActive ? "text-primary" : "text-black"}`} />}
+        {Icon && <Icon className={`h-4 w-4 ${isActive ? "text-primary" : "text-black"}`} />}
         {!isCollapsed && (
-          <span className={`font-medium ml-3 ${isActive ? "font-bold" : ""}`}>{label}</span>
+          <span className={`font-medium ml-3 text-sm ${isActive ? "font-bold" : ""}`}>{label}</span>
         )}
       </div>
     </Link>
@@ -57,15 +57,15 @@ function Sidebar({ isCollapsed, toggleSidebar }) {
   return (
     <div
       className={`fixed flex flex-col bg-white h-full shadow-md z-40 transition-all duration-300 ${
-        isCollapsed ? "w-16" : "w-60"
+        isCollapsed ? "w-16" : "w-42"
       }`}
     >
       {/* Sidebar Header */}
       <div className="flex items-center px-4 py-4">
         <div className="flex items-center">
-          <Wallet className="text-primary" size={32} />
+          <Wallet className="text-primary" size={28} />
           {!isCollapsed && (
-            <h1 className="text-primary font-extrabold text-xl ml-2 text-ellipsis max-w-[125px] whitespace-nowrap overflow-hidden">
+            <h1 className="text-primary text-lg  font-bold text-xl ml-2 text-ellipsis max-w-[125px] whitespace-nowrap overflow-hidden">
               Expense Wise
             </h1>
           )}
@@ -75,12 +75,12 @@ function Sidebar({ isCollapsed, toggleSidebar }) {
       {/* Collapse/Expand Button */}
       <button
         onClick={toggleSidebar}
-        className="absolute top-4 -right-4 bg-white border border-gray-300 rounded-full p-0.5 shadow-md focus:outline-none hover:bg-gray-100 transition-all duration-300 z-50"
+        className="absolute top-4 -right-3 bg-white border border-gray-300 rounded-full p-0.5 shadow-md focus:outline-none hover:bg-gray-100 transition-all duration-300 z-50"
       >
         {isCollapsed ? (
-          <ChevronRight size={24} className="text-gray-500" />
+          <ChevronRight size={20} className="text-gray-500" />
         ) : (
-          <ChevronLeft size={24} className="text-gray-500" />
+          <ChevronLeft size={20} className="text-gray-500" />
         )}
       </button>
 
@@ -111,9 +111,9 @@ function Sidebar({ isCollapsed, toggleSidebar }) {
       {!isCollapsed && (
         <div className="block mb-6 bg-white">
           <div className="flex items-center px-5 mb-4">
-            <CircleUserRound size={38} className="text-gray-500 mr-3" />
+            <CircleUserRound className="text-gray-500 mr-3 h-7 w-7" />
             <div>
-              <h3 className="text-black font-semibold">{session?.user.username}</h3>
+              <h3 className="text-sm text-black font-semibold">{session?.user.username}</h3>
               <p className="text-gray-500 text-xs">{session?.user.email}</p>
             </div>
           </div>

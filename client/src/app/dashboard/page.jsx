@@ -55,17 +55,17 @@ function Dashboard() {
   return (
     <div className="pr-5">
       {/* header */}
-      <div className="flex justify-between items-center py-2">
-        <h1 className="text-3xl font-semibold text-primary">Dashboard</h1>
-        <div className="flex space-x-4">
+      <div className="flex justify-between items-center py-2 pt-0">
+        <h1 className="text-2xl font-semibold text-primary">Dashboard</h1>
+        <div className="flex flex-col gap-4">
           {/* Date Filter */}
           <div>
-            <label htmlFor="date-filter" className="mr-2 font-medium">
+            <label htmlFor="date-filter" className="mr-2 text-sm font-medium">
               Date:
             </label>
             <select
               id="date-filter"
-              className="border rounded-md px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-primary"
+              className="border text-sm rounded-md p-1.5 focus:outline-none focus:ring-2 focus:ring-primary"
               onChange={handleMonthChange}
               value={selectedMonth}
             >
@@ -83,7 +83,7 @@ function Dashboard() {
           </div>
         </div>
       </div>
-      <div className="grid grid-cols-10 gap-6 py-4">
+      <div className="grid grid-cols-10 gap-5 py-1">
         <div className="col-span-10 md:col-span-3">
           <MonthlyOverview
             expenseData={dashbaordData?.expenseData}
@@ -91,20 +91,20 @@ function Dashboard() {
           />
         </div>
 
-        <div className="col-span-10 md:col-span-3 bg-white p-6 shadow-md rounded-lg">
+        <div className="col-span-10 md:col-span-3">
           <TopThreeOverview
             expenseData={dashbaordData?.expenseData}
             incomeData={dashbaordData?.incomeData}
           />
         </div>
 
-        <div className="h-full col-span-10 md:col-span-4">
+        <div className="col-span-10 md:col-span-4">
           <CategorySpendingRadialChart
             categoryData={dashbaordData?.expenseData?.categoryExpenses}
           />
         </div>
 
-        <div className="h-full col-span-10 md:col-span-5">
+        <div className="col-span-10 md:col-span-5">
           <ExpenseByCategoryBarchart
             expenseCategoryData={dashbaordData?.expenseData?.categoryExpenses}
           />

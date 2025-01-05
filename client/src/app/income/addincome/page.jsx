@@ -5,34 +5,25 @@ import toast from "react-hot-toast";
 import { useRouter, useSearchParams } from "next/navigation";
 import axios from "axios";
 import Link from "next/link";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 const AddIncomePage = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
-
   const queryClient = useQueryClient();
   const { data: session, status } = useSession();
-  const [sourceData, setSourceData] = useState();
-  const initialMonth = searchParams.get("month");
-  const [selectedMonth, setSelectedMonth] = useState(initialMonth);
-
+  const [selectedMonth, setSelectedMonth] = useState();
   const today = new Date().toISOString().split("T")[0];
-
   const [formData, setFormData] = useState({
     date: today,
     source: "",
     amount: "",
     description: ""
   });
-
   const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
-    fetchSources();
-  }, [session, selectedMonth]);
-
-  useEffect(() => {
+    setSelectedMonth(searchParams.get("month") || "");
     if (searchParams.size > 0 && searchParams.has("amount")) {
       setFormData({
         date: searchParams.get("date")?.split("T")[0] || today,
@@ -46,14 +37,16 @@ const AddIncomePage = () => {
     }
   }, [searchParams]);
 
-  const fetchSources = async () => {
-    try {
+  const { data: sourceData, isLoading: isLoadingMonths } = useQuery({
+    queryKey: ["Sources", session?.user?.id, selectedMonth],
+    queryFn: async () => {
       const response = await axios.get(`${process.env.NEXT_PUBLIC_DOMAIN}/income/getsources`, {
         params: { userId: session?.user.id, month: selectedMonth }
       });
-      setSourceData(response.data);
-    } catch (err) {}
-  };
+      return response.data;
+    },
+    enabled: !!session?.user.id && !!selectedMonth
+  });
 
   const handleChange = (e) => {
     const { name, value } = e.target;

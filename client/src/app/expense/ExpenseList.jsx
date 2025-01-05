@@ -89,77 +89,80 @@ function ExpenseList() {
   if (status === "error") return <h1>{JSON.stringify(error)}</h1>;
 
   return (
-    <div className="lg:col-span-3 bg-white p-6 rounded-lg shadow h-full flex flex-col">
-      <h2 className="text-lg font-semibold text-primary mb-4">Expense List</h2>
+    <div className="flex flex-col gap-3 bg-white p-5 rounded-lg shadow h-full">
+      <h2 className="text-xl font-semibold text-primary">Expense List</h2>
 
-      <ul className="space-y-3 flex-grow overflow-y-auto">
-        {data?.expenses.map((expense) => (
-          <li key={expense?._id} className="flex justify-between items-center border-b pb-2">
-            <div className="flex flex-col gap-1">
-              <span className="text-gray-800 font-medium">{expense?.category}</span>
-              <div className="flex items-center gap-2 text-sm text-gray-500">
-                <span>
-                  {new Date(expense?.date).toLocaleDateString("en-IN", {
-                    day: "2-digit",
-                    month: "short",
-                    year: "numeric"
-                  })}
-                </span>
-                |<span className="italic text-gray-600">{expense?.description}</span>
+      <ul className="flex flex-col flex-grow overflow-y-auto">
+        {data?.expenses.map((expense, index) => (
+          <div key={expense?._id}>
+            <li className="flex justify-between items-center">
+              <div className="flex flex-col gap-0.5">
+                <span className="text-gray-800 text-sm font-medium">{expense?.category}</span>
+                <div className="flex items-center gap-2 text-xs text-gray-500">
+                  <span>
+                    {new Date(expense?.date).toLocaleDateString("en-IN", {
+                      day: "2-digit",
+                      month: "short",
+                      year: "numeric"
+                    })}
+                  </span>
+                  |<span className="italic text-gray-600">{expense?.description}</span>
+                </div>
               </div>
-            </div>
 
-            <div className="flex items-center gap-4">
-              <span className="text-lg font-bold text-gray-900">₹{expense?.amount}</span>
-              <div className="flex items-center gap-1">
-                <Link
-                  href={{
-                    pathname: "/expense/addexpense",
-                    query: {
-                      id: expense._id,
-                      date: expense.date,
-                      category: expense.category,
-                      amount: expense.amount,
-                      description: expense.description
-                    }
-                  }}
-                >
-                  <button className="p-1 rounded hover:bg-primary-300 hover:text-white transition-colors">
-                    <Pen className="w-4 h-4" />
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-bold text-gray-900">₹{expense?.amount}</span>
+                <div className="flex items-center gap-0.5">
+                  <Link
+                    href={{
+                      pathname: "/expense/addexpense",
+                      query: {
+                        id: expense._id,
+                        date: expense.date,
+                        category: expense.category,
+                        amount: expense.amount,
+                        description: expense.description
+                      }
+                    }}
+                  >
+                    <button className="p-1 rounded hover:bg-primary-300 hover:text-white transition-colors">
+                      <Pen className="w-4 h-4" />
+                    </button>
+                  </Link>
+                  <button
+                    className="p-1 rounded hover:bg-red-400 hover:text-white transition-colors"
+                    onClick={() => deleteExpenseMutation.mutate(expense._id)}
+                  >
+                    <Trash2 className="w-4 h-4" />
                   </button>
-                </Link>
-                <button
-                  className="p-1 rounded hover:bg-red-400 hover:text-white transition-colors"
-                  onClick={() => deleteExpenseMutation.mutate(expense._id)}
-                >
-                  <Trash2 className="w-4 h-4" />
-                </button>
-                <button
-                  className="p-1 rounded hover:bg-action-300 hover:text-white transition-colors"
-                  onClick={() => repeatExpenseMutation.mutate(expense)}
-                >
-                  <Repeat className="w-4 h-4" />
-                </button>
+                  <button
+                    className="p-1 rounded hover:bg-action-300 hover:text-white transition-colors"
+                    onClick={() => repeatExpenseMutation.mutate(expense)}
+                  >
+                    <Repeat className="w-4 h-4" />
+                  </button>
+                </div>
               </div>
-            </div>
-          </li>
+            </li>
+            {index < data?.expenses.length - 1 && <hr className="border-gray-300 my-1.5" />}
+          </div>
         ))}
       </ul>
 
       {/* Pagination Controls */}
-      <div className="flex justify-between mt-4 pt-4 border-t bottom-0 bg-white">
+      <div className="flex justify-between items-center mt-1 pt-4 border-t bottom-0 bg-white">
         <button
-          className="bg-gray-200 p-2 rounded hover:bg-gray-300 disabled:opacity-50"
+          className="text-sm bg-gray-200 p-1.5 rounded hover:bg-gray-300 disabled:opacity-50"
           onClick={() => setPage(data.previousPage)}
           disabled={data?.currentPage === 1}
         >
           Previous
         </button>
-        <span className="text-gray-600">
+        <span className="text-gray-600 text-sm">
           Page {data?.currentPage} of {data?.totalPages}
         </span>
         <button
-          className="bg-gray-200 p-2 rounded hover:bg-gray-300 disabled:opacity-50"
+          className="text-sm bg-gray-200 p-1.5 rounded hover:bg-gray-300 disabled:opacity-50"
           onClick={() => setPage(data.nextPage)}
           disabled={data?.currentPage === data?.totalPages}
         >

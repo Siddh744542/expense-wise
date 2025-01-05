@@ -53,7 +53,7 @@ const DashboardWrapper = ({ children }) => {
         <main
           className={`flex flex-col w-full h-full ${
             status === "authenticated" ? "py-4" : ""
-          } ${isSideBarCollapsed ? "pl-24 md:pl-24" : "pl-72 md:pl-72"}`}
+          } ${isSideBarCollapsed ? "ml-20 md:ml-20" : "ml-64 md:ml-64"}`}
         >
           {children}
         </main>

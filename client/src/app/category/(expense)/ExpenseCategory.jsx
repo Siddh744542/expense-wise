@@ -54,17 +54,17 @@ function ExpenseCategory() {
 
   if (isLoadingMonths || isLoadingCategory) return <Loader />;
   return (
-    <div className="pr-4">
-      <div className="flex justify-between items-center pb-3">
-        <h1 className="text-3xl font-semibold text-primary">Category Overview</h1>
-        <div className="flex gap-2 items-center">
+    <div>
+      <div className="flex justify-between items-center py-2 pt-0">
+        <h1 className="text-2xl font-semibold text-primary">Category Overview</h1>
+        <div className="flex gap-4">
           <div>
-            <label htmlFor="date-filter" className="mr-2 font-medium">
+            <label htmlFor="date-filter" className="mr-2 text-sm font-medium">
               Date:
             </label>
             <select
               id="date-filter"
-              className="border rounded-md px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-primary"
+              className="border text-sm rounded-md p-1.5 focus:outline-none focus:ring-2 focus:ring-primary"
               onChange={handleMonthChange}
               value={selectedMonth || ""}
             >
@@ -82,7 +82,7 @@ function ExpenseCategory() {
           </div>
 
           <button
-            className="bg-action text-white px-4 py-2 rounded-md hover:bg-opacity-90 transition"
+            className="bg-action text-sm text-white px-2 py-1 rounded-md hover:bg-opacity-90 transition"
             onClick={() => router.push("/category/addcategory")}
           >
             Add Categories
@@ -90,25 +90,34 @@ function ExpenseCategory() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-        <div className="col-span-1 lg:col-span-2">
-          <Categories categoryData={categoryData?.summaryData} refetch={refetch} />
+      <div className="grid grid-cols-1 gap-5 py-2">
+        {/* First Row */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-5">
+          {/* Categories */}
+          <div className="lg:col-span-2">
+            <Categories categoryData={categoryData?.summaryData} refetch={refetch} />
+          </div>
+          {/* Expense By Category Bar Chart */}
+          <div className="lg:col-span-3">
+            <ExpenseByCategoryBarchart
+              expenseCategoryData={categoryData?.summaryData?.categoryExpenses}
+            />
+          </div>
         </div>
 
-        <div className="h-full col-span-1 lg:col-span-3 ">
-          <ExpenseByCategoryBarchart
-            expenseCategoryData={categoryData?.summaryData?.categoryExpenses}
-          />
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-4">
-        <div className="h-full col-span-1 md:col-span-2 lg:col-span-2 ">
-          <CategorySpendingRadialChart categoryData={categoryData?.summaryData?.categoryExpenses} />
-        </div>
-
-        <div className="col-span-1 md:col-span-2 lg:col-span-2 ">
-          <CategorySpendingComparison comparisonData={categoryData?.comparisonData} />
+        {/* Second Row */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+          {/* Category Spending Radial Chart */}
+          <div className="md:col-span-2 lg:col-span-2 h-full">
+            <CategorySpendingRadialChart
+              categoryData={categoryData?.summaryData?.categoryExpenses}
+              isCategoryPage={true}
+            />
+          </div>
+          {/* Category Spending Comparison */}
+          <div className="md:col-span-2 lg:col-span-2 h-full">
+            <CategorySpendingComparison comparisonData={categoryData?.comparisonData} />
+          </div>
         </div>
       </div>
     </div>

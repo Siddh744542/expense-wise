@@ -1,67 +1,30 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useSession } from "next-auth/react";
-import toast from "react-hot-toast";
 import { Pen, Trash2, Repeat } from "lucide-react";
 import Link from "next/link";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import axios from "axios";
-import { useSearchParams } from "next/navigation";
 import { getExpenseList } from "@/api/query/expenseQuery";
+import { useDeleteExpenseMutation, useRepeatExpenseMutation } from "@/api/mutation/expanseMutation";
 
 function ExpenseList() {
   const { data: session } = useSession();
-
-  const searchParams = useSearchParams();
   const [page, setPage] = useState(1);
-  const queryClient = useQueryClient();
-  const [selectedMonth, setSelectedMonth] = useState(null);
-  useEffect(() => {
-    const initialMonth = searchParams.get("month");
-    setSelectedMonth(initialMonth);
-  }, [searchParams]);
-  // Fetch expenses with React Query
+  const deleteExpenseMutation = useDeleteExpenseMutation();
+  const repeatExpenseMutation = useRepeatExpenseMutation();
+
   const [expenseList, isLoadingList] = getExpenseList(page, session?.user?.id);
-  // Delete expense mutation
-  const deleteExpenseMutation = useMutation({
-    mutationFn: async (expenseId) => {
-      await axios.delete(`${process.env.NEXT_PUBLIC_DOMAIN}/expense/deleteexpense`, {
-        data: { userId: session?.user.id, expenseId }
-      });
-    },
-    onSuccess: () => {
-      toast.success("Expense deleted successfully!");
-      queryClient.invalidateQueries(["expenses", { page }]);
-      queryClient.invalidateQueries(["expenseSummaryData", session?.user?.id, selectedMonth]);
-    },
-    onError: () => {
-      toast.error("Failed to delete expense.");
-    }
-  });
 
-  // Repeat expense mutation
-  const repeatExpenseMutation = useMutation({
-    mutationFn: async (expense) => {
-      const today = new Date().toISOString().split("T")[0];
-      const repeatData = {
-        userId: session?.user.id,
-        date: today,
-        category: expense.category,
-        amount: expense.amount,
-        description: expense.description
-      };
-      await axios.post(`${process.env.NEXT_PUBLIC_DOMAIN}/expense/addexpense`, repeatData);
-    },
-
-    onSuccess: () => {
-      toast.success("Expense repeated successfully!");
-      queryClient.invalidateQueries(["expenses", { page }]);
-      queryClient.invalidateQueries(["expenseSummaryData", session?.user?.id, selectedMonth]);
-    },
-    onError: () => {
-      toast.error("Failed to repeat expense.");
-    }
-  });
+  const handleRepeat = (expense) => {
+    const today = new Date().toISOString().split("T")[0];
+    const repeatData = {
+      userId: session?.user.id,
+      date: today,
+      category: expense.category,
+      amount: expense.amount,
+      description: expense.description
+    };
+    repeatExpenseMutation.mutate(repeatData);
+  };
 
   return (
     <div className="flex flex-col gap-3 bg-white p-5 rounded-lg shadow h-full">
@@ -107,13 +70,18 @@ function ExpenseList() {
                     </Link>
                     <button
                       className="p-1 rounded hover:bg-red-400 hover:text-white transition-colors"
-                      onClick={() => deleteExpenseMutation.mutate(expense._id)}
+                      onClick={() =>
+                        deleteExpenseMutation.mutate({
+                          expenseId: expense._id,
+                          userId: session?.user?.id
+                        })
+                      }
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
                     <button
                       className="p-1 rounded hover:bg-action-300 hover:text-white transition-colors"
-                      onClick={() => repeatExpenseMutation.mutate(expense)}
+                      onClick={() => handleRepeat(expense)}
                     >
                       <Repeat className="w-4 h-4" />
                     </button>

@@ -10,6 +10,7 @@ export const Loader = () => (
     <img src="/loader.svg" alt="Loading..." className="w-24 h-24" />
   </div>
 );
+
 const DashboardWrapper = ({ children }) => {
   const [isSideBarCollapsed, setIsSideBarCollapsed] = useState(false);
   const { data: session, status } = useSession();

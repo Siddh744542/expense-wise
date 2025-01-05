@@ -7,18 +7,8 @@ import ExpenseSummary from "./ExpenseSummary";
 import CategoryChart from "./CategoryChart";
 import { useRouter, useSearchParams } from "next/navigation";
 import ExpenseList from "./ExpenseList";
-import formatMonth from "@/helper/formatMonth";
 import { Loader } from "../dashboardWrapper";
-
-export const fetchAvailableMonths = async (userId) => {
-  const response = await axios.get(
-    `${process.env.NEXT_PUBLIC_DOMAIN}/dashboard/getavailablemonths`,
-    {
-      params: { userId }
-    }
-  );
-  return response.data?.months;
-};
+import MonthFilter from "../(components)/MonthFilter";
 
 const fetchSummaryData = async ({ userId, month }) => {
   const response = await axios.get(`${process.env.NEXT_PUBLIC_DOMAIN}/expense/summary`, {
@@ -30,20 +20,12 @@ const fetchSummaryData = async ({ userId, month }) => {
 function Expenses() {
   const { data: session, status } = useSession();
   const router = useRouter();
-
   const searchParams = useSearchParams();
   const [selectedMonth, setSelectedMonth] = useState();
 
   useEffect(() => {
-    const initialMonth = searchParams.get("month");
-    setSelectedMonth(initialMonth);
+    setSelectedMonth(searchParams.get("month"));
   }, [searchParams]);
-  // Fetch available months
-  const { data: availableMonths, isLoading: isLoadingMonths } = useQuery({
-    queryKey: ["availableMonths", session?.user?.id],
-    queryFn: () => fetchAvailableMonths(session?.user?.id),
-    enabled: !!session?.user?.id
-  });
 
   // Fetch summary data
   const { data: summaryData, isLoading: isLoadingSummary } = useQuery({
@@ -52,15 +34,7 @@ function Expenses() {
     enabled: !!session?.user?.id && !!selectedMonth
   });
 
-  const handleMonthChange = (e) => {
-    const newMonth = e.target.value;
-    setSelectedMonth(newMonth);
-    const params = new URLSearchParams(searchParams.toString());
-    params.set("month", newMonth);
-    router.push(`?${params.toString()}`, { shallow: true });
-  };
-
-  if (isLoadingMonths || isLoadingSummary) {
+  if (selectedMonth === null || isLoadingSummary) {
     return <Loader />;
   }
 
@@ -72,28 +46,7 @@ function Expenses() {
 
         <div className="flex gap-4">
           {/* Date Filter */}
-          <div>
-            <label htmlFor="date-filter" className="mr-2 text-sm font-medium">
-              Date:
-            </label>
-            <select
-              id="date-filter"
-              className="border text-sm rounded-md p-1.5 focus:outline-none focus:ring-2 focus:ring-primary"
-              onChange={handleMonthChange}
-              value={selectedMonth}
-            >
-              <option value="">Select Month</option>
-              {availableMonths?.length > 0 ? (
-                availableMonths?.map((month) => (
-                  <option key={month} value={month}>
-                    {formatMonth(month)}
-                  </option>
-                ))
-              ) : (
-                <option disabled>No months available</option>
-              )}
-            </select>
-          </div>
+          <MonthFilter selectedMonth={selectedMonth} />
 
           <button
             className="bg-action text-sm text-white px-2 py-1 rounded-md hover:bg-opacity-90 transition"

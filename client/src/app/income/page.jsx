@@ -6,10 +6,9 @@ import { useRouter, useSearchParams } from "next/navigation";
 import IncomeSummary from "./IncomeSummary";
 import SourceChart from "./SourceChart";
 import IncomeList from "./IncomeList";
-import formatMonth from "@/helper/formatMonth";
 import { useQuery } from "@tanstack/react-query";
-import { fetchAvailableMonths } from "../expense/page";
 import { Loader } from "../dashboardWrapper";
+import MonthFilter from "../(components)/MonthFilter";
 
 const fetchSummary = async ({ userId, month }) => {
   const response = await axios.get(`${process.env.NEXT_PUBLIC_DOMAIN}/income/summary`, {
@@ -25,23 +24,8 @@ function Income() {
   const router = useRouter();
 
   useEffect(() => {
-    const initialMonth = searchParams.get("month");
-    setSelectedMonth(initialMonth);
+    setSelectedMonth(searchParams.get("month"));
   }, [searchParams]);
-
-  const handleMonthChange = (e) => {
-    const newMonth = e.target.value;
-    setSelectedMonth(newMonth);
-    const params = new URLSearchParams(searchParams.toString());
-    params.set("month", newMonth);
-    router.push(`?${params.toString()}`, { shallow: true });
-  };
-
-  const { data: availableMonths, isLoading: isLoadingMonths } = useQuery({
-    queryKey: ["availableMonths", session?.user?.id],
-    queryFn: () => fetchAvailableMonths(session?.user?.id),
-    enabled: !!session?.user?.id
-  });
 
   // Fetch summary data
   const { data: summaryData, isLoading: isLoadingSummary } = useQuery({
@@ -50,7 +34,7 @@ function Income() {
     enabled: !!session?.user?.id && !!selectedMonth
   });
 
-  if (isLoadingMonths || isLoadingSummary) return <Loader />;
+  if (selectedMonth === null || isLoadingSummary) return <Loader />;
   return (
     <div className="pr-5">
       {/* header */}
@@ -59,28 +43,7 @@ function Income() {
 
         <div className="flex gap-4">
           {/* Date Filter */}
-          <div>
-            <label htmlFor="date-filter" className="mr-2 text-sm font-medium">
-              Date:
-            </label>
-            <select
-              id="date-filter"
-              className="border text-sm rounded-md p-1.5 focus:outline-none focus:ring-2 focus:ring-primary"
-              onChange={handleMonthChange}
-              value={selectedMonth || ""}
-            >
-              <option value="">Select Month</option>
-              {availableMonths?.length > 0 ? (
-                availableMonths?.map((month) => (
-                  <option key={month} value={month}>
-                    {formatMonth(month)}
-                  </option>
-                ))
-              ) : (
-                <option disabled>No months available</option>
-              )}
-            </select>
-          </div>
+          <MonthFilter selectedMonth={selectedMonth} />
 
           <button
             className="bg-action text-sm text-white px-2 py-1 rounded-md hover:bg-opacity-90 transition"

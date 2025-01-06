@@ -42,7 +42,7 @@ const ConfirmDeleteModal = ({ isOpen, onClose, handleDelete }) => {
   );
 };
 
-function SourceSummary({ summaryData }) {
+function SourceSummary({ summaryData, refetch }) {
   const { data: session } = useSession();
   const searchParams = useSearchParams();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -64,7 +64,7 @@ function SourceSummary({ summaryData }) {
     setSelectedSource(null);
   };
 
-  const handleDeleteSource = (deleteIncomes) => {
+  const handleDeleteSource = async (deleteIncomes) => {
     const data = {
       userId: session?.user.id,
       sourceId: selectedSource,
@@ -72,6 +72,7 @@ function SourceSummary({ summaryData }) {
       month: selectedMonth
     };
     deleteSource.mutate(data);
+    await refetch();
     closeModal();
   };
 

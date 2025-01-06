@@ -9,9 +9,9 @@ export function useDeleteExpenseCategoryMutation() {
     mutationFn: async (data) => {
       await axios.delete(`${process.env.NEXT_PUBLIC_DOMAIN}/category/delete`, { data });
     },
-    onSuccess: async () => {
+    onSuccess: () => {
       toast.success("Category deleted successfully!");
-      await queryClient.invalidateQueries(["categoryData"]);
+      queryClient.invalidateQueries(["categoryData"]);
     },
     onError: () => {
       toast.error("Failed to delete category.");

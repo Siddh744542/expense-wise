@@ -1,7 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
+
 export function getExpenseCategoryData(userId, selectedMonth) {
-  const { data: expenseCategoryData, isLoading: isLoadingCategory } = useQuery({
+  const {
+    data: expenseCategoryData,
+    isLoading: isLoadingCategory,
+    refetch
+  } = useQuery({
     queryKey: ["categoryData", userId, selectedMonth],
     queryFn: async () => {
       const response = await axios.get(`${process.env.NEXT_PUBLIC_DOMAIN}/category`, {
@@ -11,5 +16,5 @@ export function getExpenseCategoryData(userId, selectedMonth) {
     },
     enabled: !!userId && !!selectedMonth
   });
-  return [expenseCategoryData, isLoadingCategory];
+  return [expenseCategoryData, isLoadingCategory, refetch];
 }

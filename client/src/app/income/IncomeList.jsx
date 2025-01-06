@@ -1,63 +1,31 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useSession } from "next-auth/react";
-import toast from "react-hot-toast";
 import { Pen, Trash2, Repeat, LogIn } from "lucide-react";
-import axios from "axios";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getIncomeList } from "@/api/query/incomeQuery";
+import { useDeleteIncomeMutation, useRepeatIncomeMutation } from "@/api/mutation/incomeMutation";
 
 function IncomeList() {
   const { data: session } = useSession();
-  const searchParams = useSearchParams();
   const [page, setPage] = useState(1);
-  const queryClient = useQueryClient();
-  const [selectedMonth, setSelectedMonth] = useState(null);
-  useEffect(() => {
-    setSelectedMonth(searchParams.get("month"));
-  }, [searchParams]);
   // Fetch expenses with React Query
   const [incomeList, isListLoading] = getIncomeList(page, session?.user?.id);
-  // Delete income mutation
-  const deleteIncomeMutation = useMutation({
-    mutationFn: async (incomeId) => {
-      await axios.delete(`${process.env.NEXT_PUBLIC_DOMAIN}/income/deleteincome`, {
-        data: { userId: session?.user.id, incomeId: incomeId }
-      });
-    },
-    onSuccess: () => {
-      toast.success("Income deleted successfully!");
-      queryClient.invalidateQueries(["incomes", { page }]);
-      queryClient.invalidateQueries(["incomeSummaryData", session?.user?.id, selectedMonth]);
-    },
-    onError: () => {
-      toast.error("Failed to delete income.");
-    }
-  });
-  const repeatIncomeMutation = useMutation({
-    mutationFn: async (income) => {
-      const today = new Date().toISOString().split("T")[0];
-      const repeatData = {
-        userId: session?.user.id,
-        date: today,
-        source: income.source,
-        amount: income.amount,
-        description: income.description
-      };
-      await axios.post(`${process.env.NEXT_PUBLIC_DOMAIN}/income/addincome`, repeatData);
-    },
+  const deleteIncomeMutation = useDeleteIncomeMutation();
 
-    onSuccess: () => {
-      toast.success("Income repeated successfully!");
-      queryClient.invalidateQueries(["incomes", { page }]);
-      queryClient.invalidateQueries(["incomeSummaryData", session?.user?.id, selectedMonth]);
-    },
-    onError: () => {
-      toast.error("Failed to repeat income.");
-    }
-  });
+  const repeatIncomeMutation = useRepeatIncomeMutation();
+
+  function handleRepeat(income) {
+    const today = new Date().toISOString().split("T")[0];
+    const repeatData = {
+      userId: session?.user.id,
+      date: today,
+      source: income.source,
+      amount: income.amount,
+      description: income.description
+    };
+    repeatIncomeMutation.mutate(repeatData);
+  }
 
   return (
     <div className="flex flex-col gap-3 bg-white p-5 rounded-lg shadow h-full">
@@ -104,13 +72,18 @@ function IncomeList() {
                     </Link>
                     <button
                       className="p-1 rounded hover:bg-red-400 hover:text-white transition-colors"
-                      onClick={() => deleteIncomeMutation.mutate(income?._id)}
+                      onClick={() =>
+                        deleteIncomeMutation.mutate({
+                          incomeId: income?._id,
+                          userId: session?.user?.id
+                        })
+                      }
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
                     <button
                       className="p-1 rounded hover:bg-action-300 hover:text-white transition-colors"
-                      onClick={() => repeatIncomeMutation.mutate(income)}
+                      onClick={() => handleRepeat(income)}
                     >
                       <Repeat className="w-4 h-4" />
                     </button>

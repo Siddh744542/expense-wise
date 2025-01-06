@@ -1,18 +1,14 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
-import toast from "react-hot-toast";
-import { useRouter, useSearchParams } from "next/navigation";
-import axios from "axios";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getSourceData } from "@/api/query/incomeQuery";
+import { useAddIncomeMutation, useUpdateIncomeMutation } from "@/api/mutation/incomeMutation";
 
 const AddIncomePage = () => {
-  const router = useRouter();
   const searchParams = useSearchParams();
-  const queryClient = useQueryClient();
-  const { data: session, status } = useSession();
+  const { data: session } = useSession();
   const [selectedMonth, setSelectedMonth] = useState();
   const today = new Date().toISOString().split("T")[0];
   const [formData, setFormData] = useState({
@@ -38,7 +34,7 @@ const AddIncomePage = () => {
     }
   }, [searchParams]);
 
-  const [sourceData, isLoadingMonths] = getSourceData(session?.user.id, selectedMonth);
+  const [sourceData] = getSourceData(session?.user.id, selectedMonth);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -47,47 +43,19 @@ const AddIncomePage = () => {
       [name]: value
     }));
     if (name === "date") {
-      const updatedMonth = value.slice(0, 7);
-      setSelectedMonth(updatedMonth);
+      setSelectedMonth(value.slice(0, 7));
     }
   };
 
   // Add income mutation
-  const addMutation = useMutation({
-    mutationFn: async (data) => {
-      return axios.post(`${process.env.NEXT_PUBLIC_DOMAIN}/income/addincome`, data);
-    },
-    onSuccess: () => {
-      toast.success("Income added successfully!");
-      queryClient.invalidateQueries(["incomes", { page: 1 }]);
-      queryClient.invalidateQueries(["incomeSummaryData", session?.user?.id, selectedMonth]);
-      router.push("/income");
-    },
-    onError: () => {
-      toast.error("Failed to add income.");
-    }
-  });
+  const addMutation = useAddIncomeMutation();
 
   // Update income mutation
-  const updateMutation = useMutation({
-    mutationFn: async (data) => {
-      return axios.put(`${process.env.NEXT_PUBLIC_DOMAIN}/income/updateincome`, data);
-    },
-    onSuccess: () => {
-      toast.success("Income updated successfully!");
-      queryClient.invalidateQueries(["incomes", { page: 1 }]);
-      queryClient.invalidateQueries(["incomeSummaryData", session?.user?.id, selectedMonth]);
-      router.push("/income");
-    },
-    onError: () => {
-      toast.error("Failed to update income.");
-    }
-  });
+  const updateMutation = useUpdateIncomeMutation();
 
   const handleSubmit = (e) => {
     e.preventDefault();
     const data = { userId: session?.user.id, ...formData };
-
     if (isEditing) {
       updateMutation.mutate({ ...data, incomeId: searchParams.get("id") });
     } else {

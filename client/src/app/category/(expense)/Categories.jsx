@@ -3,10 +3,7 @@ import React, { useState, useEffect } from "react";
 import { Pen, Trash2, X } from "lucide-react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
-import toast from "react-hot-toast";
-import axios from "axios";
 import { useSearchParams } from "next/navigation";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useDeleteExpenseCategoryMutation } from "@/api/mutation/expenseCategoryMutation";
 
 function getExpenseColor(expense, limit) {

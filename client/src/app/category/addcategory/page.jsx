@@ -16,10 +16,8 @@ const AddCategoryForm = () => {
     limit: "",
     month: new Date().toISOString().slice(0, 7)
   });
-  const [selectedMonth, setSelectedMonth] = useState(null);
 
   useEffect(() => {
-    setSelectedMonth(searchParams.get("month"));
     if (searchParams.size > 0 && searchParams.has("category")) {
       setFormData({
         category: searchParams.get("category") || "",

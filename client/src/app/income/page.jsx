@@ -1,12 +1,10 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
-import axios from "axios";
 import { useRouter, useSearchParams } from "next/navigation";
 import IncomeSummary from "./IncomeSummary";
 import SourceChart from "./SourceChart";
 import IncomeList from "./IncomeList";
-import { useQuery } from "@tanstack/react-query";
 import { Loader } from "../dashboardWrapper";
 import MonthFilter from "../(components)/MonthFilter";
 import { getIncomeSummary } from "@/api/query/incomeQuery";

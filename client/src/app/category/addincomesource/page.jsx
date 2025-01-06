@@ -1,26 +1,22 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
-import toast from "react-hot-toast";
-import { useRouter, useSearchParams } from "next/navigation";
-import axios from "axios";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useSearchParams } from "next/navigation";
+import {
+  useAddIncomeSourceMutation,
+  useUpdateIncomeSourceMutation
+} from "@/api/mutation/incomeSourceMutation";
 
 const AddIncomeSourceForm = () => {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const { data: session } = useSession();
-  const [selectedMonth, setSelectedMonth] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
-
-  const queryClient = useQueryClient();
   const [formData, setFormData] = useState({
     source: "",
-    month: ""
+    month: new Date().toISOString().slice(0, 7)
   });
 
   useEffect(() => {
-    setSelectedMonth(searchParams.get("month"));
     if (searchParams.size > 0 && searchParams.has("source")) {
       setFormData({
         source: searchParams.get("source") || "",
@@ -40,33 +36,9 @@ const AddIncomeSourceForm = () => {
     });
   };
 
-  const AddMutation = useMutation({
-    mutationFn: async (data) => {
-      await axios.post(`${process.env.NEXT_PUBLIC_DOMAIN}/incomesource/add`, data);
-    },
-    onSuccess: () => {
-      toast.success("Source added successfully!");
-      queryClient.invalidateQueries(["sourceData", session?.user?.id, selectedMonth]);
-      router.push("/category?isexpense=false");
-    },
-    onError: () => {
-      toast.error("Failed to add Source.");
-    }
-  });
+  const AddMutation = useAddIncomeSourceMutation();
 
-  const UpdateMutation = useMutation({
-    mutationFn: async (data) => {
-      await axios.put(`${process.env.NEXT_PUBLIC_DOMAIN}/incomesource/update`, data);
-    },
-    onSuccess: () => {
-      toast.success("Source updated successfully!");
-      queryClient.invalidateQueries(["sourceData", session?.user?.id, selectedMonth]);
-      router.push("/category?isexpense=false");
-    },
-    onError: () => {
-      toast.error("Failed to update Source.");
-    }
-  });
+  const UpdateMutation = useUpdateIncomeSourceMutation();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -81,55 +53,6 @@ const AddIncomeSourceForm = () => {
         userId: session?.user.id,
         ...formData
       });
-    }
-  };
-
-  const handleAdd = async () => {
-    try {
-      await toast
-        .promise(
-          axios.post(`${process.env.NEXT_PUBLIC_DOMAIN}/incomesource/add`, {
-            userId: session?.user.id,
-            ...formData
-          }),
-          {
-            loading: "Adding income source...",
-            success: "income source added successfully!",
-            error: "Failed to add income source."
-          }
-        )
-        .then(() => {
-          setFormData({
-            source: "",
-            month: ""
-          });
-          router.push("/category?isexpense=false");
-        });
-    } catch (error) {
-      console.error("Error adding category:", error);
-    }
-  };
-
-  const handleUpdate = async () => {
-    try {
-      await toast
-        .promise(
-          axios.put(`${process.env.NEXT_PUBLIC_DOMAIN}/incomesource/update`, {
-            userId: session?.user.id,
-            sourceId: searchParams.get("id"),
-            ...formData
-          }),
-          {
-            loading: "Updating income source...",
-            success: "Income Source updated successfully!",
-            error: "Failed to update income source."
-          }
-        )
-        .then(() => {
-          router.push("/category?isexpense=false");
-        });
-    } catch (error) {
-      console.error("Error updating income source:", error);
     }
   };
 

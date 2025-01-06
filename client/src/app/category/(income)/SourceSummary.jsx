@@ -3,10 +3,8 @@ import { Pen, Trash2, X } from "lucide-react";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
-import toast from "react-hot-toast";
-import axios from "axios";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useSearchParams } from "next/navigation";
+import { useDeleteIncomeSourceMutation } from "@/api/mutation/incomeSourceMutation";
 
 const ConfirmDeleteModal = ({ isOpen, onClose, handleDelete }) => {
   if (!isOpen) return null;
@@ -44,14 +42,14 @@ const ConfirmDeleteModal = ({ isOpen, onClose, handleDelete }) => {
   );
 };
 
-function SourceSummary({ summaryData, refetch }) {
-  const { data: session, status } = useSession();
+function SourceSummary({ summaryData }) {
+  const { data: session } = useSession();
   const searchParams = useSearchParams();
-  const queryClient = useQueryClient();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedSource, setSelectedSource] = useState(null);
   const [selectedMonth, setSelectedMonth] = useState(null);
 
+  const deleteSource = useDeleteIncomeSourceMutation();
   useEffect(() => {
     setSelectedMonth(searchParams.get("month"));
   }, [searchParams]);
@@ -67,31 +65,15 @@ function SourceSummary({ summaryData, refetch }) {
   };
 
   const handleDeleteSource = (deleteIncomes) => {
-    deleteSource.mutate(deleteIncomes);
+    const data = {
+      userId: session?.user.id,
+      sourceId: selectedSource,
+      deleteIncomes: deleteIncomes,
+      month: selectedMonth
+    };
+    deleteSource.mutate(data);
+    closeModal();
   };
-
-  const deleteSource = useMutation({
-    mutationFn: async (deleteIncomes) => {
-      await axios.delete(`${process.env.NEXT_PUBLIC_DOMAIN}/incomesource/delete`, {
-        data: {
-          userId: session?.user.id,
-          sourceId: selectedSource,
-          deleteIncomes: deleteIncomes,
-          month: selectedMonth
-        }
-      });
-    },
-    onSuccess: async () => {
-      toast.success("Income Source deleted successfully!");
-      await refetch();
-      closeModal();
-      // queryClient.invalidateQueries(["sourceData"]);
-    },
-    onError: () => {
-      toast.error("Failed to delete Income Source.");
-      closeModal();
-    }
-  });
 
   return (
     <div className="bg-white p-5 rounded-lg shadow-md h-full">
@@ -151,7 +133,6 @@ function SourceSummary({ summaryData, refetch }) {
         onClose={closeModal}
         handleDelete={handleDeleteSource}
       />
-      {/* {error && <p className="text-red-500">{error}</p>} */}
     </div>
   );
 }

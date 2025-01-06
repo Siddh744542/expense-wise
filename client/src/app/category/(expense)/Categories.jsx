@@ -7,6 +7,7 @@ import toast from "react-hot-toast";
 import axios from "axios";
 import { useSearchParams } from "next/navigation";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useDeleteExpenseCategoryMutation } from "@/api/mutation/expenseCategoryMutation";
 
 function getExpenseColor(expense, limit) {
   const percentage = (expense / limit) * 100;
@@ -62,14 +63,12 @@ const ConfirmDeleteModal = ({ isOpen, onClose, handleDelete }) => {
     </div>
   );
 };
-function Categories({ categoryData, refetch }) {
+function Categories({ categoryData }) {
   const { data: session } = useSession();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const searchParams = useSearchParams();
   const [selectedMonth, setSelectedMonth] = useState(null);
-
   const [selectedCategory, setSelectedCategory] = useState(null);
-  const queryClient = useQueryClient();
 
   useEffect(() => {
     setSelectedMonth(searchParams.get("month"));
@@ -84,33 +83,17 @@ function Categories({ categoryData, refetch }) {
     setSelectedCategory(null);
   };
   const handleDeleteCategory = (deleteExpenses) => {
-    deleteCategory.mutate(deleteExpenses);
+    const data = {
+      userId: session?.user.id,
+      categoryId: selectedCategory,
+      deleteExpenses: deleteExpenses,
+      month: selectedMonth
+    };
+    deleteCategory.mutate(data);
+    closeModal();
   };
 
-  const deleteCategory = useMutation({
-    mutationFn: async (deleteExpenses) => {
-      await axios.delete(`${process.env.NEXT_PUBLIC_DOMAIN}/category/delete`, {
-        data: {
-          userId: session?.user.id,
-          categoryId: selectedCategory,
-          deleteExpenses: deleteExpenses,
-          month: selectedMonth
-        }
-      });
-    },
-    onSuccess: async () => {
-      toast.success("Category deleted successfully!");
-      console.log("session id ", session?.user.id);
-      console.log("selected month ", selectedMonth);
-      await refetch();
-      //await queryClient.invalidateQueries(["categoryData"]);
-      closeModal();
-    },
-    onError: () => {
-      toast.error("Failed to delete category.");
-      closeModal();
-    }
-  });
+  const deleteCategory = useDeleteExpenseCategoryMutation();
   return (
     <div className="flex flex-col h-full bg-white p-5 rounded-lg shadow">
       <div className="flex flex-col gap-2">

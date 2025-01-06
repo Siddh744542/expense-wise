@@ -20,7 +20,7 @@ function ExpenseCategory() {
     setSelectedMonth(searchParams.get("month"));
   }, [searchParams]);
 
-  const [expenseCategoryData, isLoadingCategory, refetch] = getExpenseCategoryData(
+  const [expenseCategoryData, isLoadingCategory] = getExpenseCategoryData(
     session?.user?.id,
     selectedMonth
   );
@@ -47,7 +47,7 @@ function ExpenseCategory() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-5">
           {/* Categories */}
           <div className="lg:col-span-2">
-            <Categories categoryData={expenseCategoryData?.summaryData} refetch={refetch} />
+            <Categories categoryData={expenseCategoryData?.summaryData} />
           </div>
           {/* Expense By Category Bar Chart */}
           <div className="lg:col-span-3">

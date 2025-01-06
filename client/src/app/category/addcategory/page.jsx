@@ -1,21 +1,20 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
-import toast from "react-hot-toast";
-import { useRouter, useSearchParams } from "next/navigation";
-import axios from "axios";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useSearchParams } from "next/navigation";
+import {
+  useAddExpenseCategoryMutation,
+  useUpdateExpenseCategoryMutation
+} from "@/api/mutation/expenseCategoryMutation";
 
 const AddCategoryForm = () => {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const { data: session } = useSession();
-  const queryClient = useQueryClient();
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
     category: "",
     limit: "",
-    month: ""
+    month: new Date().toISOString().slice(0, 7)
   });
   const [selectedMonth, setSelectedMonth] = useState(null);
 
@@ -41,33 +40,9 @@ const AddCategoryForm = () => {
     });
   };
 
-  const AddMutation = useMutation({
-    mutationFn: async (data) => {
-      await axios.post(`${process.env.NEXT_PUBLIC_DOMAIN}/category/addcategory`, data);
-    },
-    onSuccess: () => {
-      toast.success("Category added successfully!");
-      queryClient.invalidateQueries(["categoryData", session?.user?.id, selectedMonth]);
-      router.push("/category");
-    },
-    onError: () => {
-      toast.error("Failed to add Category.");
-    }
-  });
+  const AddMutation = useAddExpenseCategoryMutation();
 
-  const UpdateMutation = useMutation({
-    mutationFn: async (data) => {
-      await axios.put(`${process.env.NEXT_PUBLIC_DOMAIN}/category/updatecategory`, data);
-    },
-    onSuccess: () => {
-      toast.success("Category updated successfully!");
-      queryClient.invalidateQueries(["categoryData", session?.user?.id, selectedMonth]);
-      router.push("/category");
-    },
-    onError: () => {
-      toast.error("Failed to update category.");
-    }
-  });
+  const UpdateMutation = useUpdateExpenseCategoryMutation();
 
   const handleSubmit = async (e) => {
     e.preventDefault();

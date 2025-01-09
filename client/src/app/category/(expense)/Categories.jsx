@@ -5,7 +5,6 @@ import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
 import { useDeleteExpenseCategoryMutation } from "@/api/mutation/expenseCategoryMutation";
-// import { getExpenseColor } from "@/helper/GetExpenseColor";
 
 function Categories({ categoryData, refetch }) {
   const { data: session } = useSession();

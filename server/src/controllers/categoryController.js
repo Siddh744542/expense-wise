@@ -149,3 +149,48 @@ export const getCategoryData = async (req, res) => {
     res.status(500).json({ message: "Failed to fetch category data." });
   }
 };
+
+export const addDefaultCategory = async (userId) => {
+  if (!userId) {
+    throw new Error("User ID is required to add default categories.");
+  }
+
+  const defaultCategories = [
+    { category: "grocery", limit: 1000 },
+    { category: "transport", limit: 1000 },
+    { category: "rent", limit: 5000 },
+    { category: "shopping", limit: 1000 },
+  ];
+
+  const currentMonth = new Date().toISOString().slice(0, 7); // Format YYYY-MM
+
+  try {
+    let monthlyExpense = await MonthlyExpense.findOne({
+      userId: new mongoose.Types.ObjectId(userId),
+      month: currentMonth,
+    });
+
+    if (!monthlyExpense) {
+      monthlyExpense = new MonthlyExpense({
+        userId: new mongoose.Types.ObjectId(userId),
+        month: currentMonth,
+        categoryExpenses: [],
+      });
+    }
+
+    const newCategories = defaultCategories.map((defaultCategory) => ({
+      category: defaultCategory.category,
+      limit: defaultCategory.limit,
+      amount: 0,
+    }));
+
+    monthlyExpense.categoryExpenses.push(...newCategories);
+
+    await monthlyExpense.save();
+    console.log("Default categories added successfully!");
+    return { message: "Default categories added successfully!" };
+  } catch (error) {
+    console.error("Error adding default categories:", error);
+    throw new Error("Internal server error while adding default categories.");
+  }
+};

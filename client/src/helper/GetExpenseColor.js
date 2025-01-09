@@ -1,6 +1,5 @@
 export function getExpenseColor(expense, limit) {
   const percentage = (expense / limit) * 100;
-
   if (percentage <= 10) {
     return "bg-progress-100"; // 0-10% of limit used
   } else if (percentage <= 20) {

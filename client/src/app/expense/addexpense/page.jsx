@@ -2,11 +2,11 @@
 
 import React, { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
-import toast from "react-hot-toast";
-import { useRouter, useSearchParams } from "next/navigation";
-import axios from "axios";
+import { useSearchParams } from "next/navigation";
 import { X, CircleAlert } from "lucide-react";
 import Link from "next/link";
+import { getCategories } from "@/api/query/expenseQuery";
+import { useAddExpenseMutation, useUpdateExpenseMutation } from "@/api/mutation/expanseMutation";
 
 const ConfirmLimitModal = ({ isOpen, onClose, handleConfirm, percentage }) => {
   if (!isOpen) return null;
@@ -51,14 +51,16 @@ const ConfirmLimitModal = ({ isOpen, onClose, handleConfirm, percentage }) => {
 };
 
 const DailyExpenseForm = () => {
-  const router = useRouter();
-  const searchParams = useSearchParams();
   const { data: session } = useSession();
-  const [categoryData, setCategoryData] = useState();
+  const searchParams = useSearchParams();
+
+  const addExpenseMutation = useAddExpenseMutation();
+  const updateExpenseMutation = useUpdateExpenseMutation();
+
+  const today = new Date().toISOString().split("T")[0];
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedMonth, setSelectedMonth] = useState(new Date().toISOString().slice(0, 7));
   const [limitReachedPercentage, setLimitReachedPercentage] = useState();
-  const today = new Date().toISOString().split("T")[0];
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
     date: today,
@@ -67,10 +69,7 @@ const DailyExpenseForm = () => {
     description: ""
   });
 
-  useEffect(() => {
-    fetchCategory();
-  }, [session]);
-
+  const [categoryData] = getCategories(session?.user.id, selectedMonth);
   useEffect(() => {
     if (searchParams.size > 0 && searchParams.has("amount")) {
       setFormData({
@@ -90,33 +89,16 @@ const DailyExpenseForm = () => {
       (cat) => cat.category === formData.category
     );
     if (categoryDetails) {
-      const percentage = ((categoryDetails.amount / categoryDetails.limit) * 100).toFixed(2);
-      setLimitReachedPercentage(percentage);
+      setLimitReachedPercentage(
+        ((categoryDetails.amount / categoryDetails.limit) * 100).toFixed(2)
+      );
     }
   }, [formData.category, categoryData]);
 
-  const fetchCategory = async () => {
-    try {
-      const response = await axios.get(`${process.env.NEXT_PUBLIC_DOMAIN}/expense/summary`, {
-        params: { userId: session?.user.id, month: selectedMonth }
-      });
-      setCategoryData(response.data);
-    } catch (err) {
-      console.error("Error fetching categories:", err);
-    }
-  };
-
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value
-    });
-    if (name === "date") {
-      const updatedMonth = value.slice(0, 7);
-      setSelectedMonth(updatedMonth);
-      fetchCategory();
-    }
+    setFormData((prev) => ({ ...prev, [name]: value }));
+    if (name === "date") setSelectedMonth(value.slice(0, 7));
   };
 
   const handleConfirm = (confirm) => {
@@ -126,66 +108,22 @@ const DailyExpenseForm = () => {
 
   const handleSubmit = async () => {
     if (isEditing) {
-      handleUpdatation();
+      updateExpenseMutation.mutate({
+        userId: session?.user.id,
+        expenseId: searchParams.get("id"),
+        ...formData
+      });
     } else {
-      handleAdd();
+      addExpenseMutation.mutate({
+        userId: session?.user.id,
+        ...formData
+      });
     }
   };
 
   const handleLimitReachedPopUp = (e) => {
     e.preventDefault();
     limitReachedPercentage > 90 ? setIsModalOpen(true) : handleSubmit();
-  };
-
-  const handleAdd = async () => {
-    try {
-      await toast
-        .promise(
-          axios.post(`${process.env.NEXT_PUBLIC_DOMAIN}/expense/addexpense`, {
-            userId: session?.user.id,
-            ...formData
-          }),
-          {
-            loading: "Adding expense...",
-            success: "Expense Added successfully!",
-            error: "Failed to Add expense."
-          }
-        )
-        .then(() => {
-          setFormData({
-            date: today,
-            category: "",
-            amount: "",
-            description: ""
-          });
-          router.push("/expense");
-        });
-    } catch (error) {
-      console.error("Error adding expense:", error);
-    }
-  };
-
-  const handleUpdatation = async () => {
-    try {
-      await toast
-        .promise(
-          axios.put(`${process.env.NEXT_PUBLIC_DOMAIN}/expense/updateexpense`, {
-            userId: session?.user.id,
-            expenseId: searchParams.get("id"),
-            ...formData
-          }),
-          {
-            loading: "Updating expense...",
-            success: "Expense updated successfully!",
-            error: "Failed to update expense."
-          }
-        )
-        .then(() => {
-          router.push("/expense");
-        });
-    } catch (err) {
-      console.error("Error updating expense:", err);
-    }
   };
 
   return (

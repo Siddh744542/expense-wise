@@ -47,7 +47,7 @@ function ExpenseSummary({ summaryData }) {
               </div>
             ))
           ) : (
-            <p className="text-gray-600">No category expenses available</p>
+            <p className="text-gray-600">No expenses </p>
           )}
         </div>
       </div>

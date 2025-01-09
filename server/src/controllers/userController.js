@@ -1,6 +1,7 @@
 import User from "../../models/userModel.js";
 import bcryptjs from "bcryptjs";
 import jwt from "jsonwebtoken";
+import { addDefaultCategory } from "./categoryController.js";
 
 export const login = async (req, res, next) => {
   try {
@@ -58,6 +59,8 @@ export const signup = async (req, res) => {
       password: hashedPassword,
     });
     const savedUser = await newUser.save();
+    console.log(savedUser);
+    addDefaultCategory(savedUser._id);
     return res.status(201).json({
       message: "User is created Successfully",
       success: true,

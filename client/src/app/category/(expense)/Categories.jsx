@@ -3,73 +3,15 @@ import React, { useState, useEffect } from "react";
 import { Pen, Trash2, X } from "lucide-react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
-import toast from "react-hot-toast";
-import axios from "axios";
 import { useSearchParams } from "next/navigation";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useDeleteExpenseCategoryMutation } from "@/api/mutation/expenseCategoryMutation";
 
-function getExpenseColor(expense, limit) {
-  const percentage = (expense / limit) * 100;
-  if (percentage <= 10) {
-    return "bg-progress-100"; // 0-10% of limit used
-  } else if (percentage <= 20) {
-    return "bg-progress-200"; // 10-20% of limit used
-  } else if (percentage <= 35) {
-    return "bg-progress-300"; // 20-35% of limit used
-  } else if (percentage <= 50) {
-    return "bg-progress-400"; // 35-50% of limit used
-  } else if (percentage <= 65) {
-    return "bg-progress-500"; // 50-65% of limit used
-  } else if (percentage <= 80) {
-    return "bg-progress-600"; // 65-80% of limit used
-  } else if (percentage <= 90) {
-    return "bg-progress-700"; // 80-90% of limit used
-  } else if (percentage <= 100) {
-    return "bg-progress-800"; // 90-100% of limit used
-  } else {
-    return "bg-progress-900"; // Over limit
-  }
-}
-const ConfirmDeleteModal = ({ isOpen, onClose, handleDelete }) => {
-  if (!isOpen) return null;
-  return (
-    <div className="fixed inset-0 flex items-center justify-center z-50">
-      <div className="bg-black opacity-50 absolute inset-0"></div>
-      <div className="relative bg-white p-6 rounded-lg shadow-lg z-10">
-        <button
-          className="absolute top-2 right-2 p-2 rounded-full hover:bg-gray-200 transition-colors"
-          onClick={onClose}
-        >
-          <X className="w-5 h-5 text-gray-600" />
-        </button>
-        <h3 className="text-lg font-semibold mb-4">Delete Category</h3>
-        <p className="mb-4">Do you want to delete all expenses for this category as well?</p>
-        <div className="flex justify-end space-x-4">
-          <button
-            className="px-4 py-2 bg-gray-300 text-black rounded hover:bg-gray-400"
-            onClick={() => handleDelete(false)}
-          >
-            No, Keep Expenses
-          </button>
-          <button
-            className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
-            onClick={() => handleDelete(true)}
-          >
-            Yes, Delete All
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-};
 function Categories({ categoryData, refetch }) {
   const { data: session } = useSession();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const searchParams = useSearchParams();
   const [selectedMonth, setSelectedMonth] = useState(null);
-
   const [selectedCategory, setSelectedCategory] = useState(null);
-  const queryClient = useQueryClient();
 
   useEffect(() => {
     setSelectedMonth(searchParams.get("month"));
@@ -83,34 +25,19 @@ function Categories({ categoryData, refetch }) {
     setIsModalOpen(false);
     setSelectedCategory(null);
   };
-  const handleDeleteCategory = (deleteExpenses) => {
-    deleteCategory.mutate(deleteExpenses);
+  const handleDeleteCategory = async (deleteExpenses) => {
+    const data = {
+      userId: session?.user.id,
+      categoryId: selectedCategory,
+      deleteExpenses: deleteExpenses,
+      month: selectedMonth
+    };
+    deleteCategory.mutate(data);
+    await refetch();
+    closeModal();
   };
 
-  const deleteCategory = useMutation({
-    mutationFn: async (deleteExpenses) => {
-      await axios.delete(`${process.env.NEXT_PUBLIC_DOMAIN}/category/delete`, {
-        data: {
-          userId: session?.user.id,
-          categoryId: selectedCategory,
-          deleteExpenses: deleteExpenses,
-          month: selectedMonth
-        }
-      });
-    },
-    onSuccess: async () => {
-      toast.success("Category deleted successfully!");
-      console.log("session id ", session?.user.id);
-      console.log("selected month ", selectedMonth);
-      await refetch();
-      //await queryClient.invalidateQueries(["categoryData"]);
-      closeModal();
-    },
-    onError: () => {
-      toast.error("Failed to delete category.");
-      closeModal();
-    }
-  });
+  const deleteCategory = useDeleteExpenseCategoryMutation();
   return (
     <div className="flex flex-col h-full bg-white p-5 rounded-lg shadow">
       <div className="flex flex-col gap-2">
@@ -190,4 +117,61 @@ function Categories({ categoryData, refetch }) {
     </div>
   );
 }
+
+const ConfirmDeleteModal = ({ isOpen, onClose, handleDelete }) => {
+  if (!isOpen) return null;
+  return (
+    <div className="fixed inset-0 flex items-center justify-center z-50">
+      <div className="bg-black opacity-50 absolute inset-0"></div>
+      <div className="relative bg-white p-6 rounded-lg shadow-lg z-10">
+        <button
+          className="absolute top-2 right-2 p-2 rounded-full hover:bg-gray-200 transition-colors"
+          onClick={onClose}
+        >
+          <X className="w-5 h-5 text-gray-600" />
+        </button>
+        <h3 className="text-lg font-semibold mb-4">Delete Category</h3>
+        <p className="mb-4">Do you want to delete all expenses for this category as well?</p>
+        <div className="flex justify-end space-x-4">
+          <button
+            className="px-4 py-2 bg-gray-300 text-black rounded hover:bg-gray-400"
+            onClick={() => handleDelete(false)}
+          >
+            No, Keep Expenses
+          </button>
+          <button
+            className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+            onClick={() => handleDelete(true)}
+          >
+            Yes, Delete All
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export function getExpenseColor(expense, limit) {
+  const percentage = (expense / limit) * 100;
+  if (percentage <= 10) {
+    return "bg-progress-100"; // 0-10% of limit used
+  } else if (percentage <= 20) {
+    return "bg-progress-200"; // 10-20% of limit used
+  } else if (percentage <= 35) {
+    return "bg-progress-300"; // 20-35% of limit used
+  } else if (percentage <= 50) {
+    return "bg-progress-400"; // 35-50% of limit used
+  } else if (percentage <= 65) {
+    return "bg-progress-500"; // 50-65% of limit used
+  } else if (percentage <= 80) {
+    return "bg-progress-600"; // 65-80% of limit used
+  } else if (percentage <= 90) {
+    return "bg-progress-700"; // 80-90% of limit used
+  } else if (percentage <= 100) {
+    return "bg-progress-800"; // 90-100% of limit used
+  } else {
+    return "bg-progress-900"; // Over limit
+  }
+}
+
 export default Categories;

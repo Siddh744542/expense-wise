@@ -17,25 +17,29 @@ function CategoryChart({ summaryData }) {
     <div className="h-full bg-white p-4 rounded-lg shadow">
       <h2 className="text-lg font-semibold text-primary">Expense By Category</h2>
       <div className="h-60">
-        <ResponsiveContainer width="100%" height="100%">
-          <PieChart>
-            <Pie
-              data={aggregatedData}
-              cx="50%"
-              cy="50%"
-              outerRadius={90}
-              fill="#888fd8"
-              dataKey="value"
-              onMouseEnter={(_, index) => setActiveIndex(index)}
-            >
-              {aggregatedData?.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={ChartColors[index % ChartColors.length]} />
-              ))}
-            </Pie>
-            <Tooltip />
-            <Legend iconSize={0} height={20} />
-          </PieChart>
-        </ResponsiveContainer>
+        {aggregatedData?.length > 0 ? (
+          <ResponsiveContainer width="100%" height="100%">
+            <PieChart>
+              <Pie
+                data={aggregatedData}
+                cx="50%"
+                cy="50%"
+                outerRadius={90}
+                fill="#888fd8"
+                dataKey="value"
+                onMouseEnter={(_, index) => setActiveIndex(index)}
+              >
+                {aggregatedData?.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={ChartColors[index % ChartColors.length]} />
+                ))}
+              </Pie>
+              <Tooltip />
+              <Legend iconSize={0} height={20} />
+            </PieChart>
+          </ResponsiveContainer>
+        ) : (
+          <div className="text-gray-600 text-sm">No data available</div>
+        )}
       </div>
     </div>
   );

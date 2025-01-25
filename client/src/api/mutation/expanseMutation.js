@@ -2,12 +2,13 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
+import { SERVER_URL } from "../../../constants";
 
 export function useDeleteExpenseMutation() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async ({ expenseId, userId }) => {
-      await axios.delete(`${process.env.NEXT_PUBLIC_DOMAIN}/expense/deleteexpense`, {
+      await axios.delete(`${SERVER_URL}/expense/deleteexpense`, {
         data: { userId, expenseId }
       });
     },
@@ -26,7 +27,7 @@ export function useRepeatExpenseMutation() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (repeatData) => {
-      await axios.post(`${process.env.NEXT_PUBLIC_DOMAIN}/expense/addexpense`, repeatData);
+      await axios.post(`${SERVER_URL}/expense/addexpense`, repeatData);
     },
     onSuccess: () => {
       toast.success("Expense repeated successfully!");
@@ -44,7 +45,7 @@ export function useAddExpenseMutation() {
   const router = useRouter();
   return useMutation({
     mutationFn: async (formData) => {
-      await axios.post(`${process.env.NEXT_PUBLIC_DOMAIN}/expense/addexpense`, formData);
+      await axios.post(`${SERVER_URL}/expense/addexpense`, formData);
     },
     onSuccess: () => {
       toast.success("Expense Add successfully!");
@@ -63,7 +64,7 @@ export function useUpdateExpenseMutation() {
   const router = useRouter();
   return useMutation({
     mutationFn: async (formData) => {
-      await axios.put(`${process.env.NEXT_PUBLIC_DOMAIN}/expense/updateexpense`, formData);
+      await axios.put(`${SERVER_URL}/expense/updateexpense`, formData);
     },
     onSuccess: () => {
       toast.success("Expense Updated successfully!");

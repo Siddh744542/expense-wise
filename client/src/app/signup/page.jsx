@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { useSession } from "next-auth/react";
+import { SERVER_URL } from "../../../constants";
 const SignUp = () => {
   const router = useRouter();
   const { data: session, status } = useSession();
@@ -27,7 +28,7 @@ const SignUp = () => {
     } else {
       setError("");
       try {
-        await axios.post(`${process.env.NEXT_PUBLIC_DOMAIN}/users/signup`, {
+        await axios.post(`${SERVER_URL}/users/signup`, {
           username: userName,
           email: email,
           password: password

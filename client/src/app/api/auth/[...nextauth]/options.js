@@ -1,5 +1,6 @@
 import CredentialsProvider from "next-auth/providers/credentials";
 import { signIn } from "next-auth/react";
+import { SERVER_URL } from "../../../../../constants";
 export const options = {
   providers: [
     CredentialsProvider({
@@ -9,7 +10,7 @@ export const options = {
         password: { label: "Password", type: "password" }
       },
       async authorize(credentials, req) {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_DOMAIN}/users/login`, {
+        const res = await fetch(`${SERVER_URL}/users/login`, {
           method: "POST",
           body: JSON.stringify(credentials),
           headers: { "Content-Type": "application/json" }

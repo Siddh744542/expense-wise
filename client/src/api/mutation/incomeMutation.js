@@ -2,12 +2,13 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
+import { SERVER_URL } from "../../../constants";
 
 export function useDeleteIncomeMutation() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async ({ incomeId, userId }) => {
-      await axios.delete(`${process.env.NEXT_PUBLIC_DOMAIN}/income/deleteincome`, {
+      await axios.delete(`${SERVER_URL}/income/deleteincome`, {
         data: { userId: userId, incomeId: incomeId }
       });
     },
@@ -26,7 +27,7 @@ export function useRepeatIncomeMutation() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (repeatData) => {
-      await axios.post(`${process.env.NEXT_PUBLIC_DOMAIN}/income/addincome`, repeatData);
+      await axios.post(`${SERVER_URL}/income/addincome`, repeatData);
     },
 
     onSuccess: () => {
@@ -45,7 +46,7 @@ export function useAddIncomeMutation() {
   const router = useRouter();
   return useMutation({
     mutationFn: async (data) => {
-      return axios.post(`${process.env.NEXT_PUBLIC_DOMAIN}/income/addincome`, data);
+      return axios.post(`${SERVER_URL}/income/addincome`, data);
     },
     onSuccess: () => {
       toast.success("Income added successfully!");
@@ -63,7 +64,7 @@ export function useUpdateIncomeMutation() {
   const router = useRouter();
   return useMutation({
     mutationFn: async (data) => {
-      return axios.put(`${process.env.NEXT_PUBLIC_DOMAIN}/income/updateincome`, data);
+      return axios.put(`${SERVER_URL}/income/updateincome`, data);
     },
     onSuccess: () => {
       toast.success("Income updated successfully!");

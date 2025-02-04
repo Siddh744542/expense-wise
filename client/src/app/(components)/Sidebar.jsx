@@ -2,7 +2,7 @@
 import React from "react";
 import Link from "next/link";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
-import { useSession, signOut } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import {
   LayoutDashboard,
   ReceiptIndianRupee,
@@ -14,6 +14,7 @@ import {
   ChevronLeft,
   ChevronRight
 } from "lucide-react";
+import { Logout } from "./logout";
 
 function SidebarLink({ label, Icon, href, isCollapsed }) {
   const pathname = usePathname();
@@ -47,12 +48,6 @@ function SidebarLink({ label, Icon, href, isCollapsed }) {
 function Sidebar({ isCollapsed, toggleSidebar }) {
   const { data: session } = useSession();
   const router = useRouter();
-
-  function onLogout() {
-    signOut({ redirect: false }).then(() => {
-      router.push("/login");
-    });
-  }
 
   return (
     <div
@@ -118,11 +113,8 @@ function Sidebar({ isCollapsed, toggleSidebar }) {
             </div>
           </div>
           {/* Logout Section */}
-          <div className="flex items-center px-6 cursor-pointer text-black hover:text-gray-700">
-            <LogOut className="mr-2" size={20} />
-            <button className="text-sm font-semibold" onClick={onLogout}>
-              Logout
-            </button>
+          <div className="flex items-center px-3 cursor-pointer  hover:text-gray-700">
+            <Logout />
           </div>
         </div>
       )}

@@ -13,17 +13,13 @@ body {
   width: 10px;
 }
 
-::-webkit-scrollbar-track {
-  background: #f6f6ff;
-}
-
 ::-webkit-scrollbar-thumb {
-  background: #8a86c8;
+  background: #c1c1c1;
   border-radius: 5px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #474292;
+  background: #8e8e8e;
 }
 
 .recharts-legend-item-text,

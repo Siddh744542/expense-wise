@@ -45,12 +45,19 @@ function ExpenseList() {
                         year: "numeric"
                       })}
                     </span>
-                    |<span className="italic text-gray-600">{expense?.description}</span>
+                    {expense?.description && "|"}
+                    <span className="italic text-gray-600">{expense?.description}</span>
                   </div>
                 </div>
 
                 <div className="flex items-center gap-2">
-                  <span className="text-sm font-bold text-gray-900">₹{expense?.amount}</span>
+                  <button
+                    className="p-1 text-gray-700 rounded hover:bg-primary-300 hover:text-white transition-colors"
+                    onClick={() => handleRepeat(expense)}
+                  >
+                    <Repeat className="w-4 h-4" />
+                  </button>
+                  <span className="text-sm font-semibold text-gray-700">₹{expense?.amount}</span>
                   <div className="flex items-center gap-0.5">
                     <Link
                       href={{
@@ -64,12 +71,13 @@ function ExpenseList() {
                         }
                       }}
                     >
-                      <button className="p-1 rounded hover:bg-primary-300 hover:text-white transition-colors">
+                      <button className="p-1 text-action-600 rounded hover:bg-action-300 hover:text-white transition-colors">
                         <Pen className="w-4 h-4" />
                       </button>
                     </Link>
+
                     <button
-                      className="p-1 rounded hover:bg-red-400 hover:text-white transition-colors"
+                      className="p-1 text-red-600 rounded hover:bg-red-400 hover:text-white transition-colors"
                       onClick={() =>
                         deleteExpenseMutation.mutate({
                           expenseId: expense._id,
@@ -78,12 +86,6 @@ function ExpenseList() {
                       }
                     >
                       <Trash2 className="w-4 h-4" />
-                    </button>
-                    <button
-                      className="p-1 rounded hover:bg-action-300 hover:text-white transition-colors"
-                      onClick={() => handleRepeat(expense)}
-                    >
-                      <Repeat className="w-4 h-4" />
                     </button>
                   </div>
                 </div>

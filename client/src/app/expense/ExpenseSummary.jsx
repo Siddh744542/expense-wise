@@ -13,10 +13,10 @@ function ExpenseSummary({ summaryData }) {
         </div>
 
         {/* Category Expenses */}
-        <div className="flex flex-col">
+        <div className="flex flex-col overflow-y-auto h-[12rem]">
           {summaryData?.categoryExpenses?.length > 0 ? (
             summaryData.categoryExpenses.map((categoryExpense, index) => (
-              <div key={categoryExpense._id}>
+              <div key={categoryExpense._id} className="pr-2">
                 <div className="flex justify-between items-center">
                   {/* Category Info */}
                   <div>

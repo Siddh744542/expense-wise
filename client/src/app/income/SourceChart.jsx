@@ -14,9 +14,9 @@ function SourceChart({ summaryData, isCategory }) {
   const aggregatedData = aggregateSourceData(summaryData);
 
   return (
-    <div className="flex flex-col bg-white p-5 rounded-lg shadow-md self-end h-full">
+    <div className="flex flex-col bg-white p-5 rounded-lg shadow-md h-full">
       <h2 className="text-lg font-semibold text-primary">Income by Source</h2>
-      <div className={`${isCategory ? "h-52" : "h-72"}`}>
+      <div className={`${isCategory ? "h-52" : "h-60"}`}>
         {aggregatedData?.length > 0 ? (
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
@@ -34,7 +34,7 @@ function SourceChart({ summaryData, isCategory }) {
                 ))}
               </Pie>
               <Tooltip />
-              <Legend iconSize={0} height={13} />
+              <Legend iconSize={0} height={20} />
             </PieChart>
           </ResponsiveContainer>
         ) : (

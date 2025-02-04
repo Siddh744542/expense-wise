@@ -9,7 +9,8 @@ function formatTopThreeData(expenseData, incomeData) {
       ?.map((category) => ({
         category: category.category,
         amount: category.amount,
-        percentage: ((category.amount / totalExpenses) * 100).toFixed(2)
+        percentage:
+          totalExpenses > 0 ? ((category.amount / totalExpenses) * 100).toFixed(2) : "0.00"
       }))
       .sort((a, b) => b.amount - a.amount)
       .slice(0, 3) || [];
@@ -19,13 +20,14 @@ function formatTopThreeData(expenseData, incomeData) {
       ?.map((source) => ({
         source: source.source,
         total: source.total,
-        percentage: ((source.total / totalIncome) * 100).toFixed(2)
+        percentage: totalIncome > 0 ? ((source.total / totalIncome) * 100).toFixed(2) : "0.00"
       }))
       .sort((a, b) => b.total - a.total)
       .slice(0, 3) || [];
 
   return { topExpenseCategories, topIncomeSources };
 }
+
 const TopThreeOverview = ({ expenseData, incomeData }) => {
   const { topExpenseCategories, topIncomeSources } = formatTopThreeData(expenseData, incomeData);
 

@@ -9,7 +9,7 @@ import CategorySpendingComparison from "../category/(expense)/CategorySpendingCo
 import { useSearchParams } from "next/navigation";
 import { Loader } from "../dashboardWrapper";
 import MonthFilter from "../(components)/MonthFilter";
-import { getDashboardData } from "@/api/query/dashboardquery";
+import { getDashboardData } from "@/api/query/dashboardQuery";
 
 function Dashboard() {
   const { data: session, status } = useSession();
@@ -39,34 +39,34 @@ function Dashboard() {
           <MonthFilter selectedMonth={selectedMonth} />
         </div>
       </div>
-      <div className="grid grid-cols-10 gap-5 py-1">
-        <div className="col-span-10 md:col-span-3">
+      <div className="grid grid-cols-6 gap-5 py-1">
+        <div className="col-span-6 md:col-span-2">
           <MonthlyOverview
             expenseData={dashbaordData?.expenseData}
             incomeData={dashbaordData?.incomeData}
           />
         </div>
 
-        <div className="col-span-10 md:col-span-3">
+        <div className="col-span-6 md:col-span-2">
           <TopThreeOverview
             expenseData={dashbaordData?.expenseData}
             incomeData={dashbaordData?.incomeData}
           />
         </div>
 
-        <div className="col-span-10 md:col-span-4">
+        <div className="col-span-6 md:col-span-2">
           <CategorySpendingRadialChart
             categoryData={dashbaordData?.expenseData?.categoryExpenses}
           />
         </div>
 
-        <div className="col-span-10 md:col-span-5">
+        <div className="col-span-6 md:col-span-3">
           <ExpenseByCategoryBarchart
             expenseCategoryData={dashbaordData?.expenseData?.categoryExpenses}
           />
         </div>
 
-        <div className="col-span-10 md:col-span-5">
+        <div className="col-span-6 md:col-span-3">
           <CategorySpendingComparison comparisonData={dashbaordData?.comparisonData} />
         </div>
       </div>

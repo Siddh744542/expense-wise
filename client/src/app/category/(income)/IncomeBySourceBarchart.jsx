@@ -16,7 +16,7 @@ function IncomeBySourceBarchart({ incomeSourceData }) {
   return (
     <div className="bg-white p-4 shadow-md rounded-lg h-full ">
       <h2 className="text-lg text-primary font-semibold pb-2">Monthly Income by Source</h2>
-      <div className="flex-grow h-60">
+      <div className="flex-grow h-48">
         {aggregatedData?.length > 0 ? (
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={aggregatedData}>

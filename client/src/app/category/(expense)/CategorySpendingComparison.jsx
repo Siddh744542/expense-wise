@@ -1,4 +1,4 @@
-import React, { useState, useEffect, use } from "react";
+import React from "react";
 import { ArrowUp, ArrowDown } from "lucide-react";
 
 const CategorySpendingComparison = ({ comparisonData }) => {
@@ -8,10 +8,10 @@ const CategorySpendingComparison = ({ comparisonData }) => {
         <h2 className="text-xl text-primary-500 font-semibold">Category Comparison</h2>
         <p className="text-sm text-gray-400">This Month vs Last Month</p>
       </div>
-      <div className="flex flex-col">
+      <div className="flex flex-col overflow-y-auto h-[13rem]">
         {comparisonData?.length > 0 ? (
           comparisonData?.map((item, index) => (
-            <div key={index}>
+            <div key={index} className="pr-2">
               <div className="flex justify-between items-center">
                 <div>
                   <h3 className="text-sm text-gray-700 font-semibold">{item.category}</h3>

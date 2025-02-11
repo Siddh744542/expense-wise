@@ -5,7 +5,7 @@ import { useSearchParams } from "next/navigation";
 import {
   useAddIncomeSourceMutation,
   useUpdateIncomeSourceMutation
-} from "@/api/mutation/incomeSourceMutation";
+} from "@/react-query/mutation/incomeSourceMutation";
 
 const AddIncomeSourceForm = () => {
   const searchParams = useSearchParams();

@@ -7,7 +7,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import ExpenseList from "./ExpenseList";
 import { Loader } from "../dashboardWrapper";
 import MonthFilter from "../(components)/MonthFilter";
-import { getExpenseSummary } from "@/api/query/expenseQuery";
+import { getExpenseSummary } from "@/react-query/query/expenseQuery";
 
 function Expenses() {
   const { data: session, status } = useSession();

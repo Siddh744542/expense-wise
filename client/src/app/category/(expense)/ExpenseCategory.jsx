@@ -8,7 +8,7 @@ import CategorySpendingRadialChart from "./CategorySpendingRadialChart";
 import CategorySpendingComparison from "./CategorySpendingComparison";
 import { Loader } from "@/app/dashboardWrapper";
 import MonthFilter from "@/app/(components)/MonthFilter";
-import { getExpenseCategoryData } from "@/api/query/category/expenseCategoryQuery";
+import { getExpenseCategoryData } from "@/react-query/query/category/expenseCategoryQuery";
 
 function ExpenseCategory() {
   const { data: session, status } = useSession();

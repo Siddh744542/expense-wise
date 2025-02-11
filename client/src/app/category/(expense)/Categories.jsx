@@ -4,7 +4,7 @@ import { Pen, Trash2, X } from "lucide-react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
-import { useDeleteExpenseCategoryMutation } from "@/api/mutation/expenseCategoryMutation";
+import { useDeleteExpenseCategoryMutation } from "@/react-query/mutation/expenseCategoryMutation";
 
 function Categories({ categoryData, refetch }) {
   const { data: session } = useSession();

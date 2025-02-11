@@ -3,8 +3,11 @@ import React, { useState } from "react";
 import { useSession } from "next-auth/react";
 import { Pen, Trash2, Repeat, LogIn } from "lucide-react";
 import Link from "next/link";
-import { getIncomeList } from "@/api/query/incomeQuery";
-import { useDeleteIncomeMutation, useRepeatIncomeMutation } from "@/api/mutation/incomeMutation";
+import { getIncomeList } from "@/react-query/query/incomeQuery";
+import {
+  useDeleteIncomeMutation,
+  useRepeatIncomeMutation
+} from "@/react-query/mutation/incomeMutation";
 
 function IncomeList() {
   const { data: session } = useSession();

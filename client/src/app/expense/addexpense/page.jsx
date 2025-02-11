@@ -5,8 +5,11 @@ import { useSession } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
 import { X, CircleAlert } from "lucide-react";
 import Link from "next/link";
-import { getCategories } from "@/api/query/expenseQuery";
-import { useAddExpenseMutation, useUpdateExpenseMutation } from "@/api/mutation/expanseMutation";
+import { getCategories } from "@/react-query/query/expenseQuery";
+import {
+  useAddExpenseMutation,
+  useUpdateExpenseMutation
+} from "@/react-query/mutation/expanseMutation";
 
 const ConfirmLimitModal = ({ isOpen, onClose, handleConfirm, percentage }) => {
   if (!isOpen) return null;

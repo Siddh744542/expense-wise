@@ -9,7 +9,7 @@ import CategorySpendingComparison from "../category/(expense)/CategorySpendingCo
 import { useSearchParams } from "next/navigation";
 import { Loader } from "../dashboardWrapper";
 import MonthFilter from "../(components)/MonthFilter";
-import { getDashboardData } from "@/api/query/dashboardquery";
+import { getDashboardData } from "@/react-query/query/dashboardQuery";
 
 function Dashboard() {
   const { data: session, status } = useSession();

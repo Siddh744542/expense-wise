@@ -3,7 +3,7 @@ import { useSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import React from "react";
 import formatMonth from "@/helper/formatMonth";
-import { getAvailableMonths } from "@/api/query/monthFilterQuery";
+import { getAvailableMonths } from "@/react-query/query/monthFilterQuery";
 
 function MonthFilter({ selectedMonth }) {
   const { data: session, status } = useSession();

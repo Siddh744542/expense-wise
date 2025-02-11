@@ -8,7 +8,7 @@ import MonthlyIncomeComparison from "./MonthlyIncomeComparison";
 import SourceChart from "@/app/income/SourceChart";
 import { Loader } from "@/app/dashboardWrapper";
 import MonthFilter from "@/app/(components)/MonthFilter";
-import { getIncomeSourceData } from "@/api/query/category/incomeSourceQuery";
+import { getIncomeSourceData } from "@/react-query/query/category/incomeSourceQuery";
 
 function IncomeSource() {
   const { data: session, status } = useSession();

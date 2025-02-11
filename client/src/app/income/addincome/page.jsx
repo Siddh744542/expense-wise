@@ -3,8 +3,11 @@ import React, { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { getSourceData } from "@/api/query/incomeQuery";
-import { useAddIncomeMutation, useUpdateIncomeMutation } from "@/api/mutation/incomeMutation";
+import { getSourceData } from "@/react-query/query/incomeQuery";
+import {
+  useAddIncomeMutation,
+  useUpdateIncomeMutation
+} from "@/react-query/mutation/incomeMutation";
 
 const AddIncomePage = () => {
   const searchParams = useSearchParams();

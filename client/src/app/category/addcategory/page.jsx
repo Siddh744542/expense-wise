@@ -5,7 +5,7 @@ import { useSearchParams } from "next/navigation";
 import {
   useAddExpenseCategoryMutation,
   useUpdateExpenseCategoryMutation
-} from "@/api/mutation/expenseCategoryMutation";
+} from "@/react-query/mutation/expenseCategoryMutation";
 
 const AddCategoryForm = () => {
   const searchParams = useSearchParams();

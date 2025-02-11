@@ -7,7 +7,7 @@ import SourceChart from "./SourceChart";
 import IncomeList from "./IncomeList";
 import { Loader } from "../dashboardWrapper";
 import MonthFilter from "../(components)/MonthFilter";
-import { getIncomeSummary } from "@/api/query/incomeQuery";
+import { getIncomeSummary } from "@/react-query/query/incomeQuery";
 
 function Income() {
   const { data: session, status } = useSession();

@@ -4,7 +4,7 @@ import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
-import { useDeleteIncomeSourceMutation } from "@/api/mutation/incomeSourceMutation";
+import { useDeleteIncomeSourceMutation } from "@/react-query/mutation/incomeSourceMutation";
 
 const ConfirmDeleteModal = ({ isOpen, onClose, handleDelete }) => {
   if (!isOpen) return null;

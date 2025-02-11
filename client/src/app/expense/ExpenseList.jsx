@@ -3,8 +3,11 @@ import React, { useState } from "react";
 import { useSession } from "next-auth/react";
 import { Pen, Trash2, Repeat } from "lucide-react";
 import Link from "next/link";
-import { getExpenseList } from "@/api/query/expenseQuery";
-import { useDeleteExpenseMutation, useRepeatExpenseMutation } from "@/api/mutation/expanseMutation";
+import { getExpenseList } from "@/react-query/query/expenseQuery";
+import {
+  useDeleteExpenseMutation,
+  useRepeatExpenseMutation
+} from "@/react-query/mutation/expanseMutation";
 
 function ExpenseList() {
   const { data: session } = useSession();

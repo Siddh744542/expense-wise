@@ -57,7 +57,7 @@ function ExpenseList() {
                   >
                     <Repeat className="w-4 h-4" />
                   </button>
-                  <span className="text-sm font-semibold text-gray-700">₹{expense?.amount}</span>
+                  <span className="text-sm text-black">₹{expense?.amount}</span>
                   <div className="flex items-center gap-0.5">
                     <Link
                       href={{

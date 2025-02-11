@@ -23,7 +23,13 @@ app.use(morgan("common"));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 // app.use(cors());
-app.use(cors({ credentials: true, origin: true }));
+app.use(
+  cors({
+    credentials: true,
+    origin: process.env.CLIENT_URL || "http://localhost:3000",
+  })
+);
+
 app.use(cookieParser());
 connect();
 // routes

@@ -11,48 +11,6 @@ import {
   useUpdateExpenseMutation
 } from "@/react-query/mutation/expanseMutation";
 
-const ConfirmLimitModal = ({ isOpen, onClose, handleConfirm, percentage }) => {
-  if (!isOpen) return null;
-
-  return (
-    <div className="fixed inset-0 flex items-center justify-center z-50">
-      <div className="bg-black opacity-50 absolute inset-0"></div>
-      <div className="relative bg-yellow-50 border-l-4 border-yellow-500 p-6 rounded-lg shadow-lg z-10 max-w-sm">
-        <button
-          className="absolute top-2 right-2 p-2 rounded-full hover:bg-gray-200 transition-colors"
-          onClick={onClose}
-        >
-          <X className="w-5 h-5 text-gray-600" />
-        </button>
-
-        <div className="flex items-center mb-4">
-          <CircleAlert className="w-6 h-6 text-yellow-500 mr-2" />
-          <h3 className="text-lg font-semibold text-yellow-700">Warning: Limit Reached</h3>
-        </div>
-
-        <p className="text-yellow-800 mb-4">
-          You have reached <strong>{percentage}%</strong> of your limit. Do you want to add more?
-        </p>
-
-        <div className="flex justify-end space-x-4">
-          <button
-            className="px-4 py-2 bg-gray-300 text-black rounded hover:bg-gray-400"
-            onClick={() => handleConfirm(false)}
-          >
-            No
-          </button>
-          <button
-            className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
-            onClick={() => handleConfirm(true)}
-          >
-            Yes
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-};
-
 const DailyExpenseForm = () => {
   const { data: session } = useSession();
   const searchParams = useSearchParams();
@@ -130,16 +88,16 @@ const DailyExpenseForm = () => {
   };
 
   return (
-    <div>
-      <div className="!w-1/2 px- mx-auto mt-10 space-y-4">
-        <h2 className="text-2xl font-semibold text-primary-700 text-center mb-4">
+    <div className="flex items-center h-screen">
+      <div className="!w-1/2 mx-auto flex flex-col gap-4">
+        <h2 className="text-2xl font-semibold text-primary-700 text-center">
           {isEditing ? "Update Daily Expense" : "Add Daily Expense"}
         </h2>
 
         <div className="p-6 bg-white shadow-md rounded-md">
-          <form onSubmit={handleLimitReachedPopUp} className="space-y-4">
-            <div className="flex flex-col">
-              <label htmlFor="date" className="text-gray-600 mb-1">
+          <form onSubmit={handleLimitReachedPopUp} className="flex flex-col gap-3">
+            <div className="flex flex-col gap-1">
+              <label htmlFor="date" className="text-gray-600 text-sm">
                 Date
               </label>
               <input
@@ -148,13 +106,13 @@ const DailyExpenseForm = () => {
                 id="date"
                 value={formData.date}
                 onChange={handleChange}
-                className="border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring focus:border-primary-500"
+                className="border border-gray-300 rounded-lg p-1.5 text-sm focus:outline-none focus:ring focus:border-primary-500"
                 required
               />
             </div>
 
-            <div className="flex flex-col">
-              <label htmlFor="category" className="text-gray-600 mb-1">
+            <div className="flex flex-col gap-1">
+              <label htmlFor="category" className="text-gray-600 text-sm">
                 Category
               </label>
               <div className="flex gap-2">
@@ -163,7 +121,7 @@ const DailyExpenseForm = () => {
                   id="category"
                   value={formData.category}
                   onChange={handleChange}
-                  className="border w-full border-gray-300 rounded-lg p-2 focus:outline-none focus:ring focus:border-primary-500"
+                  className="border text-sm w-full border-gray-300 rounded-lg p-1.5 focus:outline-none focus:ring focus:border-primary-500"
                   required
                 >
                   <option value="" disabled>
@@ -176,15 +134,15 @@ const DailyExpenseForm = () => {
                   ))}
                 </select>
                 <Link href={"/category/addcategory"}>
-                  <button className="w-max bg-primary text-white p-2 rounded-lg hover:bg-primary-600 transition">
+                  <button className="w-max bg-primary text-sm text-white p-1.5 rounded-lg hover:bg-primary-600 transition">
                     Add Category
                   </button>
                 </Link>
               </div>
             </div>
 
-            <div className="flex flex-col relative">
-              <label htmlFor="amount" className=" font-sans text-gray-600 mb-1">
+            <div className="flex flex-col relative gap-1">
+              <label htmlFor="amount" className=" font-sans text-gray-600 text-sm">
                 Amount
               </label>
               <input
@@ -193,13 +151,14 @@ const DailyExpenseForm = () => {
                 id="amount"
                 value={formData.amount}
                 onChange={handleChange}
-                className={`border-2 border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 `}
+                className={`border-2 border-gray-300 rounded-lg p-1.5 text-sm focus:outline-none focus:ring-2 `}
                 required
+                autoFocus
               />
             </div>
 
-            <div className="flex flex-col">
-              <label htmlFor="description" className="text-gray-600 mb-1">
+            <div className="flex flex-col gap-1">
+              <label htmlFor="description" className="text-gray-600 text-sm">
                 Description (Optional)
               </label>
               <textarea
@@ -207,13 +166,13 @@ const DailyExpenseForm = () => {
                 id="description"
                 value={formData.description}
                 onChange={handleChange}
-                className="border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring focus:border-primary-500"
+                className="border border-gray-300 rounded-lg p-1.5 text-sm focus:outline-none focus:ring focus:border-primary-500"
               ></textarea>
             </div>
 
             <button
               type="submit"
-              className="w-full bg-primary text-white p-2 rounded-lg hover:bg-primary-600 transition"
+              className="w-full bg-primary text-white p-1.5 text-sm rounded-lg hover:bg-primary-600 transition"
             >
               {isEditing ? "Update Expense" : "Add Expense"}
             </button>
@@ -226,6 +185,48 @@ const DailyExpenseForm = () => {
         handleConfirm={handleConfirm}
         percentage={limitReachedPercentage}
       />
+    </div>
+  );
+};
+
+const ConfirmLimitModal = ({ isOpen, onClose, handleConfirm, percentage }) => {
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 flex items-center justify-center z-50">
+      <div className="bg-black opacity-50 absolute inset-0"></div>
+      <div className="relative bg-yellow-50 border-l-4 border-yellow-500 p-6 rounded-lg shadow-lg z-10 max-w-sm">
+        <button
+          className="absolute top-2 right-2 p-2 rounded-full hover:bg-gray-200 transition-colors"
+          onClick={onClose}
+        >
+          <X className="w-5 h-5 text-gray-600" />
+        </button>
+
+        <div className="flex items-center mb-4">
+          <CircleAlert className="w-6 h-6 text-yellow-500 mr-2" />
+          <h3 className="text-lg font-semibold text-yellow-700">Warning: Limit Reached</h3>
+        </div>
+
+        <p className="text-yellow-800 mb-4">
+          You have reached <strong>{percentage}%</strong> of your limit. Do you want to add more?
+        </p>
+
+        <div className="flex justify-end space-x-4">
+          <button
+            className="px-4 py-2 bg-gray-300 text-black rounded hover:bg-gray-400"
+            onClick={() => handleConfirm(false)}
+          >
+            No
+          </button>
+          <button
+            className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+            onClick={() => handleConfirm(true)}
+          >
+            Yes
+          </button>
+        </div>
+      </div>
     </div>
   );
 };

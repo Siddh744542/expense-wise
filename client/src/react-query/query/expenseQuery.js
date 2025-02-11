@@ -1,11 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
+import { SERVER_URL } from "../../../constants";
 
 export function getExpenseSummary(userId, selectedMonth) {
   const { data: expenseSummaryData, isLoading: isLoadingSummary } = useQuery({
     queryKey: ["expenseSummaryData", userId, selectedMonth],
     queryFn: async () => {
-      const response = await axios.get(`${process.env.NEXT_PUBLIC_DOMAIN}/expense/summary`, {
+      const response = await axios.get(`${SERVER_URL}/expense/summary`, {
         params: { userId: userId, month: selectedMonth }
       });
       return response.data;
@@ -20,7 +21,7 @@ export function getExpenseList(page, userId) {
   const { data: expenseList, isLoading: isLoadingList } = useQuery({
     queryKey: ["expenseList", { page }],
     queryFn: async () => {
-      const response = await axios.get(`${process.env.NEXT_PUBLIC_DOMAIN}/expense/getexpense`, {
+      const response = await axios.get(`${SERVER_URL}/expense/getexpense`, {
         params: { userId: userId, page: page }
       });
       const hasNext = page < response.data.totalPages;
@@ -41,7 +42,7 @@ export function getCategories(userId, selectedMonth) {
   const { data: categoryData, isLoading: isCategoryLoading } = useQuery({
     queryKey: ["categories", userId, selectedMonth],
     queryFn: async () => {
-      const response = await axios.get(`${process.env.NEXT_PUBLIC_DOMAIN}/expense/summary`, {
+      const response = await axios.get(`${SERVER_URL}/expense/summary`, {
         params: { userId: userId, month: selectedMonth }
       });
       return response.data;

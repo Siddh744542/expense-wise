@@ -33,7 +33,7 @@ function Income() {
           <MonthFilter selectedMonth={selectedMonth} />
 
           <button
-            className="bg-action text-sm text-white px-2 py-1 rounded-md hover:bg-opacity-90 transition"
+            className="bg-primary text-sm text-white px-2 py-1 rounded-md hover:bg-opacity-90 transition"
             onClick={() => router.push("/income/addincome")}
           >
             Add Income

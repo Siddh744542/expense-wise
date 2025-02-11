@@ -84,7 +84,7 @@ function SourceSummary({ summaryData, refetch }) {
           <div className="text-action font-bold text-xl">₹{summaryData?.totalIncome || 0}</div>
         </div>
 
-        <div className="flex flex-col">
+        <div className="flex flex-col overflow-y-auto h-[11rem]">
           {summaryData?.sources.length > 0 ? (
             summaryData?.sources.map((source, index) => (
               <div key={source?._id}>
@@ -117,9 +117,7 @@ function SourceSummary({ summaryData, refetch }) {
                     </button>
                   </div>
                 </div>
-                {index < summaryData.sources.length - 1 && (
-                  <hr className="border-gray-300 my-1.5" />
-                )}
+                {index < summaryData.sources.length - 1 && <hr className="border-gray-300 my-1" />}
               </div>
             ))
           ) : (

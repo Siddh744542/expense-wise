@@ -11,12 +11,12 @@ const aggregateCategoryData = (categoryData) => {
     fill: ChartColors[index % ChartColors.length]
   }));
 };
-function ExpenseByCategoryBarchart({ expenseCategoryData }) {
+function ExpenseByCategoryBarchart({ expenseCategoryData, isCategoryPage }) {
   const aggregateData = aggregateCategoryData(expenseCategoryData);
   return (
     <div className="h-full bg-white p-4 shadow-md rounded-lg">
       <h2 className="text-xl text-primary font-semibold pb-2">Monthly Expenses by Category</h2>
-      <div className={`flex-grow h-60`}>
+      <div className={`flex-grow ${isCategoryPage ? "h-52" : "h-60"}`}>
         {aggregateData?.length > 0 ? (
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={aggregateData}>

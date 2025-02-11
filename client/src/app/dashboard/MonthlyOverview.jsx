@@ -13,10 +13,11 @@ function formatData(expenseData, incomeData) {
             limit: category.limit
           }
         : max,
-    { name: "", amount: 0, limit: 0 }
+    { name: "_", amount: 0, limit: 0 }
   );
 
-  mostSpentCategory.percentage = ((mostSpentCategory.amount / totalExpenses) * 100).toFixed(2);
+  mostSpentCategory.percentage =
+    totalExpenses > 0 ? ((mostSpentCategory.amount / totalExpenses) * 100).toFixed(2) : "0.00";
 
   const totalIncome = incomeData?.totalIncome || 0;
   const sources = incomeData?.sources || [];
@@ -24,10 +25,11 @@ function formatData(expenseData, incomeData) {
   const highestIncomeSource = sources.reduce(
     (max, source) =>
       source?.total > max.amount ? { name: source.source, amount: source.total } : max,
-    { name: "", amount: 0 }
+    { name: "_", amount: 0 }
   );
 
-  highestIncomeSource.percentage = ((highestIncomeSource.amount / totalIncome) * 100).toFixed(2);
+  highestIncomeSource.percentage =
+    totalIncome > 0 ? ((highestIncomeSource.amount / totalIncome) * 100).toFixed(2) : "0.00";
 
   const savings = totalIncome - totalExpenses;
 
@@ -63,9 +65,9 @@ const MonthlyOverview = ({ expenseData, incomeData }) => {
             <div className="flex justify-between ">
               <p className="text-gray-600 text-sm font-medium">Most Spent</p>
               <div className="text-right items-center">
-                <p className="text-sm font-semibold">{mostSpentCategory.name || "N/A"}</p>
+                <p className="text-sm font-semibold">{mostSpentCategory.name || "_"}</p>
                 <p className="text-xs text-gray-500 whitespace-nowrap">
-                  ₹{mostSpentCategory.amount} ({mostSpentCategory.percentage}%)
+                  ₹{mostSpentCategory.amount} ({mostSpentCategory.percentage || 0}%)
                 </p>
               </div>
             </div>
@@ -79,9 +81,9 @@ const MonthlyOverview = ({ expenseData, incomeData }) => {
             <div className="flex justify-between ">
               <p className="text-gray-600 text-sm font-medium">Highest Source</p>
               <div className="text-right items-center">
-                <p className="text-sm font-semibold">{highestIncomeSource.name || "N/A"}</p>
+                <p className="text-sm font-semibold">{highestIncomeSource.name || "_"}</p>
                 <p className="text-xs text-gray-500 whitespace-nowrap">
-                  ₹{highestIncomeSource.amount} ({highestIncomeSource.percentage}%)
+                  ₹{highestIncomeSource.amount} ({highestIncomeSource.percentage || 0}%)
                 </p>
               </div>
             </div>

@@ -34,7 +34,7 @@ function CategoryChart({ summaryData }) {
                 ))}
               </Pie>
               <Tooltip />
-              <Legend iconSize={0} height={20} />
+              <Legend iconSize={-5} height={20} />
             </PieChart>
           </ResponsiveContainer>
         ) : (

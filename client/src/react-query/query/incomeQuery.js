@@ -1,11 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
+import { SERVER_URL } from "../../../constants";
 
 export function getIncomeSummary(userId, selectedMonth) {
   const { data: incomeSummaryData, isLoading: isLoadingSummary } = useQuery({
     queryKey: ["incomeSummaryData", userId, selectedMonth],
     queryFn: async () => {
-      const response = await axios.get(`${process.env.NEXT_PUBLIC_DOMAIN}/income/summary`, {
+      const response = await axios.get(`${SERVER_URL}/income/summary`, {
         params: { userId: userId, month: selectedMonth }
       });
       return response.data;
@@ -19,7 +20,7 @@ export function getIncomeList(page, userId) {
   const { data: incomeList, isLoading: isListLoading } = useQuery({
     queryKey: ["incomesList", { page }],
     queryFn: async () => {
-      const response = await axios.get(`${process.env.NEXT_PUBLIC_DOMAIN}/income/getincome`, {
+      const response = await axios.get(`${SERVER_URL}/income/getincome`, {
         params: { userId: userId, page: page }
       });
       const hasNext = page < response.data.totalPages;
@@ -39,7 +40,7 @@ export function getSourceData(userId, selectedMonth) {
   const { data: sourceData, isLoading: isLoadingMonths } = useQuery({
     queryKey: ["Sources", userId, selectedMonth],
     queryFn: async () => {
-      const response = await axios.get(`${process.env.NEXT_PUBLIC_DOMAIN}/income/getsources`, {
+      const response = await axios.get(`${SERVER_URL}/income/getsources`, {
         params: { userId: userId, month: selectedMonth }
       });
       return response.data;

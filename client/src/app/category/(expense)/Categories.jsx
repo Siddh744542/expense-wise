@@ -49,7 +49,7 @@ function Categories({ categoryData, refetch }) {
           </div>
         </div>
         {/* Category Expenses List */}
-        <div className="flex flex-col">
+        <div className="flex flex-col overflow-y-auto h-[12.5rem]">
           {categoryData?.categoryExpenses.length > 0 ? (
             categoryData?.categoryExpenses.map((categoryExpense, index) => (
               <div key={categoryExpense?._id}>

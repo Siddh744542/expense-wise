@@ -40,7 +40,7 @@ function Expenses() {
           <MonthFilter selectedMonth={selectedMonth} />
 
           <button
-            className="bg-action text-sm text-white px-2 py-1 rounded-md hover:bg-opacity-90 transition"
+            className="bg-primary text-sm text-white px-2 py-1 rounded-md hover:bg-opacity-90 transition"
             onClick={() => router.push("/expense/addexpense")}
           >
             Add Expense
@@ -50,7 +50,7 @@ function Expenses() {
 
       {/* Grid Layout */}
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-5 py-2">
-        <div className="lg:col-span-2 grid grid-rows-1 gap-5">
+        <div className="lg:col-span-2 grid gap-5">
           {/* Expense Summary Section */}
           <ExpenseSummary summaryData={expenseSummaryData} />
           {/* Pie Chart Section */}

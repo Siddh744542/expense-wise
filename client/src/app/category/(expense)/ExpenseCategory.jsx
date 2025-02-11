@@ -53,6 +53,7 @@ function ExpenseCategory() {
           <div className="lg:col-span-3">
             <ExpenseByCategoryBarchart
               expenseCategoryData={expenseCategoryData?.summaryData?.categoryExpenses}
+              isCategoryPage={true}
             />
           </div>
         </div>

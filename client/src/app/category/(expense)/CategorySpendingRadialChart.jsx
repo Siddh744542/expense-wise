@@ -34,7 +34,7 @@ const CategorySpendingRadialChart = ({ categoryData, isCategoryPage }) => {
       <h2 className="text-lg text-primary-500 font-semibold text-left">
         Spending Limit Reached per Category
       </h2>
-      <div className={`${isCategoryPage ? "h-56" : "h-52"} flex-grow`}>
+      <div className={`${isCategoryPage ? "h-60" : "h-52"} flex-grow`}>
         {radialBarData?.length > 0 ? (
           <ResponsiveContainer width="100%" height="100%">
             <RadialBarChart
